@@ -94,8 +94,8 @@ export const DEFAULT_JSON = {
   onboarding: [
     {
       screenId: "PICK_CHARACTER",
-      title: "Meet Bob",
-      text: "Meet Bob (that's you in this demo!). Bob is a student at Test College. To help make student life easier, BestBC College is going to offer Alice a digital Student Card to put in her BC Wallet.",
+      title: "Meet Ana",
+      text: "Meet Ana (that's you in this demo!). Ana is a student at Test College. To help make student life easier, BestBC College is going to offer Alice a digital Student Card to put in her BC Wallet.",
     },
     {
       screenId: "SETUP_START",
@@ -145,9 +145,210 @@ export const DEFAULT_JSON = {
       },
       steps: [
         {
+          screenId: "OvertestClothesOnlineView2",
+          type: "BASIC",
+          title: "Getting a student discount",
+          text: "BC Wallet will now ask you to confirm what to send. Notice how it will only share if the credential has expired, not even the expiry date itself gets shared. You don't have to share anything else for it to be trustable.",
+          requestOptions: {
+            type: "OOB",
+            title: "Cool Clothes Online Request",
+            text: "Cool Clothes Online would like some of your personal information.",
+            proofRequest: {
+              attributes: {
+                test_card_id: {
+                  attributes: ["student_first_name", "student_last_name"],
+                  restrictions: ["test_card_id"],
+                },
+                student_card: {
+                  attributes: ["student_first_name", "student_last_name"],
+                  restrictions: ["student_card"],
+                },
+              },
+              predicates: {
+                test_card_id_expiry_date: {
+                  name: "expiry_date",
+                  type: ">=",
+                  value: 20230517,
+                  restrictions: ["test_card_id"],
+                },
+                student_card_expiry_date: {
+                  name: "expiry_date",
+                  type: ">=",
+                  value: 20230517,
+                  restrictions: ["student_card"],
+                },
+              },
+            },
+          },
+        },
+        {
           screenId: "testClothesOnlineStep1",
           type: "CONNET_AND_VERIFY",
           title: "Confirm the information to send",
+          text: "BC Wallet will now ask you to confirm what to send. Notice how it will only share if the credential has expired, not even the expiry date itself gets shared. You don't have to share anything else for it to be trustable.",
+          requestOptions: {
+            type: "OOB",
+            title: "Cool Clothes Online Request",
+            text: "Cool Clothes Online would like some of your personal information.",
+            proofRequest: {
+              attributes: {
+                test_card_id: {
+                  attributes: ["student_first_name", "student_last_name"],
+                  restrictions: ["test_card_id"],
+                },
+                student_card: {
+                  attributes: ["student_first_name", "student_last_name"],
+                  restrictions: ["student_card"],
+                },
+              },
+              predicates: {
+                test_card_id_expiry_date: {
+                  name: "expiry_date",
+                  type: ">=",
+                  value: 20230517,
+                  restrictions: ["test_card_id"],
+                },
+                student_card_expiry_date: {
+                  name: "expiry_date",
+                  type: ">=",
+                  value: 20230517,
+                  restrictions: ["student_card"],
+                },
+              },
+            },
+          },
+        },
+        {
+          screenId: "OvertestClothesOnlineView3",
+          type: "BASIC",
+          title: "You're Done",
+          text: "BC Wallet will now ask you to confirm what to send. Notice how it will only share if the credential has expired, not even the expiry date itself gets shared. You don't have to share anything else for it to be trustable.",
+          requestOptions: {
+            type: "OOB",
+            title: "Cool Clothes Online Request",
+            text: "Cool Clothes Online would like some of your personal information.",
+            proofRequest: {
+              attributes: {
+                test_card_id: {
+                  attributes: ["student_first_name", "student_last_name"],
+                  restrictions: ["test_card_id"],
+                },
+                student_card: {
+                  attributes: ["student_first_name", "student_last_name"],
+                  restrictions: ["student_card"],
+                },
+              },
+              predicates: {
+                test_card_id_expiry_date: {
+                  name: "expiry_date",
+                  type: ">=",
+                  value: 20230517,
+                  restrictions: ["test_card_id"],
+                },
+                student_card_expiry_date: {
+                  name: "expiry_date",
+                  type: ">=",
+                  value: 20230517,
+                  restrictions: ["student_card"],
+                },
+              },
+            },
+          },
+        },
+      ],
+    },
+    {
+      id: "UniversityParkingPermit",
+      name: "University Parking permit",
+      overview: {
+        title: "Getting a student discount",
+        text: "Bob (that's you in this demo!) can get a student discount on her online purchase. In this example, you will just tell Cool Clothes Online you're a student.",
+        image: "/student/useCases/store/card-school.svg",
+      },
+      summary: {
+        title: "You're done!",
+        text: "You proved that you're a student, and Cool Clothes Online gave you the discount. It only took a few seconds, you revealed minimal information, and Cool Clothes Online could easily and automatically trust what you sent.",
+        image: "/student/student-accepted.svg",
+      },
+      steps: [
+        {
+          screenId: "OverView",
+          type: "OverView",
+          title: "Getting a student discount",
+          text: "BC Wallet will now ask you to confirm what to send. Notice how it will only share if the credential has expired, not even the expiry date itself gets shared. You don't have to share anything else for it to be trustable.",
+          requestOptions: {
+            type: "OOB",
+            title: "Cool Clothes Online Request",
+            text: "Cool Clothes Online would like some of your personal information.",
+            proofRequest: {
+              attributes: {
+                test_card_id: {
+                  attributes: ["student_first_name", "student_last_name"],
+                  restrictions: ["test_card_id"],
+                },
+                student_card: {
+                  attributes: ["student_first_name", "student_last_name"],
+                  restrictions: ["student_card"],
+                },
+              },
+              predicates: {
+                test_card_id_expiry_date: {
+                  name: "expiry_date",
+                  type: ">=",
+                  value: 20230517,
+                  restrictions: ["test_card_id"],
+                },
+                student_card_expiry_date: {
+                  name: "expiry_date",
+                  type: ">=",
+                  value: 20230517,
+                  restrictions: ["student_card"],
+                },
+              },
+            },
+          },
+        },
+        {
+          screenId: "testClothesOnlineStep1",
+          type: "CONNET_AND_VERIFY",
+          title: "Confirm the information to send",
+          text: "BC Wallet will now ask you to confirm what to send. Notice how it will only share if the credential has expired, not even the expiry date itself gets shared. You don't have to share anything else for it to be trustable.",
+          requestOptions: {
+            type: "OOB",
+            title: "Cool Clothes Online Request",
+            text: "Cool Clothes Online would like some of your personal information.",
+            proofRequest: {
+              attributes: {
+                test_card_id: {
+                  attributes: ["student_first_name", "student_last_name"],
+                  restrictions: ["test_card_id"],
+                },
+                student_card: {
+                  attributes: ["student_first_name", "student_last_name"],
+                  restrictions: ["student_card"],
+                },
+              },
+              predicates: {
+                test_card_id_expiry_date: {
+                  name: "expiry_date",
+                  type: ">=",
+                  value: 20230517,
+                  restrictions: ["test_card_id"],
+                },
+                student_card_expiry_date: {
+                  name: "expiry_date",
+                  type: ">=",
+                  value: 20230517,
+                  restrictions: ["student_card"],
+                },
+              },
+            },
+          },
+        },
+        {
+          screenId: "Done",
+          type: "OverView",
+          title: "You're Done",
           text: "BC Wallet will now ask you to confirm what to send. Notice how it will only share if the credential has expired, not even the expiry date itself gets shared. You don't have to share anything else for it to be trustable.",
           requestOptions: {
             type: "OOB",

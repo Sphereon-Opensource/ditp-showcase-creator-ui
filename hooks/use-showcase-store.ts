@@ -4,17 +4,21 @@ import { DEFAULT_JSON } from "@/lib/fixtures";
 import { Persona, ShowcaseJSON } from "@/types";
 import { CredentialFormData } from "@/schemas/credential";
 
+type Tab = "Character" | "Onboarding" | "Scenario" | "Publish";
+
 interface State {
   showcaseJSON: ShowcaseJSON;
   selectedCharacter: number;
   currentPage: string;
   editMode: boolean;
+  activeTab: Tab;
 }
 
 interface Actions {
   setShowcaseJSON: (json: ShowcaseJSON) => void;
   setSelectedCharacter: (index: number) => void;
   setEditMode: (mode: boolean) => void;
+  setActiveTab: (tab: Tab) => void;
   updateCharacterDetails: (data: {
     name: string;
     type: string;
@@ -41,7 +45,14 @@ export const useShowcaseStore = create<State & Actions>()(
     },
     selectedCharacter: 0,
     currentPage: "character",
+    activeTab: "Character",
     editMode: false,
+
+    setActiveTab: (tab) => {
+      set((state) => {
+        state.activeTab = tab;
+      });
+    },
 
     setShowcaseJSON: (json) =>
       set((state) => {

@@ -10,6 +10,7 @@ import {
   ShowcaseJSON,
 } from "@/types";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface DisplayStepCredentialsProps {
   selectedCharacter: number;
@@ -81,19 +82,30 @@ export const DisplayStepCredentials = ({
 
         return (
           <div key={credential} className="flex flex-col">
-            <div className="w-full">
+            <div className="w-full border border-dark-border dark:border-light-border rounded-t-lg">
               {/* Credential Header */}
               <div
                 className={cn(
                   "px-4 py-3 rounded-t-lg flex items-center justify-between",
-                  "bg-light-input dark:bg-dark-input"
+                  "bg-light-bg dark:bg-dark-bg"
                 )}
               >
-                <div className="space-y-1">
+                <div className="w-fit flex items-center">
+                <div>
+                  <Image
+                    src={require(`../../public/assets/NavBar/${"Joyce"}.png`)}
+                    alt={"Bob"}
+                    width={50}
+                    height={50}
+                    className="rounded-full"
+                  />
+                </div>
+                <div className="space-y-1 ml-4">
+                  <p className="font-semibold">{credentialData.name}</p>
                   <p className="text-sm text-muted-foreground">
                     {credentialData.issuer_name}
                   </p>
-                  <p className="font-semibold">{credentialData.name}</p>
+                </div>
                 </div>
 
                 <Button
@@ -103,7 +115,7 @@ export const DisplayStepCredentials = ({
                     e.preventDefault();
                     removeCredential(credential);
                   }}
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  className="hover:text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -111,10 +123,7 @@ export const DisplayStepCredentials = ({
 
               {/* Proof Request Section */}
               <div
-                className={cn(
-                  "p-3 rounded-b-lg",
-                  "bg-light-bg dark:bg-dark-bg"
-                )}
+                className={cn("p-3 rounded-b-lg", "bg-white dark:bg-dark-bg")}
               >
                 {isEditing &&
                 localData.requestOptions?.proofRequest &&
@@ -140,8 +149,7 @@ export const DisplayStepCredentials = ({
                       setEditingCredentials([...editingCredentials, index]);
                     }}
                   >
-                    <Edit className="h-3 w-3 mr-1" />
-                    Edit Proof Request
+                    EDIT PROOF REQUEST
                   </Button>
                 )}
               </div>

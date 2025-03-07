@@ -9,7 +9,7 @@ export default async function Onboarding({ params }: { params: PageParams }) {
   const t = await getTranslations("onboarding");
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col ">
       <div className="flex gap-12 container mx-auto px-4 py-8 mt-20">
         <div className="w-2/5 rounded left-col text-light-text dark:text-dark-text">
           <div className="flex w-full">

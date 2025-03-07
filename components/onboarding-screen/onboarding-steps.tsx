@@ -29,7 +29,7 @@ export const OnboardingSteps = () => {
   return (
     <div
       id="editStep"
-      className="w-3/5 two-column-col bg-light-bg-secondary dark:bg-dark-bg-secondary text-light-text dark:text-dark-text p-6 rounded-md right-col"
+      className="w-full two-column-col bg-white dark:bg-dark-bg-secondary text-light-text dark:text-dark-text p-6 rounded-md right-col"
     >
       {stepState === "no-selection" && (
         <div className="">

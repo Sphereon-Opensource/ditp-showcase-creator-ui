@@ -43,7 +43,9 @@ export const ProofAttribute = ({
           defaultValue={attribute}
         >
           <SelectTrigger>
-            <SelectValue placeholder={t('scenario.proof_attribute_placeholder')} />
+            <SelectValue
+              placeholder={t("scenario.proof_attribute_placeholder")}
+            />
           </SelectTrigger>
           <SelectContent>
             {availableAttributes.map((attr) => (
@@ -66,11 +68,18 @@ export const ProofAttribute = ({
           value="none"
           onValueChange={(value) => onConditionTypeChange(index, value)}
         >
-          {PREDICATE_OPTIONS.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
+          <SelectTrigger>
+            <SelectValue
+              placeholder={t("scenario.proof_attribute_placeholder")}
+            />
+          </SelectTrigger>
+          <SelectContent>
+            {PREDICATE_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
         </Select>
       </div>
 

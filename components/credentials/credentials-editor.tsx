@@ -5,11 +5,14 @@ import { NoSelection } from "./no-selection";
 import { useCredentials } from "@/hooks/use-credentials";
 import { useTranslations } from 'next-intl';
 
-export const CredentialsEditor = () => {
-  const t = useTranslations()
-  const { mode } = useCredentials();
+interface CredentialsEditorProps {
+  credential: any | null;  // It should accept the credential prop
+}
 
-  if (!mode) {
+export const CredentialsEditor = ({ credential }: CredentialsEditorProps) => {
+  const t = useTranslations();
+  
+  if (!credential) {
     return (
       <div className="">
         <NoSelection text={t('credentials.no_credential_selected_message')} />
@@ -17,5 +20,5 @@ export const CredentialsEditor = () => {
     );
   }
 
-  return <CredentialsForm />;
+  return <CredentialsForm selectedCredential={credential} />;
 };
