@@ -6,11 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { FormTextArea, FormTextInput } from "@/components/text-input";
+import { Edit, Monitor } from "lucide-react";
 import {
-  Edit,
-  Monitor,
-} from "lucide-react";
-import { useOnboarding } from "@/hooks/use-onboarding";
+  useOnboarding,
+  useCreateIssuanceStep,
+  useUpdateIssuanceStep,
+} from "@/hooks/use-onboarding";
 import { BasicStepFormData } from "@/schemas/onboarding";
 import { basicStepSchema } from "@/schemas/onboarding";
 import { LocalFileUpload } from "./local-file-upload";
@@ -18,10 +19,11 @@ import { useTranslations } from "next-intl";
 import StepHeader from "../step-header";
 import ButtonOutline from "../ui/button-outline";
 import DeleteModal from "../delete-modal";
-import { Link } from "@/i18n/routing";
+import { Link, usePathname, useRouter } from "@/i18n/routing";
 import apiClient from "@/lib/apiService";
 import { ErrorModal } from "../error-modal";
 import Loader from "../loader";
+import { StepRequest, StepResponse, Step } from "@/openapi-types";
 
 export const BasicStepEdit = () => {
   const t = useTranslations();
@@ -33,17 +35,19 @@ export const BasicStepEdit = () => {
     setStepState,
     stepState,
     removeStep,
-    scenarioId
+    scenarioId,
   } = useOnboarding();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const currentStep = selectedStep !== null ? screens[selectedStep] : null;
+  const { mutateAsync } = useCreateIssuanceStep();
+  const { mutateAsync: mutateAsyncStep } = useUpdateIssuanceStep();
+  const currentStep: any = selectedStep !== null ? screens[selectedStep] : null;
   const isEditMode = stepState === "editing-basic";
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showErrorModal, setErrorModal] = useState(false);
-  console.log('Current Step',currentStep);
-
+  const isEditing = !!currentStep?.id && currentStep.title.trim() !== "";
+  const router = useRouter();
   const defaultValues = currentStep
     ? {
         title: currentStep.title,
@@ -72,14 +76,21 @@ export const BasicStepEdit = () => {
     }
   }, [currentStep, form]);
 
-  const onSubmit = (data: BasicStepFormData) => {
+  const onSubmit = (data: any) => {
     if (selectedStep !== null) {
       updateStep(selectedStep, {
         ...screens[selectedStep],
         ...data,
       });
-      setStepState("no-selection");
-      setSelectedStep(null);
+      if (isEditing) {
+        updateIssuanceStep(scenarioId, currentStep.id, data);
+        setStepState("no-selection");
+        setSelectedStep(null);
+      } else {
+        createIssuanceStep(scenarioId, data);
+        setStepState("no-selection");
+        setSelectedStep(null);
+      }
     }
   };
 
@@ -95,82 +106,222 @@ export const BasicStepEdit = () => {
       removeStep(stepId);
 
       // // Step 1: Send DELETE request to the API
-      await apiClient.delete(`/scenarios/issuances/${'issuanceScenarioId'}/steps/${stepId}`);
+      await apiClient.delete(
+        `/scenarios/issuances/${"credential-issuance-flow"}/steps/${stepId}`
+      );
 
       console.log("Persona deleted successfully!");
-      setLoading(false)
+      setLoading(false);
       // // Step 2: Update the persona list after deletion
       // GetPersona();
     } catch (error) {
       console.error("Error deleting persona:", error);
-      setLoading(false)
+      setLoading(false);
       setErrorModal(true);
     }
   };
 
-  const createIssuanceStep = async (issuanceFlowId: string, stepData: any) => {
+  const createAsset = async (
+    base64Content: string | undefined
+  ): Promise<string | null> => {
     try {
-      console.log(`Creating issuance step for flow: ${issuanceFlowId} with data:`, stepData);
-      const response = await apiClient.post(`/scenarios/issuances/${issuanceFlowId}/steps`, stepData);
-      console.log("Issuance Step Created:", response);
-      setLoading(false)
-      return response;
+      if (!base64Content) {
+        console.warn("No content provided for asset creation.");
+        return null;
+      }
+
+      const payload = {
+        mediaType: "image/jpeg",
+        content: base64Content,
+        fileName: "Logo.png",
+        description: "Step Logo",
+      };
+
+      const response: any = await apiClient.post<{ asset: { id: string } }>(
+        "/assets",
+        payload
+      );
+      console.log("Asset Created:", response);
+
+      return response.asset.id;
+    } catch (error) {
+      console.error("Error creating asset:", error);
+      return null;
+    }
+  };
+
+  const createIssuanceStep = async (issuanceFlowId: string, formdata: any) => {
+    try {
+      console.log('FormData',formdata);
+      // setLoading(true);
+      // const showcaseSlug = "credential-issuance-flow"; // Replace with actual slug
+      // const bodyAssetId =
+      //   formdata.image !== "" ? await createAsset(formdata.image) : null;
+      // const stepData: typeof StepRequest._type = {
+      //   title: formdata.title,
+      //   description: formdata.description,
+      //   order: 7,
+      //   type: "HUMAN_TASK",
+      //   asset: bodyAssetId ?? "",
+      //   actions: [
+      //     {
+      //       title: "example_title1",
+      //       actionType: "ARIES_OOB",
+      //       text: "example_text1",
+      //       proofRequest: {
+      //         attributes: {
+      //           attribute1: {
+      //             attributes: ["attribute1", "attribute2"],
+      //             restrictions: ["restriction1", "restriction2"],
+      //           },
+      //         },
+      //         predicates: {
+      //           predicate1: {
+      //             name: "example_name",
+      //             type: "example_type",
+      //             value: "example_value",
+      //             restrictions: ["restriction1", "restriction2"],
+      //           },
+      //         },
+      //       },
+      //     },
+      //   ],
+      // };
+
+      // console.log(
+      //   `Creating issuance step for flow: ${issuanceFlowId} with data:`,
+      //   stepData
+      // );
+      // console.log("Slug", showcaseSlug);
+      // const response = await mutateAsync(
+      //   { slug: showcaseSlug, data: stepData },
+      //   {
+      //     onSuccess: (data) => {
+      //       console.log("Issuance Step Created:", data);
+      //     },
+      //   }
+      // );
+      // setLoading(false);
+      // return response;
     } catch (error) {
       console.error("Error creating issuance step:", error);
-      setLoading(false)
+      setLoading(false);
       setErrorModal(true);
     }
   };
-  
-   const updateIssuanceStep = async (issuanceFlowId: string, stepId: string, stepData: any) => {
+
+  const updateIssuanceStep = async (
+    issuanceFlowId: string,
+    stepId: string,
+    formdata: any
+  ) => {
     try {
-      console.log(`Updating issuance step ${stepId} for flow ${issuanceFlowId} with data:`, stepData);
-      const response = await apiClient.put(`/scenarios/issuances/${issuanceFlowId}/steps/${stepId}`, stepData);
-      console.log("Issuance Step Updated:", response);
-      setLoading(false)
+      console.log("Step ID ", stepId);
+      const scenarioSlug = "credential-issuance-flow";
+      const stepSlug: any = currentStep?.id;
+      console.log("Form data", formdata);
+      const bodyAssetId =
+        formdata.image !== "" ? await createAsset(formdata.image) : null;
+      let stepData: typeof StepRequest._type = {
+        title: formdata.title,
+        description: formdata.description,
+        order: 1,
+        type: "HUMAN_TASK",
+        asset: bodyAssetId ?? "",
+        actions: [
+          {
+            title: "example_title1",
+            actionType: "ARIES_OOB",
+            text: "example_text1",
+            proofRequest: {
+              attributes: {
+                attribute1: {
+                  attributes: ["attribute1", "attribute2"],
+                  restrictions: ["restriction1", "restriction2"],
+                },
+              },
+              predicates: {
+                predicate1: {
+                  name: "example_name",
+                  type: "example_type",
+                  value: "example_value",
+                  restrictions: ["restriction1", "restriction2"],
+                },
+              },
+            },
+          },
+        ],
+      };
+      console.log(
+        `Updating issuance step ${stepId} for flow ${issuanceFlowId} with data:`,
+        stepData
+      );
+      // const response = await apiClient.put(`/scenarios/issuances/${issuanceFlowId}/steps/${stepId}`, stepData);
+      // console.log("Issuance Step Updated:", response);
+      const response = await mutateAsyncStep(
+        { slug: scenarioSlug, stepSlug, data: stepData },
+        {
+          onSuccess: (data: any) => {
+            console.log("Issuance Step Upadted:", data);
+          },
+        }
+      );
+      setLoading(false);
       return response;
     } catch (error) {
       console.error("Error updating issuance step:", error);
-      setLoading(false)
+      setLoading(false);
       setErrorModal(true);
     }
   };
-  
-   const createIssuanceStepAction = async (issuanceFlowId: string, stepId: string, actionData: any) => {
+
+  const createIssuanceStepAction = async (
+    issuanceFlowId: string,
+    stepId: string,
+    actionData: any
+  ) => {
     try {
-      console.log(`Creating action for step ${stepId} in flow ${issuanceFlowId} with data:`, actionData);
-      const response = await apiClient.post(`/scenarios/issuances/${issuanceFlowId}/steps/${stepId}/actions`, actionData);
+      console.log(
+        `Creating action for step ${stepId} in flow ${issuanceFlowId} with data:`,
+        actionData
+      );
+      const response = await apiClient.post(
+        `/scenarios/issuances/${issuanceFlowId}/steps/${stepId}/actions`,
+        actionData
+      );
       console.log("Issuance Step Action Created:", response);
-      setLoading(false)
+      setLoading(false);
       return response;
     } catch (error) {
       console.error("Error creating issuance step action:", error);
-      setLoading(false)
+      setLoading(false);
       setErrorModal(true);
     }
   };
-  
-   const updateIssuanceStepAction = async (
+
+  const updateIssuanceStepAction = async (
     issuanceFlowId: string,
     stepId: string,
     actionId: string,
     actionData: any
   ) => {
     try {
-      console.log(`Updating action ${actionId} for step ${stepId} in flow ${issuanceFlowId} with data:`, actionData);
+      console.log(
+        `Updating action ${actionId} for step ${stepId} in flow ${issuanceFlowId} with data:`,
+        actionData
+      );
       const response = await apiClient.put(
         `/scenarios/issuances/${issuanceFlowId}/steps/${stepId}/actions/${actionId}`,
         actionData
       );
       console.log("Issuance Step Action Updated:", response);
-      setLoading(false)
+      setLoading(false);
       return response;
     } catch (error) {
       console.error("Error updating issuance step action:", error);
     }
   };
-  
-  
+
   const handleCancel = () => {
     form.reset();
     setStepState("no-selection");
@@ -180,6 +331,8 @@ export const BasicStepEdit = () => {
   if (selectedStep === null) {
     return null;
   }
+
+  const Pathname = pathname.split("/")[2];
 
   if (!isEditMode && currentStep) {
     return (
@@ -216,7 +369,9 @@ export const BasicStepEdit = () => {
             <h4 className="text-sm font-medium text-muted-foreground">
               {t("onboarding.page_description_label")}
             </h4>
-            <p className="text-lg whitespace-pre-wrap">{currentStep.description}</p>
+            <p className="text-lg whitespace-pre-wrap">
+              {currentStep.description}
+            </p>
           </div>
 
           {currentStep.image && (
@@ -240,102 +395,115 @@ export const BasicStepEdit = () => {
 
   return (
     <>
-    {showErrorModal && <ErrorModal errorText="Unknown error occurred" setShowModal={setErrorModal}/>}
-    {loading ? (
+      {showErrorModal && (
+        <ErrorModal
+          errorText="Unknown error occurred"
+          setShowModal={setErrorModal}
+        />
+      )}
+      {loading ? (
         <Loader text="Creating Step" />
       ) : (
-       <>
-      <StepHeader
-        icon={<Monitor strokeWidth={3} />}
-        title={t("onboarding.basic_step_header_title")}
-        onActionClick={(action) => {
-          switch (action) {
-            case "save":
-              console.log("Save Draft clicked");
-              break;
-            case "preview":
-              console.log("Preview clicked");
-              break;
-            case "revert":
-              console.log("Revert Changes clicked");
-              break;
-            case "delete":
-              console.log("Delete Page clicked");
-              setIsModalOpen(true);
-              setIsOpen(false);
-              break;
-            default:
-              console.log("Unknown action");
-          }
-        }}
-      />
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-6 h-screen">
-            <FormTextInput
-              label={t("onboarding.page_title_label")}
-              name="title"
-              register={form.register}
-              error={form.formState.errors.title?.message}
-              placeholder={t("onboarding.page_title_placeholder")}
-            />
+        <>
+          <StepHeader
+            icon={<Monitor strokeWidth={3} />}
+            title={t("onboarding.basic_step_header_title")}
+            onActionClick={(action) => {
+              switch (action) {
+                case "save":
+                  console.log("Save Draft clicked");
+                  break;
+                case "preview":
+                  console.log("Preview clicked");
+                  break;
+                case "revert":
+                  console.log("Revert Changes clicked");
+                  break;
+                case "delete":
+                  console.log("Delete Page clicked");
+                  setIsModalOpen(true);
+                  setIsOpen(false);
+                  break;
+                default:
+                  console.log("Unknown action");
+              }
+            }}
+          />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="space-y-6 h-screen">
+                <FormTextInput
+                  label={t("onboarding.page_title_label")}
+                  name="title"
+                  register={form.register}
+                  error={form.formState.errors.title?.message}
+                  placeholder={t("onboarding.page_title_placeholder")}
+                />
 
-            <div className="space-y-2">
-              <FormTextArea
-                label={t("onboarding.page_description_label")}
-                name="description"
-                register={form.register}
-                error={form.formState.errors.description?.message}
-                placeholder={t("onboarding.page_description_placeholder")}
-              />
-              {form.formState.errors.description && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.description.message}
-                </p>
-              )}
-            </div>
+                <div className="space-y-2">
+                  <FormTextArea
+                    label={t("onboarding.page_description_label")}
+                    name="description"
+                    register={form.register}
+                    error={form.formState.errors.description?.message}
+                    placeholder={t("onboarding.page_description_placeholder")}
+                  />
+                  {form.formState.errors.description && (
+                    <p className="text-sm text-destructive">
+                      {form.formState.errors.description.message}
+                    </p>
+                  )}
+                </div>
 
-            <div className="space-y-2">
-              <LocalFileUpload
-                text={t("onboarding.icon_label")}
-                element="image"
-                handleLocalUpdate={(_, value) =>
-                  form.setValue("image", value, {
-                    shouldDirty: true,
-                    shouldTouch: true,
-                    shouldValidate: true,
-                  })
-                }
-                localJSON={{ image: form.watch("image") }}
-              />
-              {form.formState.errors.image && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.image.message}
-                </p>
-              )}
-            </div>
-          </div>
-          <div className="mt-auto pt-4 border-t flex justify-end gap-3">
-            <ButtonOutline onClick={handleCancel} type="button">
-              {t("action.cancel_label")}
-            </ButtonOutline>
-            {/* <Link href="/scenarios"> */}
-            <ButtonOutline
-              type="submit"
-              disabled={!form.formState.isDirty || !form.formState.isValid}
-            >
-              {t("action.next_label")}
-            </ButtonOutline>
-            {/* </Link> */}
-          </div>
-        </form>
-      </Form>
+                <div className="space-y-2">
+                  <LocalFileUpload
+                    text={t("onboarding.icon_label")}
+                    element="image"
+                    handleLocalUpdate={(_, value) =>
+                      form.setValue("image", value, {
+                        shouldDirty: true,
+                        shouldTouch: true,
+                        shouldValidate: true,
+                      })
+                    }
+                    localJSON={{
+                      image:
+                        form.watch("image") ||
+                        currentStep?.asset?.content ||
+                        "",
+                    }}
+                    // localJSON={{ image: form.watch("image") }}
+                  />
+                  {form.formState.errors.image && (
+                    <p className="text-sm text-destructive">
+                      {form.formState.errors.image.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="mt-auto pt-4 border-t flex justify-end gap-3">
+                <ButtonOutline onClick={handleCancel} type="button">
+                  {t("action.cancel_label")}
+                </ButtonOutline>
+                <ButtonOutline type="submit">{"Save Changes"}</ButtonOutline>
+
+                {/* <Link href={`${Pathname}/scenarios`}> */}
+                <ButtonOutline
+                // type="submit"
+                // disabled={!form.formState.isDirty || !form.formState.isValid}
+                >
+                  {t("action.next_label")}
+                </ButtonOutline>
+                {/* </Link> */}
+              </div>
+            </form>
+          </Form>
           <DeleteModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             onDelete={() => {
               setIsModalOpen(false);
-              deleteStep(currentStep?.id)
+              deleteStep(currentStep?.id);
             }}
             header="Are you sure you want to delete this page?"
             description="Are you sure you want to delete this page?"
@@ -343,7 +511,7 @@ export const BasicStepEdit = () => {
             cancelText="CANCEL"
             deleteText="DELETE"
           />
-       </>
+        </>
       )}
     </>
   );

@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { FormTextInput } from "../text-input";
 import { useCredentials } from "@/hooks/use-credentials"; // Use the credentials store
@@ -13,7 +12,7 @@ import {
 } from "@/schemas/credentialImport"; // Adjusted to import the correct schema
 import { useTranslations } from "next-intl";
 import ButtonOutline from "../ui/button-outline";
-import Accordion from "./components/accordionGroup";
+import Accordion from "./components/accordion-group";
 import apiClient from "@/lib/apiService"; // Importing the API client
 
 interface SchemaResponse {
@@ -31,11 +30,6 @@ interface CredentialResponse {
 
 export const CredentialsImport = () => {
   const t = useTranslations();
-  const { setSelectedSchema, setSelectedCredential, mode } = useCredentials(); // Using the store
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null); // Allow string or null
-
 
   const defaultValues: CredentialImportFormData = {
     credentialId: "",

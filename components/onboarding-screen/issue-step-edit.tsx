@@ -21,6 +21,8 @@ import DeleteModal from "../delete-modal";
 import apiClient from "@/lib/apiService";
 import { ErrorModal } from "../error-modal";
 import Loader from "../loader";
+import { toast } from "sonner";
+import { IssuanceScenario } from "@/openapi-types";
 
 export function IssueStepEdit() {
   const t = useTranslations();
@@ -38,6 +40,9 @@ export function IssueStepEdit() {
   const form = useForm<IssueStepFormData>({
     resolver: zodResolver(issueStepSchema),
     mode: "all",
+    defaultValues: {
+      credentials:['student_card']
+    }
   });
 
   useEffect(() => {
@@ -52,43 +57,23 @@ export function IssueStepEdit() {
   }, [currentStep, form.reset]);
 
   useEffect(() => {
-    // listCredentialDefinitions();
+    listCredentialDefinitions();
   },[])
 
-  // const searchCredential = (searchText: string) => {
-  //   setSearchResults([]);
-  
-  //   if (!searchText) return;
-  
-  //   const searchUpper = searchText.toUpperCase();
-  
-  //   // Ensure `credential` is an array before filtering
-  //   if (!Array.isArray(credential)) {
-  //     console.error("Invalid credential data format");
-  //     return;
-  //   }
-  
-  //   const results = credential.filter((cred: any) =>
-  //     cred.name.toUpperCase().includes(searchUpper)
-  //   );
-  
-  //   console.log("Search Results:", results);
-  //   setSearchResults(results);
-  // };
-  
   const searchCredential = (searchText: string) => {
     setSearchResults([]);
     if (!searchText) return;
-
-    const credentials = showcaseJSON.personas[selectedCharacter].credentials;
+  
     const searchUpper = searchText.toUpperCase();
-
-    const results = Object.keys(credentials).filter(
-      (credentialId) =>
-        credentials[credentialId].issuer_name
-          .toUpperCase()
-          .includes(searchUpper) ||
-        credentials[credentialId].name.toUpperCase().includes(searchUpper)
+  
+    // Ensure `credential` is an array before filtering
+    if (!Array.isArray(credential)) {
+      console.error("Invalid credential data format");
+      return;
+    }
+  
+    const results = credential.filter((cred: any) =>
+      cred.name.toUpperCase().includes(searchUpper)
     );
 
     setSearchResults(results);
@@ -183,7 +168,7 @@ export function IssueStepEdit() {
   };
   
 
-  const onSubmit = (data: IssueStepFormData) => {
+  const onSubmit = (data: typeof IssuanceScenario._type) => {
     if (selectedStep === null) return;
 
     const updatedStep = {
@@ -199,15 +184,12 @@ export function IssueStepEdit() {
 
   const listCredentialDefinitions = async () => {
     try {
-      setLoading(true)
       const response:any = await apiClient.get("/credentials/definitions");
-      console.log("Credential Definitions:", response);
       setCredentials(response?.credentialDefinitions);
-      setLoading(false)
+      
       return response; // Return the list of credential definitions
     } catch (error) {
-      console.error("Error fetching credential definitions:", error);
-      setLoading(false)
+      toast.error("Error fetching credential definitions");
       setErrorModal(true);
       throw error;
     }
@@ -216,24 +198,17 @@ export function IssueStepEdit() {
 
   const deleteStep = async (stepId:any) => {
     try {
-      // issuanceScenarioId
       if (!stepId) {
-        console.error("Error: Step ID is required for deletion.");
+        toast.error("Error: Step ID is required for deletion.");
         return;
       }
-
-      console.log("Deleting persona with ID:", stepId);
       removeStep(stepId);
+      await apiClient.delete(`/scenarios/issuances/${'credential-issuance-flow'}/steps/${stepId}`);
 
-      // // Step 1: Send DELETE request to the API
-      await apiClient.delete(`/scenarios/issuances/${'issuanceScenarioId'}/steps/${stepId}`);
+      toast.success("Persona deleted successfully!");
 
-      console.log("Persona deleted successfully!");
-      setLoading(false)
-      // // Step 2: Update the persona list after deletion
-      // GetPersona();
     } catch (error) {
-      console.error("Error deleting persona:", error);
+      toast.error("Error deleting persona");
       setLoading(false)
       setErrorModal(true);
     }
@@ -318,7 +293,7 @@ export function IssueStepEdit() {
                   shouldValidate: true,
                 })
               }
-              localJSON={localJSON}
+              localJSON={{ image: form.watch("image") || currentStep?.asset?.content || "" }}
             />
           </div>
 
@@ -370,7 +345,7 @@ export function IssueStepEdit() {
           <ButtonOutline onClick={handleCancel}>
             {t("action.cancel_label")}
           </ButtonOutline>
-          <ButtonOutline disabled={!form.formState.isDirty}>
+          <ButtonOutline onClick={handleCancel} disabled={!form.formState.isDirty}>
             {t("action.next_label")}
           </ButtonOutline>
         </div>

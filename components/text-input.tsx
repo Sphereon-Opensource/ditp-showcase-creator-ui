@@ -26,13 +26,13 @@ export const FormTextInput = <T extends FieldValues>({
   return (
     <div className={cn("space-y-2", className)}>
       <Label
-        className="text-md font-bold"
+        className="text-md font-bold text-foreground/80"
         htmlFor={name}
       >
         {label}
       </Label>
       <Input
-        className="mt-3 dark:text-dark-text dark:bg-dark-input bg-light-bg border dark:border-dark-border"
+        className="mt-3 border dark:border-dark-border text-foreground"
         id={name}
         type="text"
         placeholder={placeholder}
@@ -58,7 +58,7 @@ export const FormTextArea = <T extends FieldValues>({
   return (
     <div className={cn("space-y-2", className)}>
       <Label
-        className="text-md font-bold"
+        className="text-md font-bold text-foreground/80"
         htmlFor={name}
       >
         {label}

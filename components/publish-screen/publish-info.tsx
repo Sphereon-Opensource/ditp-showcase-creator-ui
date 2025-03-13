@@ -1,296 +1,20 @@
 "use client";
 
+import { ensureBase64HasPrefix } from "@/lib/utils";
+import { Persona, Credential } from "@/openapi-types";
 import Image from "next/image";
-import { useState } from "react";
 
-export const PublishInfo = () => {
-
-  const characters = [
-    {
-      id: 1,
-      name: "Ana",
-      type: "Student",
-      description:
-        "Meet Ana Ana is a student at BestBC College. To help make student life easier, BestBC College is going to offer Ana a digital Student Card to put in her BC Wallet.",
-      headshot: "../../public/assets/NavBar/Joyce.png",
-      bodyImage: "../../public/assets/NavBar/Joyce.png",
-      selected: false,
-      isHidden: false,
-      credentials: [
-        {
-          id: 1,
-          issuername: "Test college",
-          name: "Student Card",
-          logo: "../../public/assets/NavBar/Ana.png",
-        },
-        {
-          id: 2,
-          issuername: "Test college",
-          name: "Permit Card",
-          logo: "../../public/assets/NavBar/Ana.png",
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "Joyce",
-      type: "Teacher",
-      description:
-        "Meet Joyce. Joyce is a Teacher at BestBC College. To help make teacher life easier, BestBC College is going to offer Joyce a digital Teacher Card to put in her BC Wallet.",
-      headshot: "../../public/assets/NavBar/Joyce.png",
-      bodyImage: "../../public/assets/NavBar/Joyce.png",
-      selected: false,
-      isHidden: false,
-      credentials: [
-        {
-          id: 1,
-          issuername: "Test college",
-          name: "Student Card",
-          logo: "../../public/assets/NavBar/Ana.png",
-        },
-        {
-          id: 2,
-          issuername: "Test college",
-          name: "Permit Card",
-          logo: "../../public/assets/NavBar/Ana.png",
-        },
-      ],
-    },
-  ];
-
-  const Showcases = {
-    "showcase": {
-      "id": "123e4567-e89b-12d3-a456-426614174456",
-      "name": "Credential Showcase BCGov",
-      "description": "Collection of credential usage scenarios",
-      "status": "PENDING",
-      "hidden": false,
-      "scenarios": [
-        {
-          "id": "789e4567-e89b-12d3-a456-434314174123",
-          "name": "Parking Permit",
-          "description": "This scenario Presentation credentials to users",
-          "type": "PRESENTATION",
-          "steps": [
-            {
-              "id": "123e4567-e89b-12d3-a456-434314174000",
-              "title": "Presentation Identity",
-              "description": "Presentation the user's identity",
-              "order": 1,
-              "type": "HUMAN_TASK",
-              "subScenario": "123e4567-e89b-12d3-a456-434314174000",
-              "actions": [
-                {
-                  "id": "123e4567-ef2d-12d3-abcd-426614174451",
-                  "title": "Connect Wallet",
-                  "text": "Connect your wallet to continue"
-                }
-              ],
-              "asset": {
-                "id": "123e4567-e89b-12d3-a456-426614174469",
-                "mediaType": "image/jpeg",
-                "content": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC",
-                "fileName": "asset.jpg",
-                "description": "A beautiful image of a cat"
-              }
-            }
-          ],
-          "personas": [
-            {
-              "id": "123e4567-e89b-12d3-a456-426614174456",
-              "name": "John",
-              "role": "professor",
-              "description": "John is a professor in the college",
-              "headshotImage": {
-                "id": "123e4567-e89b-12d3-a456-426614174469",
-                "mediaType": "image/jpeg",
-                "content": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC",
-                "fileName": "asset.jpg",
-                "description": "A beautiful image of a cat"
-              },
-              "bodyImage": {
-                "id": "123e4567-e89b-12d3-a456-426614174469",
-                "mediaType": "image/jpeg",
-                "content": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC",
-                "fileName": "asset.jpg",
-                "description": "A beautiful image of a cat"
-              }
-            }
-          ]
-        },
-        {
-          "id": "789e4567-e89b-12d3-a456-434314174126",
-          "name": "Credential Issuance",
-          "description": "This scenario issues credentials to users",
-          "type": "PRESENTATION",
-          "steps": [
-            {
-              "id": "123e4567-e89b-12d3-a456-434314174001",
-              "title": "Verify Identity",
-              "description": "Verify the user's identity",
-              "order": 1,
-              "type": "HUMAN_TASK",
-              "subScenario": "123e4567-e89b-12d3-a456-434314174003",
-              "actions": [
-                {
-                  "id": "123e4567-ef2d-12d3-abcd-426614174454",
-                  "title": "Connect Wallet1",
-                  "text": "Connect your wallet to continue"
-                },
-                {
-                  "id": "123e4567-ef2d-12d3-abcd-426614174455",
-                  "title": "Download Wallet1",
-                  "text": "Download your wallet to continue"
-                }
-              ],
-              "asset": {
-                "id": "123e4567-e89b-12d3-a456-426614174461",
-                "mediaType": "image/jpeg",
-                "content": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC",
-                "fileName": "asset.jpg",
-                "description": "A beautiful image of a cat"
-              }
-            },
-            {
-              "id": "123e4567-e89b-12d3-a456-434314174002",
-              "title": "Download Wallet",
-              "description": "Download Wallet to continue",
-              "order": 1,
-              "type": "HUMAN_TASK",
-              "subScenario": "123e4567-e89b-12d3-a456-434314174004",
-              "actions": [
-                {
-                  "id": "123e4567-ef2d-12d3-abcd-426614174456",
-                  "title": "Connect Wallet",
-                  "text": "Connect your wallet to continue"
-                },
-                {
-                  "id": "123e4567-ef2d-12d3-abcd-426614174452",
-                  "title": "Download Wallet",
-                  "text": "Download your wallet to continue"
-                }
-              ],
-              "asset": {
-                "id": "123e4567-e89b-12d3-a456-426614174466",
-                "mediaType": "image/jpeg",
-                "content": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC",
-                "fileName": "asset.jpg",
-                "description": "A beautiful image of a cat"
-              }
-            }
-          ],
-          "personas": [
-            {
-              "id": "123e4567-e89b-12d3-a456-426614174452",
-              "name": "Ana",
-              "role": "Student",
-              "description": "Ana is a verifier for the system",
-              "headshotImage": {
-                "id": "123e4567-e89b-12d3-a456-426614174461",
-                "mediaType": "image/jpeg",
-                "content": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC",
-                "fileName": "asset.jpg",
-                "description": "A beautiful image of a cat"
-              },
-              "bodyImage": {
-                "id": "123e4567-e89b-12d3-a456-426614174462",
-                "mediaType": "image/jpeg",
-                "content": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC",
-                "fileName": "asset.jpg",
-                "description": "A beautiful image of a cat"
-              }
-            }
-          ]
-        }
-      ],
-      "credentialDefinitions": [
-        {
-          "id": "123e4567-e89b-12d3-a456-426614174127",
-          "name": "Student Card",
-          "issuerId": "123e4567-e89b-12d3-a456-426614174122",
-          "schemaId": "123e4567-e89b-12d3-a456-426614174121",
-          "identifierType": "DID",
-          "identifier": "did:sov:XUeUZauFLeBNofY3NhaZCB",
-          "version": "1.0",
-          "type": "ANONCRED",
-          "representations": [
-            {
-              "id": "123e4567-e89b-12d3-abcd-426614174452"
-            },
-            {
-              "id": "123e4567-e89b-12d3-abcd-426614174453",
-              "credDefId": "123e4567-e89b-12d3-a456-426614174123",
-              "schemaId": "123e4567-e89b-12d3-a456-426614174123",
-              "ocaBundleUrl": "https://example.com/ocaBundle.json"
-            }
-          ],
-          "revocation": {
-            "id": "abcd4567-e89b-12d3-a456-426614174123",
-            "title": "Revocation Information",
-            "description": "This credential is revocable"
-          },
-          "icon": {
-            "id": "123e4567-e89b-12d3-a456-426614174469",
-            "mediaType": "image/jpeg",
-            "content": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC",
-            "fileName": "asset.jpg",
-            "description": "A beautiful image of a cat"
-          }
-        },
-        {
-          "id": "123e4567-e89b-12d3-a456-426614174123",
-          "name": "Parking Card",
-          "issuerId": "123e4567-e89b-12d3-a456-426614174122",
-          "schemaId": "123e4567-e89b-12d3-a456-426614174121",
-          "identifierType": "DID",
-          "identifier": "did:sov:XUeUZauFLeBNofY3NhaZCB",
-          "version": "1.0",
-          "type": "ANONCRED",
-          "representations": [
-            {
-              "id": "123e4567-e89b-12d3-abcd-426614174452"
-            },
-            {
-              "id": "123e4567-e89b-12d3-abcd-426614174453",
-              "credDefId": "123e4567-e89b-12d3-a456-426614174123",
-              "schemaId": "123e4567-e89b-12d3-a456-426614174123",
-              "ocaBundleUrl": "https://example.com/ocaBundle.json"
-            }
-          ],
-          "revocation": {
-            "id": "abcd4567-e89b-12d3-a456-426614174123",
-            "title": "Revocation Information",
-            "description": "This credential is revocable"
-          },
-          "icon": {
-            "id": "123e4567-e89b-12d3-a456-426614174460",
-            "mediaType": "image/jpeg",
-            "content": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC",
-            "fileName": "asset.jpg",
-            "description": "A beautiful image of a cat"
-          }
-        }
-      ],
-      "personas": {}
-    }
-  }
-
-  const Maindata = Showcases.showcase;
-  const Scenarios = Maindata.scenarios;
-
-  // Extract Credentials
-  const Credentials = Maindata.credentialDefinitions.map((item) => item);
-
-  // Extract Scenarios
-  const scenarioData = Scenarios.map((item) => item);
-
-  // Extract personas
-  const personas = scenarioData.flatMap((scenario) => scenario.personas);
-
+export const PublishInfo = ({
+  characters,
+  credentials,
+}: {
+  characters: Partial<Persona>[];
+  credentials: Partial<Credential>[];
+}) => {
   return (
     <div className="bg-white dark:bg-dark-bg-secondary text-light-text dark:text-dark-text">
       <div className="flex flex-col gap-4">
-        {personas.map((char) => (
+        {characters.map((char) => (
           <div
             key={char.id}
             className="bg-white dark:bg-gray-800 border rounded-lg shadow-lg p-6 flex flex-col"
@@ -298,11 +22,8 @@ export const PublishInfo = () => {
             {/* Character Header */}
             <div className="flex items-center gap-4">
               <Image
-                src={
-                  char.headshotImage?.content ||
-                  "/assets/NavBar/Joyce.png"
-                }
-                alt={char.name}
+                src={ensureBase64HasPrefix(char.headshotImage?.content) || "/assets/NavBar/Joyce.png"}
+                alt={char.name || "Character"}
                 width={50}
                 height={50}
                 className="rounded-full"
@@ -322,14 +43,11 @@ export const PublishInfo = () => {
               </p>
 
               <div className="mt-3 space-y-3">
-                {Credentials.map((cred) => (
+                {credentials?.map((cred) => (
                   <div key={cred.id} className="flex items-center gap-3">
                     <Image
-                      src={
-                        cred.icon?.content ||
-                        "/assets/NavBar/Joyce.png"
-                      }
-                      alt={cred.icon?.description}
+                      src={ensureBase64HasPrefix(cred.icon?.content) || "/assets/NavBar/Joyce.png"}
+                      alt={cred.icon?.description || "Credential"}
                       width={40}
                       height={40}
                       className="rounded-full"
@@ -338,7 +56,7 @@ export const PublishInfo = () => {
                       <p className="font-semibold text-gray-900 dark:text-white">
                         {cred.name}
                       </p>
-                      <p className="text-gray-500 text-sm">{'Test college'}</p>
+                      <p className="text-gray-500 text-sm">{"Test college"}</p>
                     </div>
                   </div>
                 ))}

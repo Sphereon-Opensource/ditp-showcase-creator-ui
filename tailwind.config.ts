@@ -50,7 +50,7 @@ export default {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
-                // ------ Backgrounds ------ //
+        // ------ Backgrounds ------ //
 
         "dark-bg": "#202223",
         "dark-bg-secondary": "#282828",

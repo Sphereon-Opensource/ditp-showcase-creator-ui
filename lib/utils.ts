@@ -1,8 +1,8 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export const convertBase64 = (file: File) => {
@@ -18,14 +18,14 @@ export const convertBase64 = (file: File) => {
   });
 };
 
-export function ensureBase64HasPrefix(base64String:any) {
+export function ensureBase64HasPrefix(base64String: any) {
   if (!base64String) return ""; // Return empty if it's undefined or null
-  
+
   // Check if it already contains the data URI prefix
   if (base64String.startsWith("data:image/")) {
     return base64String;
   }
-  
+
   // Detect if it's a valid Base64-encoded image (PNG, JPEG, GIF, etc.)
   if (base64String.startsWith("iVBORw0KGgoAAAANSUhEU")) {
     return `data:image/png;base64,${base64String}`;
@@ -36,7 +36,7 @@ export function ensureBase64HasPrefix(base64String:any) {
   } else if (base64String.startsWith("UklGR")) {
     return `data:image/webp;base64,${base64String}`;
   }
-  
+
   // Default fallback (if format is unknown)
   return `data:image/png;base64,${base64String}`;
-  }
+}

@@ -111,12 +111,12 @@
     "step3_schema_note": "(Required for issuance & proof request)",
     "step3_details": "Once you find the correct entry, locate the following:",
     "step4_title": "Step 4",
-    " step3_credential_id_format": "Format: TxID:3:<schema-name>:<definition>",
+    "step3_credential_id_format": "Format: TxID:3:<schema-name>:<definition>",
+    "step3_credential_id_note": "(Required for issuance & proof request)",
     "step4_description": "Copy and Enter the IDs in the Import Input Fields",
     "step4_details": "Enter the Schema ID (and the Credential Definition ID if applicable) into the provided fields.",
     "identifier_type_label": "Identifier Type",
     "identifier_label": "Identifier",
-    "schema_id_label": "Schema ID",
     "revocation_label": "Is this credential revocable?",
     "revocation_checkbox_label": "Yes",
     "type_label": "Credential Type",
@@ -199,7 +199,9 @@
     "preview_label": "PREVIEW",
     "create_copy_label": "CREATE A COPY",
     "next_label": "NEXT",
-    "search_label": "Search"
+    "search_label": "Search",
+    "clear_selection_label": "Clear Selection",
+    "proceed_label": "Proceed"
   },
   "file_upload": {
     "click_to_upload_label": "Click to upload",
@@ -221,6 +223,7 @@
     "home_label": "Home",
     "showcases_label": "Showcases",
     "credential_library_label": "Credential Library",
+    "character_library_label": "Characters",
     "logout_label": "Log Out",
     "dark_mode_label": "Dark Mode"
   },

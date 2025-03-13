@@ -29,7 +29,7 @@ const StepHeader: React.FC<StepHeaderProps> = ({
       {/* Left Section: Icon + Title */}
       <h2 className="text-lg font-bold flex items-center gap-2">
         <div className="p-2 mx-2 rounded highlight-text">{icon}</div>
-        <div className="font-bold font-base">{title}</div>
+        <div className="font-bold font-base text-foreground">{title}</div>
       </h2>
 
       {/* Right Section: Actions or Default Dropdown */}
@@ -50,7 +50,7 @@ const StepHeader: React.FC<StepHeaderProps> = ({
         {/* Default Dropdown Menu */}
         {isOpen && (
           <div className="absolute right-0 mt-2 w-48 bg-light-bg dark:bg-dark-bg border rounded-md shadow-lg z-50">
-            <ul className="py-1 text-sm text-gray-700 text-light-text dark:text-dark-text">
+            <ul className="py-1 text-sm text-foreground/80">
               <li
                 className="flex gap-2 px-4 py-2 hover:bg-light-bg-secondary dark:hover:bg-dark-input-hover cursor-pointer"
                 onClick={() => onActionClick?.("save")}

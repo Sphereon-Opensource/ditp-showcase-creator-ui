@@ -196,8 +196,8 @@ export const CredentialsDisplay = () => {
 								</div>
 
 								<div>
-									<p className="text-xs text-foreground font-bold">
-										Attributes
+									<p className="text-xs text-black dark:text-gray-200 font-bold">
+										{t('credentials.attributes_label')}
 									</p>
 									<p className="text-xs text-foreground/50">
 										{item.credentialSchema &&

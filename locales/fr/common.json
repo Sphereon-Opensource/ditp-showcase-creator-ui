@@ -111,7 +111,6 @@
     "step4_details": "Entrez l'identifiant du schéma (et l'identifiant de définition du justificatif si applicable) dans les champs fournis.",
     "identifier_type_label": "Identifier Type",
     "identifier_label": "Identifier",
-    "schema_id_label": "Schema ID",
     "image_label": "Image",
     "image_placeholder": "Telecharger Image",
     "revocation_label": "Est-ce que ce justificatif peut être révoqué?",
@@ -195,7 +194,9 @@
     "preview_label": "Aperçu",
     "create_copy_label": "CRÉER UNE COPIE",
     "next_label": "PROCHAIN",
-    "search_label": "Recherche"
+    "search_label": "Recherche",
+    "clear_selection_label": "Effacer la sélection",
+    "proceed_label": "Continuer"
   },
   "file_upload": {
     "click_to_upload_label": "Cliquez pour téléverser",
@@ -217,6 +218,7 @@
     "home_label": "Maison",
     "showcases_label": "Vitrines",
     "credential_library_label": "Bibliothèque d'informations",
+    "character_library_label": "Personnages",
     "logout_label": "Se déconnecter",
     "dark_mode_label": "Mode sombre"
   },

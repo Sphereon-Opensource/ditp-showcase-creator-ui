@@ -11,7 +11,7 @@ export default async function Onboarding({ params }: { params: PageParams }) {
   const t = await getTranslations();
 
   return (
-    <div className="flex bg-light-bg dark:bg-dark-bg flex-col h-full w-full bg-gray-100">
+    <div className="flex bg-light-bg dark:bg-dark-bg flex-col h-full w-full">
       <div className="flex flex-col h-full">
         <div className="flex justify-between items-center px-6 py-2 mt-4">
           {/* Left Header Section */}
@@ -25,8 +25,8 @@ export default async function Onboarding({ params }: { params: PageParams }) {
             </span>
           </div>
           {/* Tabs Section */}
-          <div className="flex space-x-1 text-lg font-semibold justify-start mr-[305px]">
-            <TabsComponent />
+          <div className="flex space-x-1 text-lg font-semibold justify-start">
+          <TabsComponent slug="example-name" />
           </div>
           <button className="text-gray-500 hover:text-gray-700"></button>
         </div>
@@ -37,7 +37,7 @@ export default async function Onboarding({ params }: { params: PageParams }) {
               <h2 className="text-base font-bold text-foreground">
                 {t("onboarding.header_title")}
               </h2>
-              <p className="w-full text-xs">
+              <p className="w-full text-xs text-foreground">
                 {t("onboarding.header_subtitle")}
               </p>
             </div>

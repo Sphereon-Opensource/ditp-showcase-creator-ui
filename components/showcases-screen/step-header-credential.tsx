@@ -47,13 +47,9 @@ const StepHeaderCredential: React.FC<StepHeaderCredentialProps> = ({
 
 				{/* Default Dropdown Menu */}
 				{isOpen && (
-<<<<<<< Updated upstream
-					<div className="absolute right-0 mt-2 w-48 bg-light-bg dark:bg-dark-bg border rounded-md shadow-lg z-50">
-						<ul className="py-1 text-sm text-gray-700 text-light-text dark:text-dark-text">
-=======
 					<div className="absolute right-0 mt-2 w-48 bg-light-bg dark:bg-dark-bg border  rounded-md shadow-lg z-50">
 						<ul className="py-1 text-sm text-foreground">
->>>>>>> Stashed changes
+
 							<li
 								className="flex gap-2 px-4 mt-2 py-2 hover:bg-light-bg-secondary dark:hover:bg-dark-input-hover cursor-pointer"
 								onClick={() => {

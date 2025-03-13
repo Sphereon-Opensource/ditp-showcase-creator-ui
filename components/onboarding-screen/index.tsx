@@ -9,7 +9,7 @@ export const OnboardingMain = () => {
   const t = useTranslations();
   
   return (
-    <div className="flex text-light-text bg-light-bg dark:bg-dark-bg dark:text-dark-text flex-col h-full w-full bg-gray-100">
+    <div className="flex text-light-text bg-light-bg dark:bg-dark-bg dark:text-dark-text flex-col h-full w-full">
       <div className="flex flex-col h-full">
         <div className="flex gap-4 p-4 min-h-screen">
           {/* Left Section - Character Selection with Header */}

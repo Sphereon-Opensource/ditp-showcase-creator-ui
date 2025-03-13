@@ -2,7 +2,7 @@ import { DarkModeToggle } from "./dark-mode-toggle";
 import { SaveButton } from "./save-button";
 import { JSONUploadButton } from "./json-uploader";
 import { NavBarButton } from "./navbar-button";
-import Link from "next/link";
+import { Link } from '@/i18n/routing';
 import { LanguageSelector } from "./language-selector";
 import { useTranslations } from 'next-intl';
 

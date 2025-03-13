@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import ButtonOutline from "../ui/button-outline";
 import { useCredentials } from "@/hooks/use-credentials";
 import { CredentialsDisplay } from "./credentials-display";
 import { CredentialsForm } from "./credentials-form";
 import { CredentialsImport } from "./credentials-import";
-import { useTranslations } from "next-intl";
 
 export const CredentialsPage = () => {
 	const { mode, startImporting } = useCredentials(); // Get the store's state and actions

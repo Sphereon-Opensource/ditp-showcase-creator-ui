@@ -34,7 +34,7 @@ export const Layouts = () => {
               <p className="text-slate-100 text-sm">
                 Creating a new credential
               </p>
-              <h3 className="text-4xl font-bold text-slate-50">
+              <h3 className="text-3xl font-bold text-slate-50">
                 Add Credential
               </h3>
             </div>
