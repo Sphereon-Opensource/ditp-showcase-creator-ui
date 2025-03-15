@@ -5,11 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useCredentials } from "@/hooks/use-credentials";
-import {
-	CredentialFormData,
-	SchemaData,
-	IssuerData,
-} from "@/schemas/credential";
+import { CredentialFormData } from "@/schemas/credential";
 import { Form } from "@/components/ui/form";
 import { FormTextInput } from "../text-input";
 import { FileUploadFull } from "../file-upload";
@@ -22,16 +18,11 @@ import apiClient from "@/lib/apiService";
 import { ErrorModal } from "../error-modal";
 import DeleteModal from "../delete-modal";
 import { ensureBase64HasPrefix } from "@/lib/utils";
+import { toast } from "sonner";
 
 export const CredentialsForm = () => {
-	const {
-		selectedCredential,
-		mode,
-
-		deleteCredential,
-		issuers,
-		fetchIssuers,
-	} = useCredentials();
+	const { selectedCredential, mode, deleteCredential, issuers, fetchIssuers } =
+		useCredentials();
 	const t = useTranslations();
 	const [formData, setFormData] = useState({
 		name: "",
@@ -54,12 +45,25 @@ export const CredentialsForm = () => {
 		useCredentials.getState().fetchIssuers();
 	}, []);
 
-	const handleCancel = () => {
-		// Add cancel logic (e.g., resetting the form or switching mode)
+	const handleCancel = () => {};
+
+	const handleDeleteCredential = async () => {
+		try {
+			setIsSubmitting(true);
+			setError(null);
+
+		} catch (error) {
+			console.error("Error during delete:", error);
+			setError("There was an error while deleting the credential.");
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
+
 	const createSchemaAndThenDefinition = async () => {
 		try {
 			let Credentials: any = form.getValues();
+
 			// Step 1: Create Schema
 			let payload = {
 				name: Credentials.name || "example_name",
@@ -79,16 +83,14 @@ export const CredentialsForm = () => {
 			);
 
 			const schemaId = schemaResponse.credentialSchema.id;
-			console.log(":white_check_mark: Schema Created:", schemaResponse);
 
 			// Step 2: Upload Asset using the store's createAsset
 			let assetId = "";
 			if (credentialLogo) {
-				// Convert the file to base64 if needed (or use your existing conversion function)
 				const base64Content = credentialLogo;
-				// const base64Content = await convertBase64(formData.icon.imageFile);
+
 				const asset: any = {
-					mediaType: "image/png", // or the correct media type for your file
+					mediaType: "image/png",
 					content: base64Content,
 					fileName: "CredentialLogo.png",
 					description: "Credential icon image",
@@ -98,7 +100,6 @@ export const CredentialsForm = () => {
 					asset
 				);
 				assetId = bodyResponse ? bodyResponse.asset.id : "";
-				console.log(":white_check_mark: Asset Uploaded, assetId:", assetId);
 			}
 
 			// Step 3: Create Credential Definition with Schema ID and Asset ID
@@ -119,17 +120,10 @@ export const CredentialsForm = () => {
 						: null,
 				});
 
-			console.log(
-				":white_check_mark: Credential Definition Created:",
-				credentialDefinitionResponse
-			);
-
+			toast.success("Credential Definition created successfully!");
 			return credentialDefinitionResponse;
 		} catch (error) {
-			console.error(
-				":x: Error creating schema, uploading asset, or credential definition:",
-				error
-			);
+			toast.error("Error occurred while creating the credential."); 
 			throw error;
 		}
 	};
@@ -139,10 +133,14 @@ export const CredentialsForm = () => {
 			setIsSubmitting(true);
 			setError(null);
 			await createSchemaAndThenDefinition();
-			// Handle success (e.g., reset form, show success message)
+
+			toast.success("Credential created successfully!");
+
+			form.reset();
+			window.location.reload();
 		} catch (error) {
-			console.error("Error during create:", error);
 			setError("There was an error while creating the credential.");
+			toast.error("There was an error while creating the credential.");
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -200,18 +198,16 @@ export const CredentialsForm = () => {
 				<div className="space-y-6">
 					{/* Basic Information */}
 					<div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 px-6  ">
-						{/* Icon (if available) */}
 						{credentialDefinition.icon && (
 							<div className="px-2 py-2">
 								<img
-									// src={`data:${credentialDefinition.icon};base64,${credentialDefinition.icon.content}`}
 									src={
 										ensureBase64HasPrefix(
 											credentialDefinition?.icon?.content
 										) || ""
 									}
 									alt="Credential Icon"
-									className="w-24 h-24 rounded-full shadow"
+									className="w-24 h-24 rounded-full shadow object-cover"
 								/>
 							</div>
 						)}
@@ -261,12 +257,12 @@ export const CredentialsForm = () => {
 						].map((item, index) => (
 							<div
 								key={index}
-								className="flex flex-col p-4  dark:bg-dark-bg-secondary space-y-2"
+								className="flex flex-col p-4  text-foreground space-y-2"
 							>
-								<h6 className="text-md font-semibold dark:text-white text-black">
+								<h6 className="text-md font-semibold text-foreground">
 									{item.label}
 								</h6>
-								<p className="text-sm font-medium text-gray-900 dark:text-white break-words">
+								<p className="text-sm font-medium text-foreground/80 break-words">
 									{item.value || "—"}
 								</p>
 							</div>
@@ -289,7 +285,7 @@ export const CredentialsForm = () => {
 					</div>
 
 					<div
-						className=" mx-4 flex items-center bg-[#F7F9FC] dark:bg-[#202223] dark:border-dark-border  border border-gray-300 rounded text-white text-sm font-bold px-4 py-3"
+						className=" mx-10  flex items-center bg-[#F7F9FC] dark:bg-[#202223] dark:border-dark-border  border border-gray-300 rounded text-foreground text-sm font-bold px-4 py-3"
 						role="alert"
 					>
 						<svg
@@ -299,7 +295,7 @@ export const CredentialsForm = () => {
 						>
 							<path d="M12.432 0c1.34 0 2.01.912 2.01 1.957 0 1.305-1.164 2.512-2.679 2.512-1.269 0-2.009-.75-1.974-1.99C9.789 1.436 10.67 0 12.432 0zM8.309 20c-1.058 0-1.833-.652-1.093-3.524l1.214-5.092c.211-.814.246-1.141 0-1.141-.317 0-1.689.562-2.502 1.117l-.528-.88c2.572-2.186 5.531-3.467 6.801-3.467 1.057 0 1.233 1.273.705 3.23l-1.391 5.352c-.246.945-.141 1.271.106 1.271.317 0 1.357-.392 2.379-1.207l.6.814C12.098 19.02 9.365 20 8.309 20z" />
 						</svg>
-						<p className="font-normal dark:text-white text-[#202223]">
+						<p className="font-normal text-foreground/80">
 							<span className="font-semibold">
 								This credential is now available for use! <br />
 							</span>
@@ -313,16 +309,7 @@ export const CredentialsForm = () => {
 				<DeleteModal
 					isOpen={isModalOpen}
 					onClose={() => setIsModalOpen(false)}
-					onDelete={async () => {
-						if (selectedCredential) {
-							try {
-								await deleteCredential(selectedCredential.id); // Call delete action
-								setIsModalOpen(false); // Close the modal
-							} catch (error) {
-								setErrorModal(true); // Show error modal if deletion fails
-							}
-						}
-					}}
+					onDelete={handleDeleteCredential}
 					header="Are you sure you want to delete this credential?"
 					description="Are you sure you want to delete this credential?"
 					subDescription="<b>This action cannot be undone.</b>"
@@ -339,7 +326,7 @@ export const CredentialsForm = () => {
 				onSubmit={form.handleSubmit(handleCreateCredential)}
 				className="my-4 flex flex-col"
 			>
-				<div className="flex items-center gap-x-2 px-4 py-3 border-b border-gray-200">
+				<div className="flex items-center gap-x-2 px-4 py-3 border-b border-gray-200 dark:border-dark-border">
 					<h3 className="text-lg font-bold text-foreground">
 						{mode === "create"
 							? t("credentials.add_header_title")
@@ -354,31 +341,16 @@ export const CredentialsForm = () => {
 									label={t("credentials.credential_name_label")}
 									name="name"
 									register={form.register}
-									error={form.formState.errors.name?.message}
+									error={form.formState.errors.name?.message?.toString()}
 									placeholder={t("credentials.credential_name_placeholder")}
 								/>
 								<FormTextInput
 									label={t("credentials.version_label")}
 									name="version"
 									register={form.register}
-									error={form.formState.errors.version?.message}
+									error={form.formState.errors.version?.message?.toString()}
 									placeholder={t("credentials.version_placeholder")}
 								/>
-							</div>
-							<div className="flex space-x-4">
-								<label className="text-sm font-bold" htmlFor="issuanceCheckbox">
-									{t("credentials.revocation_label")}
-								</label>
-								<div className="flex items-center space-x-2 cursor-pointer">
-									<input
-										type="checkbox"
-										{...form.register("revocation")}
-										className="h-5 w-5 rounded border-gray-300 text-pink-500 focus:ring-pink-500"
-									/>
-									<span className="text-sm">
-										{t("credentials.revocation_checkbox_label")}
-									</span>
-								</div>
 							</div>
 							<div className="grid grid-cols-1 gap-4 mt-6">
 								<div className="text-start">
@@ -394,10 +366,9 @@ export const CredentialsForm = () => {
 							</div>
 						</>
 					)}
-
 					<CredentialAttributes mode="create" form={form} />
 				</div>
-				<div className="flex justify-end gap-4 mt-6">
+				<div className="flex justify-end gap-4 mt-6 px-4">
 					<ButtonOutline type="button" onClick={handleCancel}>
 						{t("action.cancel_label")}
 					</ButtonOutline>

@@ -69,6 +69,7 @@ class ApiService {
 }
 
 // Create an instance with the actual API base URL
+
 // const apiClient = new ApiService("http://localhost:3001");
 const apiClient = new ApiService("https://bcshowcase-api-dev.nborbit.ca");
 

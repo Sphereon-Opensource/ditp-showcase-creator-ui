@@ -64,8 +64,6 @@ export const CredentialAttributes = ({
 					<TableBody className="bg-white dark:bg-dark-bg-secondary border-b border-gray-200  dark:border-dark-border">
 						{attributes.map((attr, index) => (
 							<TableRow key={attr.name || index}>
-								{" "}
-								{/* Use attr.name or index as key */}
 								<TableCell className="font-semibold ">{attr.name}</TableCell>
 								<TableCell>{attr.type || "string"}</TableCell>
 							</TableRow>

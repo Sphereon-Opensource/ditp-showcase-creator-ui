@@ -57,18 +57,30 @@ export const FileUploadFull = ({
           </button>
         </div>
       )}
-      <label htmlFor={`${element}`} className="p-3 flex flex-col items-center justify-center w-full h-full bg-light-bg dark:bg-dark-input dark:hover:bg-dark-input-hover rounded-lg cursor-pointer border dark:border-dark-border hover:bg-light-bg">
-        <div className="flex flex-col items-center h-[240px] justify-center border rounded-lg border-dashed dark:border-dark-border p-2">
-          {preview ? (
-            <Image alt="preview" className="p-3 w-3/4" src={preview} width={300} height={100} style={{ width: "90%", height: "90%" }} />
-          ) : (
-            <p className="text-center text-xs lowercase">
-              <span className="font-bold">{t("file_upload.click_to_upload_label")}</span> {t("file_upload.drag_to_upload_label")}
-            </p>
-          )}
-        </div>
-        <input id={`${element}`} type="file" className="hidden" onChange={(e) => handleChange(e.target.files?.[0] ?? null)} />
-      </label>
+    <label htmlFor={`${element}`} className="p-3 flex flex-col items-center justify-center w-full h-full bg-light-bg dark:bg-dark-input dark:hover:bg-dark-input-hover rounded-lg cursor-pointer border dark:border-dark-border hover:bg-light-bg">
+  <div className="flex flex-col items-center h-[240px] justify-center border rounded-lg border-dashed dark:border-dark-border p-2">
+    {preview ? (
+      <Image
+        alt="preview"
+        className="p-3 w-full h-auto object-contain" // Use `w-full` for responsiveness and `object-contain` to maintain aspect ratio
+        src={preview}
+        width={300}
+        height={100}
+      />
+    ) : (
+      <p className="text-center text-xs lowercase">
+        <span className="font-bold">{t("file_upload.click_to_upload_label")}</span> {t("file_upload.drag_to_upload_label")}
+      </p>
+    )}
+  </div>
+  <input
+    id={`${element}`}
+    type="file"
+    className="hidden"
+    onChange={(e) => handleChange(e.target.files?.[0] ?? null)}
+  />
+</label>
+
     </div>
   );
 };
