@@ -10,6 +10,7 @@ import { Share2 } from "lucide-react";
 import { ensureBase64HasPrefix } from "@/lib/utils";
 import { useShowcases } from "@/hooks/use-showcases";
 import { Showcase } from "@/openapi-types";
+import Image from "next/image";
 
 export const LandingPage = () => {
   const t = useTranslations();
@@ -54,7 +55,7 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {!isLoading && (
+      {/* {!isLoading && (
         <div className="container mx-auto px-5 mt-2">
           <div className="flex gap-4 text-sm font-medium">
             {tabs.map((tab, index) => (
@@ -69,36 +70,37 @@ export const LandingPage = () => {
               >
                 <div className="font-bold text-base">{tab}</div>
                 <span className="bg-light-bg-secondary dark:dark-bg-secondary text-gray-600 text-xs px-2 py-0.5 rounded-full">
-                  {index === 0 ? 3 : index === 1 ? 1 : 2}
+                  {index === 0 ? data?.showcases.length : index === 1 ? 1 : 2}
                 </span>
               </button>
             ))}
           </div>
         </div>
-      )}
+      )} */}
 
       {isLoading && (
         <div className="flex flex-col items-center">
           <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-          Loading Showcases
+          {t('showcases.loading_label')}
         </div>
       )}
       <section className="container mx-auto px-4">
-        <div className="grid md:grid-cols-3 gap-6 mt-6">
+        <div className="grid md:grid-cols-3 gap-6 mt-6 pb-4">
           {data?.showcases
           .filter(searchFilter)
           .map((showcase: Showcase) => (
             <Card key={showcase.id}>
               <div
                 key={showcase.id}
-                className="bg-white dark:bg-dark-bg shadow-md rounded-lg overflow-hidden border border-light-border dark:border-dark-border flex flex-col h-full"
+                className="bg-white dark:bg-dark-bg rounded-lg overflow-hidden border border-light-border dark:border-dark-border flex flex-col h-full"
               >
                 <div
                   className="relative min-h-[15rem] h-auto flex items-center justify-center bg-cover bg-center"
                   style={{
                     backgroundImage: `url('${
-                      showcase?.bannerImage?.content ||
-                      "https://fastly.picsum.photos/id/506/400/400.jpg?hmac=YUuTQH9RPqWbrpNVNTOj4Yicxuv0Eu62QUy3T11KgJA"
+                      showcase?.bannerImage?.content
+                        ? showcase.bannerImage.content
+                        : "/assets/NavBar/Showcase.jpeg"
                     }')`,
                   }}
                 >
@@ -114,8 +116,7 @@ export const LandingPage = () => {
                       </h2>
                       <div className="flex-shrink-0">
                         {" "}
-                        {/* Prevent button from shrinking */}
-                        <button className="border border rounded px-3 py-1 hover:bg-gray-400 dark:hover:bg-gray-700">
+                        <button className="border dark:border-white rounded px-3 py-1 hover:bg-gray-400 dark:hover:bg-gray-700">
                           <Share2
                             size={18}
                             className="cursor-pointer text-white"
@@ -149,17 +150,19 @@ export const LandingPage = () => {
                           key={persona.id}
                           className="border-[1px] border-dark-border dark:border-light-border flex items-center gap-3 p-3 rounded-md"
                         >
-                          <img
+                          <Image
                             src={
                               ensureBase64HasPrefix(
                                 persona.headshotImage?.content
-                              ) || "https://picsum.photos/200"
+                              ) || "/assets/NavBar/Joyce.png"
                             }
                             alt={persona.name}
-                            className="w-[44px] h-[44px] rounded-full"
+                            width={44}
+                            height={44}
+                            className="rounded-full w-[44px] h-[44px]"
                           />
                           <div>
-                            <p className="text-base font-medium text-light-text dark:text-dark-text">
+                            <p className="text-base text-foreground font-semibold">
                               {persona.name}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
