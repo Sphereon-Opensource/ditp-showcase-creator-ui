@@ -88,6 +88,7 @@
     "credential_id_placeholder": "Enter Credential ID",
     "checkbox_label": "How will you use this imported credential?",
     "import_header_title": "Import Credential",
+    "import_header":"IMPORT CREDENTIAL",
     "import_subtitle": "To import a credential, first locate the CLAIM_DEF transaction in CandyScan. Then, enter the Schema ID and Credential ID below.",
     "first_checkbox_label": "Issuance",
     "second_checkbox_label": "Proof Request",

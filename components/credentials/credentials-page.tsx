@@ -5,26 +5,31 @@ import { useCredentials } from "@/hooks/use-credentials";
 import { CredentialsDisplay } from "./credentials-display";
 import { CredentialsForm } from "./credentials-form";
 import { CredentialsImport } from "./credentials-import";
+import Header from "../header";
+import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export const CredentialsPage = () => {
+	const t = useTranslations();
 	const { mode, startImporting } = useCredentials(); // Get the store's state and actions
-
+	const [searchTerm, setSearchTerm] = useState("");
 	const handleImport = () => {
 		startImporting(); // Ensure this properly triggers the state change
 	};
 
 	return (
 		<div className="flex flex-col">
-			<div className="flex justify-between items-center px-6 py-2 mt-4">
-				<p className="font-bold text-3xl">Credential Library</p>
-
-				<ButtonOutline
-					className="mt-4 border py-2 rounded-md font-bold"
-					onClick={handleImport} // Switch to import mode
-				>
-					IMPORT CREDENTIAL
-				</ButtonOutline>
-			</div>
+			<Header
+        title={t('sidebar.credential_library_label')}
+        searchTerm={searchTerm}
+        showSearch={true}
+        setSearchTerm={setSearchTerm}
+        buttonLabel={t('credentials.import_header')}
+        buttonLink={handleImport}
+        buttonBgColor="border-2 border-dark-border dark:border-dark-border cursor-pointer uppercase dark:bg-dark-tertiary text-light-text dark:text-dark-text hover:bg-light-btn dark:hover:bg-dark-btn-hover font-bold py-2 px-2 transition"
+        buttonTextColor="text-black"
+        showIcon={false}
+      />
 
 			<div className="flex gap-4 p-4">
 				{/* Left Panel: Credentials Display */}

@@ -11,6 +11,7 @@ import { ensureBase64HasPrefix } from "@/lib/utils";
 import { useCreateShowcase, useShowcases } from "@/hooks/use-showcases";
 import { Persona, Showcase } from "@/openapi-types";
 import Image from "next/image";
+import Header from "../header";
 
 export const ShowcaseList = () => {
   const t = useTranslations();
@@ -64,37 +65,14 @@ export const ShowcaseList = () => {
       <main
         className={`flex-1 bg-light-bg dark:bg-dark-bg dark:text-dark-text text-light-text `}
       >
-        <section
-          className="w-full px-0 py-2 bg-cover bg-center dark:bg-dark-bg"
-        >
-          <div className="container mx-auto px-4 mt-6 mb-6">
-            <h1 className="text-3xl font-bold">
-              {t("showcases.header_title")}
-            </h1>
-          </div>
-          <div className="container mx-auto px-4 mb-8 mt-2 flex items-center justify-between">
-            <div className="relative max-w-[550px] w-full">
-              <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={22}
-              />
-              <Input
-                type="text"
-                placeholder={t("action.search_label")}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-3 py-4 border border-foreground/50 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-100"
-                />
-            </div>
-
-            <Link href={"/showcases/create"}>
-              <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 h-12 flex items-center gap-4 shadow-md">
-                {t("showcases.create_new_showcase_label")}
-                <CirclePlus size={22} />
-              </button>
-            </Link>
-          </div>
-        </section>
+        <Header
+          title={t("showcases.header_title")} 
+          showSearch={true}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm} 
+          buttonLabel={t("showcases.create_new_showcase_label")} 
+          buttonLink="/showcases/create"
+        />
 
         {!isLoading && (
           <div className="container mx-auto px-5 mt-2">

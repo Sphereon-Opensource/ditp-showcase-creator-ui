@@ -19,6 +19,7 @@ import { ensureBase64HasPrefix } from "@/lib/utils";
 import { usePersonas, useCreatePersona, useUpdatePersona, useDeletePersona } from "@/hooks/use-personas";
 import { Persona } from "@/openapi-types";
 import { toast } from "sonner";
+import Header from "../header";
 
 type CharacterFormData = z.infer<typeof characterSchema>;
 
@@ -29,6 +30,7 @@ export default function NewCharacterPage() {
   const [isHeadShotImageEdited, setHeadShotImageEdited] = useState<boolean>(false);
   const [bodyImage, setBodyImage] = useState<string | null>(null);
   const [isBodyImageEdited, setIsBodyImageEdited] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState("");
   
   // Track the selected persona by ID for UI stability
   const [selectedPersonaId, setSelectedPersonaId] = useState<string | null>(null);
@@ -199,9 +201,23 @@ export default function NewCharacterPage() {
     }
   };
 
+  const searchFilter = (persona: Persona) => {
+    if (searchTerm === "") {
+      return true;
+    }
+    return persona.name.toLowerCase().includes(searchTerm.toLowerCase());
+  };
+
   return (
     <div className="flex bg-light-bg dark:bg-dark-bg dark:text-dark-text text-light-text flex-col h-full w-full">
       <div className="flex flex-col h-screen">
+      <Header
+        title="Characters"
+        searchTerm={searchTerm}
+        showSearch={true}
+        setSearchTerm={setSearchTerm}
+        showIcon={false}
+      />
         <div className="flex gap-4 p-4 h-full">
           {/* Left panel - Character list */}
           <div className="w-1/3 bg-white dark:bg-dark-bg-secondary border shadow-md rounded-md flex flex-col">
@@ -222,7 +238,7 @@ export default function NewCharacterPage() {
             ) : (
               <div className="flex-grow overflow-y-auto">
                 {personasData?.personas &&
-                  personasData.personas.map((persona: any) => (
+                  personasData.personas.filter(searchFilter).map((persona: any) => (
                     <div
                       key={persona.id}
                       className={`hover:bg-light-bg dark:hover:bg-dark-input-hover relative p-4 border-t border-b border-light-border-secondary dark:border-dark-border flex ${
