@@ -1,7 +1,7 @@
 "use client";
 
 import { ShowcaseJSON } from "@/types";
-import { useCredentials } from "@/hooks/use-credentials";
+import { useCredentials } from "@/hooks/use-credentials-store";
 import { useShowcaseStore } from "@/hooks/use-showcase-store";
 import { Trash2, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";

@@ -13,7 +13,7 @@ import { useTranslations } from "next-intl";
 import { produce } from "immer";
 import { useShowcaseStore } from "@/hooks/use-showcase-store";
 import { Step } from "@/openapi-types";
-import { useCredentials } from "@/hooks/use-credentials";
+import { useCredentials } from "@/hooks/use-credentials-store";
 
 const MAX_CHARS = 50;
 

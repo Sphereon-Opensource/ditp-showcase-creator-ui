@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { useCredentials } from './use-credentials'
+import { useCredentials } from './use-credentials-store'
 
 describe('useCredentials', () => {
   beforeEach(() => {
