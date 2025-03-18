@@ -13,13 +13,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import StepHeader from "../step-header";
 import ButtonOutline from "../ui/button-outline";
 import { Link, useRouter } from "@/i18n/routing";
-import { ShowcaseRequest, ShowcaseRequestType } from "@/openapi-types";
+import { AssetResponseType, ShowcaseRequest, ShowcaseRequestType } from "@/openapi-types";
 import { useCreateShowcase } from "@/hooks/use-showcases";
 import { toast } from "sonner";
 import { useShowcaseStore } from "@/hooks/use-showcases-store";
 import { convertBase64 } from "@/lib/utils";
 import Image from "next/image";
 import { Trash2 } from "lucide-react";
+import { useCreateAsset } from "@/hooks/use-asset";
+import { Button } from "../ui/button";
 
 const BannerImageUpload = ({
   text,
@@ -32,14 +34,27 @@ const BannerImageUpload = ({
 }) => {
   const t = useTranslations();
   const [preview, setPreview] = useState<string | null>(value || null);
+  const { mutateAsync: createAsset } = useCreateAsset();
 
   const handleChange = async (newValue: File | null) => {
     if (newValue) {
       try {
         const base64 = await convertBase64(newValue);
         if (typeof base64 === "string") {
-          setPreview(base64);
-          onChange(base64);
+
+          await createAsset({
+            content: base64,
+            mediaType: newValue.type,
+          }, {
+            onSuccess: (data: unknown) => {
+              const response = data as AssetResponseType;
+              setPreview(base64);
+              onChange(response.asset.id);
+            },
+            onError: (error) => {
+              console.error("Error creating asset:", error);
+            }
+          });
         }
       } catch (error) {
         console.error("Error converting file:", error);
@@ -156,7 +171,6 @@ export const PublishEdit = () => {
           className="flex flex-col flex-grow space-y-6"
         >
           <div className="space-y-6 flex-grow">
-            <p className="font-bold text-xl text-foreground/80">Publishing Information</p>
             <FormTextInput
               label="Showcase Name"
               name="name"
@@ -200,17 +214,19 @@ export const PublishEdit = () => {
               </ButtonOutline>
             </div>
             <div className="flex gap-3">
-              <ButtonOutline disabled={!form.formState.isValid || !form.formState.isDirty} onClick={handleCancel}>
+              {/* <ButtonOutline disabled={!form.formState.isValid || !form.formState.isDirty} onClick={handleCancel}>
                 {"SAVE AS DRAFT"}
-              </ButtonOutline>
-              <button
+              </ButtonOutline> */}
+              <Button
                 type="submit"
-                // disabled={!form.formState.isValid || !form.formState.isDirty}
+                variant="outline"
+                size="lg"
+                disabled={!form.formState.isValid || !form.formState.isDirty}
                 onClick={() => setIsModalOpen(true)}
-                className="px-6 bg-light-yellow py-2 rounded text-gray-700 font-bold"
+                className="px-6 bg-yellow-500 py-2 rounded text-gray-700 font-bold hover:bg-yellow-400 dark:bg-yellow-500 dark:hover:bg-yellow-600"
               >
                 {"PUBLISH FOR REVIEW"}
-              </button>
+              </Button>
             </div>
           </div>
         </form>
@@ -253,7 +269,7 @@ export const PublishEdit = () => {
               </button>
               <Link href={'/'}>
               <ButtonOutline
-                className="bg-light-yellow border-light-yellow hover:bg-light-yellow"
+                className="bg-yellow-500 border-light-yellow hover:bg-yellow-500"
                 onClick={() => {
                   form.handleSubmit(onSubmit)
                 }}
