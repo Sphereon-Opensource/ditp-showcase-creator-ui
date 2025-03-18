@@ -1,6 +1,6 @@
 "use client";
 
-import { CirclePlus, Search } from "lucide-react";
+import { CirclePlus, Search, Share2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Link } from "@/i18n/routing";
@@ -9,18 +9,22 @@ import ButtonOutline from "@/components/ui/button-outline";
 import { Card } from "@/components/ui/card";
 import { ensureBase64HasPrefix } from "@/lib/utils";
 import { useCreateShowcase, useShowcases } from "@/hooks/use-showcases";
-import { Showcase } from "@/openapi-types";
+import { Persona, Showcase } from "@/openapi-types";
+import Image from "next/image";
 
 export const ShowcaseList = () => {
   const t = useTranslations();
   const { data, isLoading } = useShowcases();
   const { mutateAsync } = useCreateShowcase();
 
-  const [activeTab, setActiveTab] = useState(
-    t("showcases.header_tab_overview")
-  );
+  const tabs = [
+    { label: t("showcases.header_tab_overview"), status: "ALL" },
+    { label: t("showcases.header_tab_draft"), status: "PENDING" },
+    { label: t("showcases.header_tab_under_review"), status: "UNDER_REVIEW" },
+    { label: t("showcases.header_tab_published"), status: "ACTIVE" },
+  ];
 
-  const [Showcases, setShowcases] = useState<any>([]);
+  const [activeTab, setActiveTab] = useState(tabs[0]);
   const [searchTerm, setSearchTerm] = useState("");
 
   const searchFilter = (showcase: Showcase) => {
@@ -54,12 +58,6 @@ export const ShowcaseList = () => {
     return response;
   };
 
-  const tabs = [
-    t("showcases.header_tab_overview"),
-    t("showcases.header_tab_draft"),
-    t("showcases.header_tab_under_review"),
-    t("showcases.header_tab_published"),
-  ];
 
   return (
     <>
@@ -101,26 +99,30 @@ export const ShowcaseList = () => {
         {!isLoading && (
           <div className="container mx-auto px-5 mt-2">
             <div className="flex gap-4 text-sm font-medium">
-              {tabs.map((tab, index) => (
-                <button
-                  key={index}
-                  className={`flex items-center gap-1 px-2 py-1 ${
-                    activeTab === tab
-                      ? "border-b-2 border-light-blue dark:border-white dark:text-dark-text text-light-blue font-bold cursor-pointer"
-                      : "text-gray-800/50 dark:text-gray-200/50"
-                  }`}
-                  onClick={() => setActiveTab(tab)}
-                >
-                  <div className="font-bold text-base">{tab}</div>
-                  <span className="bg-light-bg-secondary dark:dark-bg-secondary text-gray-600 text-xs px-2 py-0.5 rounded-full">
-                    {index === 0
-                      ? Showcases.length
-                      : index === 1
-                      ? Showcases.length
-                      : 0}
-                  </span>
-                </button>
-              ))}
+              {tabs.map((tab, index) => {
+
+                const showcaseCount =
+                tab.status === tabs[0].status
+                  ? data?.showcases?.length || 0
+                  : data?.showcases?.filter((showcase) => showcase.status === tab.status).length || 0;
+
+                return(
+                  <button
+                    key={index}
+                    className={`flex items-center gap-1 px-2 py-1 ${
+                      activeTab.status === tab.status
+                        ? "border-b-2 border-light-blue dark:border-white dark:text-dark-text text-light-blue font-bold cursor-pointer"
+                        : "text-gray-800/50 dark:text-gray-200/50"
+                    }`}
+                    onClick={() => setActiveTab(tab)}
+                  >
+                    <div className="font-bold text-base">{tab.label}</div>
+                    <span className="bg-light-bg-secondary dark:dark-bg-secondary text-gray-600 text-xs px-2 py-0.5 rounded-full">
+                      {showcaseCount}
+                    </span>
+                  </button>
+                )
+              })}
             </div>
           </div>
         )}
@@ -128,37 +130,43 @@ export const ShowcaseList = () => {
         {isLoading && (
           <div className="flex flex-col items-center">
             <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-            Loading Showcases
+            {t('showcases.loading_label')}
           </div>
         )}
 
         <section className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-6 mt-6">
-            {data?.showcases?.filter(searchFilter).reverse().map((showcase: Showcase) => (
+          <div className="grid md:grid-cols-3 gap-6 mt-6 pb-4">
+            {data?.showcases?.filter(searchFilter)
+              .filter(
+                (showcase) =>
+                  activeTab.status === tabs[0].status || showcase.status === activeTab.status
+              )
+            .reverse().map((showcase: Showcase) => (
               <Card key={showcase.id}>
                 <div
                   key={showcase.id}
-                  className="bg-white dark:bg-dark-bg shadow-md rounded-lg overflow-hidden border border-light-border dark:border-dark-border flex flex-col h-full"
+                  className="bg-white dark:bg-dark-bg rounded-lg overflow-hidden border border-light-border dark:border-dark-border flex flex-col h-full"
                 >
-                  {/* <div
+                  <div
                     className="relative min-h-[15rem] h-auto flex items-center justify-center bg-cover bg-center"
                     style={{
                       backgroundImage: `url('${
-                        showcase?.bannerImage?.content ||
-                        "https://picsum.photos/400"
+                        showcase?.bannerImage?.content
+                          ? showcase.bannerImage.content
+                          : "/assets/NavBar/Showcase.jpeg"
                       }')`,
                     }}
                   >
                     <div
                       className={`${
-                        showcase.status == "Published"
-                          ? "bg-light-yellow"
+                        showcase.status == "ACTIVE"
+                          ? "bg-yellow-500"
                           : "bg-dark-grey"
                       } left-0 right-0 top-4 py-2 rounded w-1/4 absolute`}
                     >
                       <p
                         className={`text-center ${
-                          showcase.status == "Published"
+                          showcase.status == "ACTIVE"
                             ? "text-black"
                             : "text-white"
                         }`}
@@ -190,7 +198,7 @@ export const ShowcaseList = () => {
                         </div>
                       </div>
                     </div>
-                  </div> */}
+                  </div>
 
                   <div className="p-5 flex flex-col flex-grow">
                     <h3 className="text-sm font-semibold text-light-text dark:text-dark-text">
@@ -212,22 +220,24 @@ export const ShowcaseList = () => {
                       </h4>
                       <div className="mt-2 space-y-3">
                         {showcase?.personas?.map(
-                          (persona: any, charIndex: any) => (
+                          (persona: Persona) => (
                             <div
                               key={persona.id}
                               className="border-[1px] border-dark-border dark:border-light-border flex items-center gap-3 p-3 rounded-md"
                             >
-                              <img
-                                src={
-                                  ensureBase64HasPrefix(
-                                    persona.headshotImage?.content
-                                  ) || "https://picsum.photos/200"
-                                }
-                                alt={persona.name || "Persona"}
-                                className="w-[44px] h-[44px] rounded-full"
-                              />
+                               <Image
+                                  src={
+                                    ensureBase64HasPrefix(
+                                      persona.headshotImage?.content
+                                    ) || "/assets/NavBar/Joyce.png"
+                                  }
+                                  alt={persona.name}
+                                  width={44}
+                                  height={44}
+                                  className="rounded-full w-[44px] h-[44px]"
+                                />
                               <div>
-                                <p className="text-base font-medium text-light-text dark:text-dark-text font-semibold">
+                                <p className="text-base text-foreground font-semibold">
                                   {persona.name}
                                 </p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -243,37 +253,19 @@ export const ShowcaseList = () => {
                     <div className="flex gap-4 mt-auto">
                       <Link className="w-1/2" href={`/showcases/${showcase.slug}`}>
                       <ButtonOutline
-                        className="w-1/2"
-                        // onClick={() => setIsModalOpen(true)}
+                        className="w-full"
+                        disabled
                       >
                         {t("action.edit_label")}
                       </ButtonOutline>
                       </Link>
                       <ButtonOutline
                         onClick={() => createShowcase()}
+                        disabled
                         className="w-1/2"
                       >
                         {t("action.create_copy_label")}
                       </ButtonOutline>
-                      {/* {item.buttons.map((button, btnIndex) => ( */}
-                      {/* <button
-                      // key={btnIndex}
-                      className={`w-full font-bold py-2 rounded-md transition ${
-                        showcase.status === "PUBLISHED"
-                          ? "border-2 border-dark-border dark:border-light-border text-light-text dark:text-dark-text hover:bg-gray-100 dark:hover:bg-gray-700"
-                          : showcase.status === "DRAFT"
-                          ? "border-2 border-dark-border dark:border-light-border text-light-text dark:text-dark-text hover:bg-gray-100 dark:hover:bg-gray-700"
-                          : "bg-gray-300 text-gray-600 cursor-not-allowed"
-                      }`}
-                      // disabled={button.type === "disabled"}
-                      onClick={() =>
-                        button.label == t("action.edit_label") &&
-                        setIsModalOpen(true)
-                      }
-                    >
-                      {button.label}
-                    </button> */}
-                      {/* ))} */}
                     </div>
                   </div>
                 </div>

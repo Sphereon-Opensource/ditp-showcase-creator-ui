@@ -19,7 +19,8 @@
     "created_by_label": "Créé par {name}",
     "description_label": "Description",
     "character_label": "Personnage(s)",
-    "description_version": "Version"
+    "description_version": "Version",
+    "loading_label": "Chargement des vitrines"
   },
   "character": {
     "header_title": "Créez votre Personnage",
