@@ -10,6 +10,7 @@ import { Share2 } from "lucide-react";
 import { ensureBase64HasPrefix } from "@/lib/utils";
 import { useShowcases } from "@/hooks/use-showcases";
 import { Showcase } from "@/openapi-types";
+import { SidebarTrigger } from "../ui/sidebar";
 
 export const LandingPage = () => {
   const t = useTranslations();
@@ -33,8 +34,9 @@ export const LandingPage = () => {
   return (
     <>
       <section className="w-full px-0 py-2 bg-cover bg-center dark:bg-dark-bg">
-        <div className="container mx-auto px-4 mt-6 mb-6">
-          <h1 className="text-3xl font-bold">{t("home.header_title")}</h1>
+        <div className="container mx-auto px-4 mt-4 mb-4 flex flex-row gap-2">
+        <SidebarTrigger className="-ml-1" />
+        <h1 className="text-3xl font-bold">{t("home.header_title")}</h1>
         </div>
 
         <div className="container mx-auto px-4 mb-8 mt-2">
