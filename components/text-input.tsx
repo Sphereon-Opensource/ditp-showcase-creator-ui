@@ -65,7 +65,7 @@ export const FormTextArea = <T extends FieldValues>({
       </Label>
       <Textarea
         className="rounded w-full dark:text-dark-text dark:bg-dark-input bg-light-bg resize-none mt-3 p-2 border dark:border-dark-border"
-        rows={8}
+        rows={3}
         id={name}
         placeholder={placeholder}
         {...register(name)}

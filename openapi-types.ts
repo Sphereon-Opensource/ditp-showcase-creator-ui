@@ -445,3 +445,4 @@ export type AssetRequestType = z.infer<typeof AssetRequest>;
 
 export type CredentialType = z.infer<typeof CredentialDefinition>;
 export type CredentialSchemaType = z.infer<typeof CredentialSchema>;
+export type AssetResponseType = z.infer<typeof AssetResponse>;
