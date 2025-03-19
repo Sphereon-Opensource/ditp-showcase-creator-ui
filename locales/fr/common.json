@@ -89,6 +89,7 @@
     "first_checkbox_label": "Justificatif",
     "second_checkbox_label": "Demande de preuve",
     "import_header_title": "Importation d'un Justificatif",
+    "import_header":"IMPORTATION D'UN JUSTIFICATIF",
     "import_header_subtitle": "Pour importer un justificatif, trouvez d'abord la transaction CLAIM_DEF dans CandyScan. Ensuite, entrez l'ID du schéma et l'ID du justificatif ci-dessous.",
     "link_text": "Trouver sur CandyScan",
     "import_instructions_title": "Voir les Instructions",

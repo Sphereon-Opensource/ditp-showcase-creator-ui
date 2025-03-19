@@ -12,6 +12,7 @@ import { useShowcases } from "@/hooks/use-showcases";
 import { Showcase } from "@/openapi-types";
 import { SidebarTrigger } from "../ui/sidebar";
 import Image from "next/image";
+import Header from "../header";
 
 export const LandingPage = () => {
   const t = useTranslations();
@@ -27,28 +28,9 @@ export const LandingPage = () => {
 
   return (
     <>
-      <section className="w-full px-0 py-2 bg-cover bg-center dark:bg-dark-bg">
-        <div className="container mx-auto px-4 mt-4 mb-4 flex flex-row gap-2">
-        <SidebarTrigger className="-ml-1" />
-        <h1 className="text-3xl font-bold">{t("home.header_title")}</h1>
-        </div>
 
-        <div className="container mx-auto px-4 mb-8 mt-2">
-          <div className="relative max-w-[550px] w-full">
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              size={22}
-            />
-            <Input
-              type="text"
-              placeholder={t("action.search_label")}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-3 py-4 border border-foreground/50 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-100"
-            />
-          </div>
-        </div>
-      </section>
+      <Header title={t("home.header_title")} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
 
       {/* {!isLoading && (
         <div className="container mx-auto px-5 mt-2">

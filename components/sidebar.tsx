@@ -1,7 +1,7 @@
 "use client";
 
 import { JSX, useState } from "react";
-import {  ChevronLeft } from "lucide-react";
+import {  ChevronLeft, User, Users, Users2, Users2Icon } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { LanguageSelector } from "./language-selector";
 import Image from "next/image";
@@ -83,8 +83,8 @@ export default function Sidebar() {
 
 				<Link href="/characters">
 					<SidebarItem
-						// icon={<Wallet size={22}/>}
-						icon="/assets/NavBar/credentials_library.svg"
+						icon={<Users2 size={22}/>}
+						// icon="/assets/NavBar/credentials_library.svg"
 						text={t("character_library_label")}
 						alt="Characters"
 						expanded={isExpanded}
