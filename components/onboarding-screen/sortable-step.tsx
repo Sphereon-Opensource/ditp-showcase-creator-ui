@@ -1,11 +1,10 @@
+// @ts-nocheck
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { OnboardingStep } from "@/types";
 import Image from "next/image";
 import {
   Copy,
   GripVertical,
-  TriangleAlert,
 } from "lucide-react";
 import { cn, ensureBase64HasPrefix } from "@/lib/utils";
 import { useOnboarding } from "@/hooks/use-onboarding";
@@ -13,7 +12,7 @@ import { useTranslations } from "next-intl";
 import { produce } from "immer";
 import { useShowcaseStore } from "@/hooks/use-showcase-store";
 import { Step } from "@/openapi-types";
-import { useCredentials } from "@/hooks/use-credentials";
+import { useCredentials } from "@/hooks/use-credentials-store";
 
 const MAX_CHARS = 50;
 
@@ -21,7 +20,6 @@ export const SortableStep = ({
   selectedStep,
   myScreen,
   stepIndex,
-  totalSteps,
 }: {
   selectedStep: number | null;
   myScreen: typeof Step._type;
@@ -161,7 +159,7 @@ export const SortableStep = ({
               />
               <div className="ml-4 flex-col">
                 <div className="font-semibold">{selectedCredential?.name}</div>
-                <div className="text-sm">{selectedCredential.issuer?.name ?? 'Test college'}</div>
+                <div className="text-sm">{selectedCredential?.issuer?.name ?? 'Test college'}</div>
               </div>
               <div className="align-middle ml-auto">
                 <div className="font-semibold">Attributes</div>

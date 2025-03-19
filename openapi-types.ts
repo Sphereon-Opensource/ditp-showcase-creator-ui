@@ -438,11 +438,17 @@ export type ShowcaseRequestType = z.infer<typeof ShowcaseRequest>;
 export type Persona = z.infer<typeof PersonaSchema>;
 export type PersonaRequestType = z.infer<typeof PersonaRequest>;
 export type Credential = z.infer<typeof CredentialDefinition>;
+
 export type ScenarioRequestType = z.infer<typeof ScenarioRequest>;
 export type IssuanceScenarioResponseType = z.infer<typeof IssuanceScenarioResponse>;
 export type AssetRequestType = z.infer<typeof AssetRequest>;
 
+export type CredentialAttributeType = z.infer<typeof CredentialAttribute>;
+export type CredentialSchemaType = z.infer<typeof CredentialSchema>;
 
 export type CredentialType = z.infer<typeof CredentialDefinition>;
-export type CredentialSchemaType = z.infer<typeof CredentialSchema>;
 export type AssetResponseType = z.infer<typeof AssetResponse>;
+export type CredentialSchemaRequestType = z.infer<typeof CredentialSchemaRequest>;
+
+export type StepRequestType = z.infer<typeof StepRequest>;
+export type StepType = z.infer<typeof Step>;

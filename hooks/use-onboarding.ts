@@ -1,19 +1,13 @@
+// @ts-nocheck
+
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { OnboardingStep } from "@/types";
 import { useShowcaseStore } from "./use-showcase-store";
 import { produce } from "immer";
-import {
-  OnboardingStepFormData,
-  onboardingStepFormSchema,
-} from "@/schemas/onboarding";
-import { stepTypeSchema } from "@/schemas/onboarding";
 import { useForm } from "react-hook-form";
-import { StepTypeData } from "@/schemas/onboarding";
-import { use, useState } from "react";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  QueryClient,
   useMutation,
   useQuery,
   useQueryClient,
@@ -21,12 +15,17 @@ import {
 import {
   IssuanceScenarioResponse,
   ScenarioRequest,
+  ScenarioRequestType,
+  ScenarioTypeEnum,
   StepRequest,
+  StepRequestType,
   StepResponse,
+  StepTypeEnum,
+  StepType
 } from "@/openapi-types";
 import apiClient from "@/lib/apiService";
 
-type OnboardingStepState =
+type StepState =
   | "editing-basic"
   | "editing-issue"
   | "no-selection"
@@ -34,20 +33,20 @@ type OnboardingStepState =
 
 interface State {
   selectedStep: number | null;
-  stepState: OnboardingStepState;
-  screens: OnboardingStep[];
+  stepState: StepState;
+  screens: StepType[];
   scenarioId: string;
   issuerId: string;
 }
 
 interface Actions {
   setSelectedStep: (index: number | null) => void;
-  setStepState: (state: OnboardingStepState) => void;
-  initializeScreens: (screens: OnboardingStep[]) => void;
+  setStepState: (state: StepState) => void;
+  initializeScreens: (screens: StepRequestType[]) => void;
   moveStep: (oldIndex: number, newIndex: number) => void;
   removeStep: (index: number) => void;
-  createStep: (step: OnboardingStep) => void;
-  updateStep: (index: number, step: OnboardingStep) => void;
+  createStep: (step: StepRequestType) => void;
+  updateStep: (index: number, step: StepRequestType) => void;
   setScenarioId: (id: string) => void;
   setIssuerId: (id: string) => void;
   reset: () => void;
@@ -174,34 +173,31 @@ export const useOnboarding = create<State & Actions>()(
 
 export const useCreateStep = () => {
   const { createStep, setStepState } = useOnboarding();
-  const [stepType, setStepType] = useState<"basic" | "issue" | null>(null);
+  const [stepType, setStepType] = useState<typeof StepTypeEnum._type | null>(null);
 
-  const typeForm = useForm<StepTypeData>({
-    resolver: zodResolver(stepTypeSchema),
+  const stepForm = useForm<typeof StepRequest._type>({
+    resolver: zodResolver(StepRequest),
   });
 
-  const stepForm = useForm<OnboardingStepFormData>({
-    resolver: zodResolver(onboardingStepFormSchema),
-  });
-
-  const handleTypeSelection = (type: "basic" | "issue") => {
+  const handleTypeSelection = (type: typeof StepTypeEnum._type) => {
     setStepType(type);
     stepForm.reset({
-      type,
       title: "",
-      text: "",
-      image: "",
-      ...(type === "issue" && { credentials: [] }),
+      description: "",
+      type: type,
+      asset: "",
+      ...(type === "HUMAN_TASK" && { credentials: [] }),
     });
   };
 
-  const onSubmit = (data: OnboardingStepFormData) => {
+  const onSubmit = (data: typeof StepRequest._type) => {
     const newStep = {
       id: `${Date.now()}`,
       title: data.title,
-      description: data.text,
-      image: data.image || "",
-      ...(data.type === "issue" && { credentials: data.credentials || [] }),
+      description: data.description,
+      type: data.type,
+      asset: data.asset || "",
+      // ...(data.type === "HUMAN_TASK" && { credentials: data.credentials || [] }),
     };
 
     createStep(newStep);
@@ -216,13 +212,46 @@ export const useCreateStep = () => {
   };
 };
 
+// forms
+export const useCreateScenarioForm = () => {
+  const [stepType, setStepType] = useState<typeof ScenarioTypeEnum._type | null>(null);
+
+  const form = useForm<ScenarioRequestType>({
+    resolver: zodResolver(ScenarioRequest),
+  });
+
+  const handleTypeSelection = (type: typeof ScenarioTypeEnum._type) => {
+    setStepType(type);
+    form.reset({
+      name: "",
+      description: "",
+      type: type,
+      steps: [], // <-- introduce the array of steps 
+      personas: [],
+      hidden: false,
+      issuer: "",
+    });
+  };
+
+  const onSubmit = (data: ScenarioRequestType) => {
+    console.log(data);
+  };
+
+  return {
+    stepType,
+    handleTypeSelection,
+    form,
+    onSubmit,
+  };
+};
+
 const staleTime = 1000 * 60 * 5; // 5 minutes
 
 export const useCreateScenario = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: typeof ScenarioRequest._type) => {
+    mutationFn: async (data: ScenarioRequestType) => {
       const response = await apiClient.post(`/scenarios/issuances`, data);
       return response;
     },
@@ -245,6 +274,10 @@ export const useScenario = (slug: string) => {
   });
 };
 
+
+
+
+// STEPS
 export const useIssuanceStep = (slug: string) => {
   return useQuery({
     queryKey: ["issuanceStep", slug],

@@ -41,7 +41,7 @@ export default async function PublishPage({ params }: { params: PageParams }) {
                 {"Select the character and review their showcase"}
               </p>
             </div>
-            <PublishInfo />
+            <PublishInfo characters={[]} credentials={[]} />
           </div>
           <div className="w-2/3 bg-white dark:bg-dark-bg-secondary border shadow-md rounded-md flex flex-col">
             <PublishEdit />

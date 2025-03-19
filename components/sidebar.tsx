@@ -53,6 +53,7 @@ export default function Sidebar() {
 						// icon={<Home size={22}/>}
 						icon="/assets/NavBar/Home_light.svg"
 						text={t("home_label")}
+						alt="Home"
 						expanded={isExpanded}
 						isActive={pathname === "/"}
 					/>
@@ -63,6 +64,7 @@ export default function Sidebar() {
 						// icon={<Library size={22}/>}
 						icon="/assets/NavBar/showcases.svg"
 						text={t("showcases_label")}
+						alt="Showcases"
 						expanded={isExpanded}
 						isActive={pathname.startsWith("/showcases")}
 					/>
@@ -73,6 +75,7 @@ export default function Sidebar() {
 						// icon={<Wallet size={22}/>}
 						icon="/assets/NavBar/credentials_library.svg"
 						text={t("credential_library_label")}
+						alt="Credentials"
 						expanded={isExpanded}
 						isActive={pathname.startsWith("/credentials")}
 					/>
@@ -83,6 +86,7 @@ export default function Sidebar() {
 						icon={<Users2 size={22}/>}
 						// icon="/assets/NavBar/credentials_library.svg"
 						text={t("character_library_label")}
+						alt="Characters"
 						expanded={isExpanded}
 						isActive={pathname.startsWith("/characters")}
 					/>
@@ -123,9 +127,11 @@ function SidebarItem({
 	text,
 	expanded,
 	isActive,
+	alt,
 }: {
 	icon: JSX.Element | string;
 	text: string;
+	alt: string;
 	expanded: boolean;
 	isActive: boolean;
 }) {
@@ -141,7 +147,7 @@ function SidebarItem({
 				<Image
 					className="filter dark:invert"
 					src={icon}
-					alt={text}
+					alt={alt || `menu item ${text}`}
 					width={20}
 					height={20}
 				/>

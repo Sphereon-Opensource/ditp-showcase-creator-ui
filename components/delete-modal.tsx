@@ -1,7 +1,4 @@
 import {
-	CircleAlert,
-	Cross,
-	FileWarning,
 	TriangleAlert,
 	X,
 } from "lucide-react";
@@ -12,6 +9,7 @@ interface DeleteModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	onDelete: () => void;
+	isLoading: boolean; 
 	header?: string;
 	description?: string;
 	subDescription?: string;
@@ -23,6 +21,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
 	isOpen,
 	onClose,
 	onDelete,
+	isLoading,
 	header = "Are you sure?",
 	description = "Are you sure you want to delete this item?",
 	subDescription = "This action cannot be undone.",
@@ -44,22 +43,31 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
 					</div>
 					<div className="py-4">
 						<p
-							className="mt-2 text-gray-600 dark:text-white text-start"
+							className="mt-2 text-foreground/80 dark:text-white text-start"
 							dangerouslySetInnerHTML={{ __html: description }}
 						/>
 						{subDescription && (
 							<p
-								className="text-start text-gray-600 dark:text-white mt-2 font-base"
+								className="text-start text-foreground dark:text-white mt-2 font-base"
 								dangerouslySetInnerHTML={{ __html: subDescription }}
 							/>
 						)}
 					</div>
 				</div>
 				<div className="mt-4 flex justify-end gap-2 border-t pt-3 border-gray-300 dark:border-dark-border">
-					<button onClick={onClose} className="px-4 py-2 text-gray-700 rounded">
+					<button
+						onClick={onClose}
+						className="px-4 py-2 text-foreground rounded font-semibold disabled:opacity-50"
+						disabled={isLoading} 
+					>
 						{cancelText}
 					</button>
-					<ButtonOutline onClick={onDelete}>{deleteText}</ButtonOutline>
+					<ButtonOutline
+						onClick={onDelete}
+						disabled={isLoading} 
+					>
+						{isLoading ? "Deleting..." : deleteText} 
+					</ButtonOutline>
 				</div>
 			</div>
 		</div>

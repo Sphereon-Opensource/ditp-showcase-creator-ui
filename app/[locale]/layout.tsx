@@ -8,11 +8,14 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { Locale, PageParams } from "@/types";
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner";
 
-import "./globals.css";
-import Sidebar from "@/components/sidebar";
 import { QueryProviders } from "@/providers/query-provider";
+import { SidebarInset } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+
+import "../globals.css";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -42,10 +45,7 @@ type Params = PropsWithChildren<{
   params: PageParams;
 }>;
 
-export default async function RootLayout({
-  children,
-  params,
-}: Params) {
+export default async function RootLayout({ children, params }: Params) {
   const { locale } = await params;
   // Ensure that the incoming `locale` is valid
   if (!routing.locales.includes(locale)) {
@@ -66,14 +66,14 @@ export default async function RootLayout({
         >
           <QueryProviders>
             <NextIntlClientProvider messages={messages}>
-              <div className="flex flex-col h-screen bg-light-bg dark:bg-dark-bg text-light-text">
-                <div className="flex flex-grow">
-                <Sidebar />
-                <main className="flex-1 overflow-auto">{children}</main>
-                <Toaster />
-              </div>
-              <Footer />
-              </div>
+              <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset>
+                  <main className="flex-1 overflow-auto">{children}</main>
+                  <Toaster />
+                  <Footer />
+                </SidebarInset>
+              </SidebarProvider>
             </NextIntlClientProvider>
           </QueryProviders>
         </ThemeProvider>

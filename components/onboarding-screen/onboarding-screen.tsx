@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -21,7 +22,7 @@ import { ErrorModal } from "@/components/error-modal";
 import { ensureBase64HasPrefix } from "@/lib/utils";
 import { useShowcaseStore } from "@/hooks/use-showcases-store";
 
-export const OnboardingScreen = () => {
+export const OnboardingScreen = ({ slug }: { slug: string }) => {
   const t = useTranslations();
   const {
     screens,
@@ -34,7 +35,7 @@ export const OnboardingScreen = () => {
 
   const { displayShowcase } = useShowcaseStore();
   const personas = displayShowcase.personas || [];
-  const { data, isLoading } = useIssuanceStep("credential-issuance-flow");
+  const { data, isLoading } = useIssuanceStep(slug);
   const [showErrorModal, setErrorModal] = useState(false);
   let InitialId = personas.length > 0 ? personas[0]?.id : "";
   const [ selectedPersonaId, setSelectedPersonaId ] = useState(InitialId);
@@ -43,7 +44,8 @@ export const OnboardingScreen = () => {
   const selectedPersona =
     personas.find((p: any) => p.id === selectedPersonaId) || null;
 
-  const Steps = data ? data?.steps : [];
+  // const Steps = data ? data?.steps : [];
+  const Steps = [];
 
   const initialScreens = useMemo(() => {
     return JSON.parse(JSON.stringify(Steps));

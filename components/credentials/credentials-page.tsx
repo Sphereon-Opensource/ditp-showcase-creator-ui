@@ -1,7 +1,7 @@
 "use client";
 
 import ButtonOutline from "../ui/button-outline";
-import { useCredentials } from "@/hooks/use-credentials";
+import { useCredentials } from "@/hooks/use-credentials-store";
 import { CredentialsDisplay } from "./credentials-display";
 import { CredentialsForm } from "./credentials-form";
 import { CredentialsImport } from "./credentials-import";
@@ -10,15 +10,18 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 export const CredentialsPage = () => {
+
 	const t = useTranslations();
 	const { mode, startImporting } = useCredentials(); // Get the store's state and actions
 	const [searchTerm, setSearchTerm] = useState("");
+
 	const handleImport = () => {
-		startImporting(); // Ensure this properly triggers the state change
+		startImporting();
 	};
 
 	return (
 		<div className="flex flex-col">
+
 			<Header
         title={t('sidebar.credential_library_label')}
         searchTerm={searchTerm}
@@ -31,20 +34,13 @@ export const CredentialsPage = () => {
         showIcon={false}
       />
 
+
 			<div className="flex gap-4 p-4">
-				{/* Left Panel: Credentials Display */}
 				<div className="w-1/3 bg-[white]  dark:bg-dark-bg-secondary border shadow-md rounded-md flex flex-col">
 					<CredentialsDisplay />
 				</div>
-
-				{/* Right Panel: Show Details or Form */}
 				<div className="w-2/3 bg-white dark:bg-dark-bg-secondary border shadow-md rounded-md flex flex-col">
-					{/* Conditionally render based on import or create mode */}
-					{mode === "import" ? (
-						<CredentialsImport /> // Show import form if importing
-					) : (
-						<CredentialsForm />
-					)}
+					{mode === "import" ? <CredentialsImport /> : <CredentialsForm />}
 				</div>
 			</div>
 		</div>
