@@ -7,6 +7,7 @@ import {
 	IssuerResponse,
 	CredentialDefinitionsResponse,
 	CredentialSchemaRequest,
+	IssuerRequest,
 } from "@/openapi-types";
 
 const staleTime = 1000 * 60 * 5; // 5 minutes
@@ -105,8 +106,7 @@ export const useDeleteCredentialDefinition = () => {
 
 	return useMutation<void, Error, string>({
     mutationFn: async (slug: string) => {
-      const response = await apiClient.delete(`/credentials/definitions/${slug}`);
-      
+      await apiClient.delete(`/credentials/definitions/${slug}`);
     },
     onSuccess: () => {
       toast.success("Credential deleted successfully!"); 
@@ -120,5 +120,18 @@ export const useDeleteCredentialDefinition = () => {
       // Optionally refetch or reset state here
       queryClient.refetchQueries({ queryKey: ["credential"] }); // Ensure the table is refreshed
     },
+  });
+};
+
+export const useCreateIssuer = () => {
+	const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: typeof IssuerRequest._type) => {
+      const response = await apiClient.post(`/roles/issuers`, data);
+      return response;
+    },
+		onSettled: () => {
+			queryClient.invalidateQueries({ queryKey: ["issuer"] });
+		},
   });
 };

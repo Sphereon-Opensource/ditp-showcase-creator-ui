@@ -42,7 +42,7 @@ export const BasicStepEdit = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { mutateAsync } = useCreateScenario();
   const currentStep: any = selectedStep !== null ? screens[selectedStep] : null;
-  const { showcase, setScenarioIds } = useShowcaseStore();
+  const { showcase, setScenarioIds, issuerId } = useShowcaseStore();
   const personas = showcase.personas || [];
   const router = useRouter();
 
@@ -107,7 +107,7 @@ export const BasicStepEdit = () => {
       name: "example_name",
       description: "example_description",
       type: "ISSUANCE" as "ISSUANCE" | "PRESENTATION",
-      issuer: "3de59a17-222e-4c92-a22a-118eff7032b5",
+      issuer: issuerId,
       steps: [
         {
           title: "example_title",

@@ -17,7 +17,8 @@ export const useShowcaseCreation = () => {
     displayShowcase, 
     selectedPersonaIds,
     selectedCredentialDefinitionIds,
-    setScenarioIds
+    setScenarioIds,
+    issuerId
   } = useShowcaseStore();
   
   // Track scenarios being created for each persona
@@ -49,7 +50,7 @@ export const useShowcaseCreation = () => {
         ],
         personas: [persona.id],
         hidden: false,
-        issuer: "3de59a17-222e-4c92-a22a-118eff7032b5"
+        issuer: issuerId
       });
     });
     
@@ -144,7 +145,7 @@ export const useShowcaseCreation = () => {
         ],
         personas: [persona.id],
         hidden: false,
-        issuer: "3de59a17-222e-4c92-a22a-118eff7032b5"
+        issuer: issuerId
       };
       
       // Create a new map to avoid direct state mutation
