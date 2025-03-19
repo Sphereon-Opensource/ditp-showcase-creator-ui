@@ -57,7 +57,7 @@ const StepHeaderCredential: React.FC<StepHeaderCredentialProps> = ({
 								}}
 							>
 								<Trash2 size={20} />
-								Delete Page
+								Delete
 							</li>
 						</ul>
 					</div>

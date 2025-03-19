@@ -163,6 +163,7 @@ console.log('form.formState',form.formState)
       </Form>
       {/* Delete Modal */}
       <DeleteModal
+        isLoading={false}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onDelete={() => {

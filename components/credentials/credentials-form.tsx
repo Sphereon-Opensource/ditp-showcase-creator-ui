@@ -1,368 +1,351 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useCredentials } from "@/hooks/use-credentials";
-import {
-	CredentialFormData,
-} from "@/schemas/credential";
+import { z } from "zod";
+import { useCredentials } from "@/hooks/use-credentials-store";
+
 import { Form } from "@/components/ui/form";
 import { FormTextInput } from "../text-input";
 import { FileUploadFull } from "../file-upload";
 import { CredentialAttributes } from "./components/credential-attribute";
 import ButtonOutline from "../ui/button-outline";
-import { credentialDefinition } from "@/schemas/credential";
 import { Monitor } from "lucide-react";
 import StepHeaderCredential from "../showcases-screen/step-header-credential";
-import apiClient from "@/lib/apiService";
+
 import DeleteModal from "../delete-modal";
+import { toast } from "sonner";
 import { ensureBase64HasPrefix } from "@/lib/utils";
+import {
+  useCreateCredentialDefinition,
+  useCreateCredentialSchema,
+  useDeleteCredentialDefinition,
+} from "@/hooks/use-credentials";
+import { useCreateAsset } from "@/hooks/use-asset";
+import {
+  AssetRequest,
+  AssetResponse,
+  CredentialAttributeSchema,
+  CredentialSchemaRequestType,
+  CredentialSchemaResponse,
+} from "@/openapi-types";
+import { CredentialSchemaRequest } from "@/openapi-types";
+import { CredentialDefinitionRequest } from "@/openapi-types";
+import Image from "next/image";
+import { Button } from "../ui/button";
 
 export const CredentialsForm = () => {
-	const {
-		selectedCredential,
-		mode,
+  const { selectedCredential, mode, setSelectedCredential } = useCredentials();
+  const t = useTranslations();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [credentialLogo, setCredentialLogo] = useState<string>();
+  const [schemaId, setSchemaId] = useState<string | undefined>();
+  const [isLoading, setIsLoading] = useState(false);
+  const { mutateAsync: createAsset } = useCreateAsset();
+  const { mutateAsync: createCredentialSchema } = useCreateCredentialSchema();
+  const { mutateAsync: deleteCredentialDefinition } =
+    useDeleteCredentialDefinition();
+  const { mutateAsync: createCredentialDefinition } =
+    useCreateCredentialDefinition();
 
-		deleteCredential,
-		issuers,
-		fetchIssuers,
-	} = useCredentials();
-	const t = useTranslations();
-	const [formData, setFormData] = useState({
-		name: "",
-		revocation: false,
-	});
-	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [isOpen, setIsOpen] = useState(false);
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [credentialLogo, setCredentialLogo] = useState<string>();
-	const [error, setError] = useState<string | null>(null);
-	const [loading, setLoading] = useState(false);
-	const [showErrorModal, setErrorModal] = useState(false);
-	const form = useForm<CredentialFormData>({
-		resolver: zodResolver(credentialDefinition), // Use the schema here, not the type
-		mode: "onChange",
-	});
+  const form = useForm<CredentialSchemaRequestType>({
+    resolver: zodResolver(CredentialSchemaRequest),
+    mode: "all",
+  });
 
-	useEffect(() => {
-		console.log("Fetching issuers...");
-		useCredentials.getState().fetchIssuers();
-	}, []);
+  const createSchemaAndThenDefinition = async (
+    formData: CredentialSchemaRequestType
+  ) => {
+    console.log("2 ===>", formData);
+    try {
+      setIsSubmitting(true);
 
-	const handleCancel = () => {
-		// Add cancel logic (e.g., resetting the form or switching mode)
-	};
-	const createSchemaAndThenDefinition = async () => {
-		try {
-			let Credentials: any = form.getValues();
-			// Step 1: Create Schema
-			let payload = {
-				name: Credentials.name || "example_name",
-				version: Credentials.version || "example_version",
-				identifierType: "DID",
-				identifier: "did:sov:XUeUZauFLeBNofY3NhaZCB",
-				attributes: Credentials.attributes.map((item: any) => ({
-					name: item.name,
-					value: item.value,
-					type: item.type.toUpperCase(),
-				})),
-			};
+      const schemaPayload: CredentialSchemaRequestType = {
+        name: formData.name || "example_name",
+        version: formData.version || "example_version",
+        identifierType: "DID",
+        source: "CREATED",
+        identifier: "did:sov:XUeUZauFLeBNofY3NhaZCB",
+        attributes: formData?.attributes?.map(
+          (item: typeof CredentialAttributeSchema._type) => ({
+            name: item.name,
+            value: "example_value",
+            type: item.type,
+          })
+        ),
+      };
 
-			const schemaResponse = await apiClient.post<any>(
-				"/credentials/schemas",
-				payload
-			);
+      const schemaResponse = (await createCredentialSchema(
+        schemaPayload
+      )) as typeof CredentialSchemaResponse._type;
+      await createCredentialSchema(schemaPayload);
+      const schemaId = schemaResponse?.credentialSchema.id;
+      if (!schemaId) {
+        throw new Error("Failed to create schema");
+      }
 
-			const schemaId = schemaResponse.credentialSchema.id;
-			console.log(":white_check_mark: Schema Created:", schemaResponse);
+      setSchemaId(schemaId);
+      toast.success("Schema created successfully!");
+      const assetPayload: z.infer<typeof AssetRequest> = {
+        mediaType: "image/jpeg",
+        content: credentialLogo ?? "",
+        fileName: "example.jpg",
+        description: "Example asset",
+      };
+      const assetResponse = (await createAsset(
+        assetPayload
+      )) as typeof AssetResponse._type;
+      const assetId = assetResponse?.asset?.id;
 
-			// Step 2: Upload Asset using the store's createAsset
-			let assetId = "";
-			if (credentialLogo) {
-				// Convert the file to base64 if needed (or use your existing conversion function)
-				const base64Content = credentialLogo;
-				// const base64Content = await convertBase64(formData.icon.imageFile);
-				const asset: any = {
-					mediaType: "image/png", // or the correct media type for your file
-					content: base64Content,
-					fileName: "CredentialLogo.png",
-					description: "Credential icon image",
-				};
-				const bodyResponse: any = await apiClient.post<{ id: string }>(
-					"/assets",
-					asset
-				);
-				assetId = bodyResponse ? bodyResponse.asset.id : "";
-				console.log(":white_check_mark: Asset Uploaded, assetId:", assetId);
-			}
+      const credentialDefinitionPayload: z.infer<
+        typeof CredentialDefinitionRequest
+      > = {
+        name: formData.name || "example_name",
+        version: formData.version || "example_version",
+        credentialSchema: schemaId,
+        identifierType: "DID",
+        identifier: "did:sov:XUeUZauFLeBNofY3NhaZCB",
+        type: "ANONCRED",
+        // revocation: formData.revocation
+        // 	? {
+        // 			id: formData.revocation.id,
+        // 			createdAt: formData.revocation.createdAt,
+        // 			updatedAt: formData.revocation.updatedAt,
+        // 			title: formData.revocation.title,
+        // 			description: formData.revocation.description,
+        // 	  }
+        // 	: undefined,
+        icon: assetId,
+      };
 
-			// Step 3: Create Credential Definition with Schema ID and Asset ID
-			const credentialDefinitionResponse =
-				await apiClient.post<CredentialFormData>("/credentials/definitions", {
-					name: Credentials.name || "example_name",
-					version: Credentials.version || "example_version",
-					icon: assetId ? assetId : "",
-					identifierType: "DID",
-					identifier: "did:sov:XUeUZauFLeBNofY3NhaZCB",
-					type: "ANONCRED",
-					credentialSchema: schemaId,
-					revocation: formData.revocation
-						? {
-								title: "example_revocation_title",
-								description: "example_revocation_description",
-						  }
-						: null,
-				});
+      await createCredentialDefinition(credentialDefinitionPayload);
+      toast.success("Credential definition created successfully!");
+      form.reset();
+    } catch (error) {
+      toast.error("Error creating schema or credential definition.");
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-			console.log(
-				":white_check_mark: Credential Definition Created:",
-				credentialDefinitionResponse
-			);
+  const handleDeleteCredential = async () => {
+    if (!selectedCredential) return;
+    setIsLoading(true);
+    try {
+      await deleteCredentialDefinition(selectedCredential.id);
+      setSelectedCredential(null);
+      setIsModalOpen(false);
+      toast.success("Credential deleted successfully!");
+    } catch (error) {
+      setIsModalOpen(false);
+      toast.error("Failed to delete credential.");
+      console.error(error);
+    }
+    setIsLoading(false);
+  };
 
-			return credentialDefinitionResponse;
-		} catch (error) {
-			console.error(
-				":x: Error creating schema, uploading asset, or credential definition:",
-				error
-			);
-			throw error;
-		}
-	};
+  const onSubmit = (data: CredentialSchemaRequestType) => {
+    console.log("===>", data);
+    createSchemaAndThenDefinition(data);
+  };
+  const handleCancel = () => {
+    form.reset();
+    setCredentialLogo(undefined);
+  };
 
-	const handleCreateCredential = async () => {
-		try {
-			setIsSubmitting(true);
-			setError(null);
-			await createSchemaAndThenDefinition();
-			// Handle success (e.g., reset form, show success message)
-		} catch (error) {
-			console.error("Error during create:", error);
-			setError("There was an error while creating the credential.");
-		} finally {
-			setIsSubmitting(false);
-		}
-	};
+  if (mode === "view" && selectedCredential) {
+    const credentialDefinition = selectedCredential;
 
-	useEffect(() => {
-		if (mode === "create") {
-			form.reset();
-		}
-	}, [mode, form]);
+    const formattedDate = new Date(
+      selectedCredential?.createdAt
+    ).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
 
-	useEffect(() => {
-		if (mode === "create" && issuers.length === 0) {
-			fetchIssuers();
-		}
-	}, [mode, issuers, fetchIssuers]);
+    const formattedTime = new Date(
+      selectedCredential?.createdAt
+    ).toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+    });
 
-	if (mode === "view" && selectedCredential) {
-		const credentialDefinition = selectedCredential;
+    return (
+      <div className=" my-4">
+        <div className="px-4">
+          <StepHeaderCredential
+            icon={<Monitor strokeWidth={3} />}
+            title={t("credentials.view_header_title")}
+            onActionClick={(action) => {
+              switch (action) {
+                case "delete":
+                  setIsModalOpen(true);
+                  break;
+                default:
+                  console.log("Unknown action");
+              }
+            }}
+          />
+        </div>
+        <div className="space-y-6">
+          {/* Basic Information */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 px-6">
+            {credentialDefinition.icon && (
+              <div className="px-2 py-2">
+                <Image
+                  src={
+                    ensureBase64HasPrefix(
+                      credentialDefinition?.icon?.content
+                    ) || "/assets/no-image.jpg"
+                  }
+                  width={80}
+                  height={80}
+                  alt="Credential Icon"
+                  className="rounded-full shadow object-cover"
+                  style={{ aspectRatio: "1/1" }}
+                />
+              </div>
+            )}
+            {[
+              {
+                label: t("credentials.credential_name_label"),
+                value: credentialDefinition?.name,
+              },
+              {
+                label: "Created At:",
+                value: `${formattedDate} at ${formattedTime}`,
+              },
 
-		const formattedDate = new Date(
-			selectedCredential?.createdAt
-		).toLocaleDateString("en-US", {
-			year: "numeric",
-			month: "long",
-			day: "numeric",
-		});
+              {
+                label: t("credentials.version_label"),
+                value: credentialDefinition?.version,
+              },
+              {
+                label: t("credentials.schema_id_label"),
+                value: credentialDefinition?.id,
+              },
+              {
+                label: t("credentials.identifier_type_label"),
+                value: credentialDefinition?.identifierType,
+              },
+              {
+                label: t("credentials.identifier_label"),
+                value: credentialDefinition?.identifier,
+              },
+              {
+                label: t("credentials.type_label"),
+                value: credentialDefinition?.type,
+              },
+              {
+                label: t("credentials.revocation_label"),
+                value: credentialDefinition?.revocation?.description
+                  ? "Yes"
+                  : "No",
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="flex flex-col p-4  dark:bg-dark-bg-secondary space-y-2"
+              >
+                <h6 className="text-md font-semibold dark:text-white text-black">
+                  {item.label}
+                </h6>
+                <p className="text-sm font-medium text-gray-900 dark:text-white break-words">
+                  {item.value || "—"}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6 px-6 ">
+            {/* Displaying Attributes */}
+            {credentialDefinition?.credentialSchema &&
+              (credentialDefinition.credentialSchema?.attributes?.length ?? 0) >
+                0 && (
+                <div className="space-y-4">
+                  <CredentialAttributes
+                    mode="view"
+                    form={form as any}
+                    attributes={
+                      credentialDefinition.credentialSchema.attributes
+                    }
+                  />
+                </div>
+              )}
+          </div>
 
-		const formattedTime = new Date(
-			selectedCredential?.createdAt
-		).toLocaleTimeString("en-US", {
-			hour: "numeric",
-			minute: "numeric",
-		});
+          <div
+            className=" mx-4 flex items-center bg-[#F7F9FC] dark:bg-[#202223] dark:border-dark-border  border border-gray-300 rounded text-white text-sm font-bold px-4 py-3"
+            role="alert"
+          >
+            <svg
+              className="fill-current text-[#202223] dark:text-white w-4 h-4 mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <path d="M12.432 0c1.34 0 2.01.912 2.01 1.957 0 1.305-1.164 2.512-2.679 2.512-1.269 0-2.009-.75-1.974-1.99C9.789 1.436 10.67 0 12.432 0zM8.309 20c-1.058 0-1.833-.652-1.093-3.524l1.214-5.092c.211-.814.246-1.141 0-1.141-.317 0-1.689.562-2.502 1.117l-.528-.88c2.572-2.186 5.531-3.467 6.801-3.467 1.057 0 1.233 1.273.705 3.23l-1.391 5.352c-.246.945-.141 1.271.106 1.271.317 0 1.357-.392 2.379-1.207l.6.814C12.098 19.02 9.365 20 8.309 20z" />
+            </svg>
+            <p className="font-normal dark:text-white text-[#202223]">
+              <span className="font-semibold">
+                This credential is now available for use! <br />
+              </span>
+              You can select this credential when creating a{" "}
+              <span className="font-semibold">Showcase </span>and assign it to
+              any <span className="font-semibold">persona</span> in your
+              scenario.
+            </p>
+          </div>
+        </div>
+        <DeleteModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onDelete={() => handleDeleteCredential()}
+          header="Are you sure you want to delete this credential?"
+          description="Are you sure you want to delete this credential?"
+          subDescription="<b>This action cannot be undone.</b>"
+          cancelText="CANCEL"
+          deleteText="DELETE"
+          isLoading={isLoading}
+        />
+      </div>
+    );
+  }
 
-		return (
-			<div className=" my-4">
-				<div className="px-4">
-					<StepHeaderCredential
-						icon={<Monitor strokeWidth={3} />}
-						title={t("credentials.view_header_title")}
-						onActionClick={(action) => {
-							switch (action) {
-								case "delete":
-									setIsOpen(true);
-									setIsModalOpen(true);
-									setIsOpen(false);
-									break;
-								default:
-									console.log("Unknown action");
-							}
-						}}
-					/>
-				</div>
-				<div className="space-y-6">
-					{/* Basic Information */}
-					<div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 px-6  ">
-						{/* Icon (if available) */}
-						{credentialDefinition.icon && (
-							<div className="px-2 py-2">
-								<img
-									// src={`data:${credentialDefinition.icon};base64,${credentialDefinition.icon.content}`}
-									src={
-										ensureBase64HasPrefix(
-											credentialDefinition?.icon?.content
-										) || ""
-									}
-									alt="Credential Icon"
-									className="w-24 h-24 rounded-full shadow"
-								/>
-							</div>
-						)}
-						{[
-							{
-								label: t("credentials.credential_name_label"),
-								value: credentialDefinition?.name,
-							},
-							{
-								label: "Created At:",
-								value: `${formattedDate} at ${formattedTime}`,
-							},
-
-							{
-								label: t("credentials.issuer_name_label"),
-								value:
-									issuers && issuers.length > 0
-										? issuers[0].name
-										: "Loading...",
-							},
-							{
-								label: t("credentials.version_label"),
-								value: credentialDefinition?.version,
-							},
-							{
-								label: t("credentials.schema_id_label"),
-								value: credentialDefinition?.id,
-							},
-							{
-								label: t("credentials.identifier_type_label"),
-								value: credentialDefinition?.identifierType,
-							},
-							{
-								label: t("credentials.identifier_label"),
-								value: credentialDefinition?.identifier,
-							},
-							{
-								label: t("credentials.type_label"),
-								value: credentialDefinition?.type,
-							},
-							{
-								label: t("credentials.revocation_label"),
-								value: credentialDefinition?.revocation?.description
-									? "Yes"
-									: "No",
-							},
-						].map((item, index) => (
-							<div
-								key={index}
-								className="flex flex-col p-4  dark:bg-dark-bg-secondary space-y-2"
-							>
-								<h6 className="text-md font-semibold dark:text-white text-black">
-									{item.label}
-								</h6>
-								<p className="text-sm font-medium text-gray-900 dark:text-white break-words">
-									{item.value || "—"}
-								</p>
-							</div>
-						))}
-					</div>
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6 px-6 ">
-						{/* Displaying Attributes */}
-						{credentialDefinition?.credentialSchema &&
-							credentialDefinition.credentialSchema.attributes?.length > 0 && (
-								<div className="space-y-4">
-									<CredentialAttributes
-										mode="view"
-										form={form as any}
-										attributes={
-											credentialDefinition.credentialSchema.attributes
-										}
-									/>
-								</div>
-							)}
-					</div>
-
-					<div
-						className=" mx-4 flex items-center bg-[#F7F9FC] dark:bg-[#202223] dark:border-dark-border  border border-gray-300 rounded text-white text-sm font-bold px-4 py-3"
-						role="alert"
-					>
-						<svg
-							className="fill-current text-[#202223] dark:text-white w-4 h-4 mr-2"
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 20 20"
-						>
-							<path d="M12.432 0c1.34 0 2.01.912 2.01 1.957 0 1.305-1.164 2.512-2.679 2.512-1.269 0-2.009-.75-1.974-1.99C9.789 1.436 10.67 0 12.432 0zM8.309 20c-1.058 0-1.833-.652-1.093-3.524l1.214-5.092c.211-.814.246-1.141 0-1.141-.317 0-1.689.562-2.502 1.117l-.528-.88c2.572-2.186 5.531-3.467 6.801-3.467 1.057 0 1.233 1.273.705 3.23l-1.391 5.352c-.246.945-.141 1.271.106 1.271.317 0 1.357-.392 2.379-1.207l.6.814C12.098 19.02 9.365 20 8.309 20z" />
-						</svg>
-						<p className="font-normal dark:text-white text-[#202223]">
-							<span className="font-semibold">
-								This credential is now available for use! <br />
-							</span>
-							You can select this credential when creating a{" "}
-							<span className="font-semibold">Showcase </span>and assign it to
-							any <span className="font-semibold">persona</span> in your
-							scenario.
-						</p>
-					</div>
-				</div>
-				<DeleteModal
-					isOpen={isModalOpen}
-					onClose={() => setIsModalOpen(false)}
-					onDelete={async () => {
-						if (selectedCredential) {
-							try {
-								await deleteCredential(selectedCredential.id); // Call delete action
-								setIsModalOpen(false); // Close the modal
-							} catch (error) {
-								setErrorModal(true); // Show error modal if deletion fails
-							}
-						}
-					}}
-					header="Are you sure you want to delete this credential?"
-					description="Are you sure you want to delete this credential?"
-					subDescription="<b>This action cannot be undone.</b>"
-					cancelText="CANCEL"
-					deleteText="DELETE"
-				/>
-			</div>
-		);
-	}
-
-	return (
-		<Form {...form}>
-			<form
-				onSubmit={form.handleSubmit(handleCreateCredential)}
-				className="my-4 flex flex-col"
-			>
-				<div className="flex items-center gap-x-2 px-4 py-3 border-b border-gray-200">
-					<h3 className="text-lg font-bold text-foreground">
-						{mode === "create"
-							? t("credentials.add_header_title")
-							: t("credentials.view_header_title")}
-					</h3>
-				</div>
-				<div className="flex-1 overflow-auto p-4 space-y-4">
-					{mode === "create" && (
-						<>
-							<div className="grid grid-cols-2 gap-4">
-								<FormTextInput
-									label={t("credentials.credential_name_label")}
-									name="name"
-									register={form.register}
-									error={form.formState.errors.name?.message}
-									placeholder={t("credentials.credential_name_placeholder")}
-								/>
-								<FormTextInput
-									label={t("credentials.version_label")}
-									name="version"
-									register={form.register}
-									error={form.formState.errors.version?.message}
-									placeholder={t("credentials.version_placeholder")}
-								/>
-							</div>
-							<div className="flex space-x-4">
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="my-4 flex flex-col"
+      >
+        <div className="flex items-center gap-x-2 px-4 py-3 border-b border-gray-200">
+          <h3 className="text-lg font-bold text-foreground">
+            {mode === "create"
+              ? t("credentials.add_header_title")
+              : t("credentials.view_header_title")}
+          </h3>
+        </div>
+        <div className="flex-1 overflow-auto p-4 space-y-4">
+          {mode === "create" && (
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                <FormTextInput
+                  label={t("credentials.credential_name_label")}
+                  name="name"
+                  register={form.register}
+                  error={form.formState.errors.name?.message}
+                  placeholder={t("credentials.credential_name_placeholder")}
+                />
+                <FormTextInput
+                  label={t("credentials.version_label")}
+                  name="version"
+                  register={form.register}
+                  error={form.formState.errors.version?.message}
+                  placeholder={t("credentials.version_placeholder")}
+                />
+              </div>
+              {/* <div className="flex space-x-4">
 								<label className="text-sm font-bold" htmlFor="issuanceCheckbox">
 									{t("credentials.revocation_label")}
 								</label>
@@ -376,36 +359,46 @@ export const CredentialsForm = () => {
 										{t("credentials.revocation_checkbox_label")}
 									</span>
 								</div>
-							</div>
-							<div className="grid grid-cols-1 gap-4 mt-6">
-								<div className="text-start">
-									<FileUploadFull
-										text={t("credentials.image_label")}
-										element="headshot_image"
-										// handleFileUpload={handleFileUpload}
-										handleJSONUpdate={(imageType, imageData) => {
-											setCredentialLogo(imageData);
-										}}
-									/>
-								</div>
-							</div>
-						</>
-					)}
+							</div> */}
+              <div className="grid grid-cols-1 gap-4 mt-6">
+                <div className="text-start">
+                  <FileUploadFull
+                    text={t("credentials.image_label")}
+                    element="headshot_image"
+                    handleJSONUpdate={(imageType, imageData) => {
+                      setCredentialLogo(imageData);
+                    }}
+                  />
+                </div>
+              </div>
+            </>
+          )}
 
-					<CredentialAttributes mode="create" form={form as any} />
-				</div>
-				<div className="flex justify-end gap-4 mt-6">
-					<ButtonOutline type="button" onClick={handleCancel}>
-						{t("action.cancel_label")}
-					</ButtonOutline>
-					<ButtonOutline
-						onClick={handleCreateCredential}
-						disabled={isSubmitting} // Disable the button while submitting
-					>
-						{isSubmitting ? "Creating..." : "Create Credential"}
-					</ButtonOutline>
-				</div>
-			</form>{" "}
-		</Form>
-	);
+          <CredentialAttributes mode="create" form={form as any} />
+        </div>
+        <div className="flex justify-end gap-4 mt-6 px-4">
+          <Button
+            type="button"
+            variant="outlineAction"
+            size="lg"
+            onClick={handleCancel}
+          >
+            {t("action.cancel_label")}
+          </Button>
+          <Button
+            variant="outlineAction"
+            size="lg"
+            type="submit"
+            disabled={
+              !form.formState.isDirty ||
+              !form.formState.isValid ||
+              form.getValues("attributes")?.length === 0
+            }
+          >
+            {isSubmitting ? "Creating..." : "Create Credential"}
+          </Button>
+        </div>
+      </form>{" "}
+    </Form>
+  );
 };

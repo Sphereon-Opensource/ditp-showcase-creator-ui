@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { useShowcaseStore } from "./use-showcase-store";

@@ -20,7 +20,7 @@
     "description_label": "Description",
     "character_label": "Personnage(s)",
     "description_version": "Version",
-    "loading_label": "Chargement des vitrines"
+    "loading_label": "Chargement..."
   },
   "character": {
     "header_title": "Créez votre Personnage",
@@ -84,6 +84,7 @@
     "credential_id_placeholder": "Identifiant du justificatif",
     "schema_id_placeholder": "Identifiant du schéma",
     "checkbox_label": "Comment utiliserez-vous ce justificatif importé?",
+    "schema_empty": "Schema non disponible",
     "schema_id_label": "Identifiant du schéma: (obligatoire)",
     "first_checkbox_label": "Justificatif",
     "second_checkbox_label": "Demande de preuve",
@@ -92,6 +93,7 @@
     "link_text": "Trouver sur CandyScan",
     "import_instructions_title": "Voir les Instructions",
     "step1_title": "Étape 1",
+    "no_credentials: ": "Aucun justificatif trouvé",
     "step1_description": "Accédez à l'URL source où se trouve le justificatif :",
     "step1_link_text": "CandyScan",
     "step1_link_description": "où sont stockés tous les schémas et justificatifs du gouvernement de la Colombie-Britannique.",
@@ -99,6 +101,7 @@
     "step2_description": "Recherchez le schéma ou le justificatif souhaité",
     "step2_details": "Utilisez la barre de recherche pour trouver le schéma ou la définition du justificatif dont vous avez besoin.",
     "step3_title": "Étape 3",
+    "loading" : "Chargement...",
     "step3_description": "Identifiez les identifiants requis",
     "step3_credential_id_label": "Identifiant de définition du justificatif →",
     "step3_credential_id_format": "Format : TxID:3:<nom-du-schéma>:<définition>",

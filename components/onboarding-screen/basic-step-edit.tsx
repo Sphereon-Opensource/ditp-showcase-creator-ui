@@ -14,7 +14,8 @@ import { LocalFileUpload } from "./local-file-upload";
 import { useTranslations } from "next-intl";
 import StepHeader from "../step-header";
 import ButtonOutline from "../ui/button-outline";
-import DeleteModal from "../delete-modal";
+import DeleteModal
+   from "../delete-modal";
 import { useRouter } from "@/i18n/routing";
 import { ErrorModal } from "../error-modal";
 import Loader from "../loader";
@@ -319,6 +320,7 @@ export const BasicStepEdit = () => {
             </form>
           </Form>
           <DeleteModal
+            isLoading={loading}
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             onDelete={() => handleDeleteStep(currentStep?.id)}
