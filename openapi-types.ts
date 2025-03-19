@@ -448,6 +448,7 @@ export type CredentialSchemaType = z.infer<typeof CredentialSchema>;
 
 export type CredentialType = z.infer<typeof CredentialDefinition>;
 export type AssetResponseType = z.infer<typeof AssetResponse>;
+export type CredentialSchemaRequestType = z.infer<typeof CredentialSchemaRequest>;
 
 export type StepRequestType = z.infer<typeof StepRequest>;
 export type StepType = z.infer<typeof Step>;

@@ -11,7 +11,7 @@ import {
 import {
   CredentialAttributeTypeEnum,
   CredentialAttributeType,
-} from "@/openapi-types"; 
+} from "@/openapi-types";
 import {
   Table,
   TableBody,
@@ -23,15 +23,18 @@ import {
 import { FormTextInput } from "@/components/text-input";
 import { useTranslations } from "next-intl";
 
-
 type FormData = {
-  attributes: { name: string; value: string; type: "STRING" | "INTEGER" | "FLOAT" | "BOOLEAN" | "DATE" }[];
+  attributes: {
+    name: string;
+    value: string;
+    type: "STRING" | "INTEGER" | "FLOAT" | "BOOLEAN" | "DATE";
+  }[];
 };
 
 interface SchemaAttributesProps {
   mode: "create" | "view";
-  form: UseFormReturn<FormData>; 
-  attributes?: CredentialAttributeType[]; 
+  form: UseFormReturn<FormData>;
+  attributes?: CredentialAttributeType[];
 }
 
 export const CredentialAttributes = ({
@@ -42,9 +45,8 @@ export const CredentialAttributes = ({
   const t = useTranslations();
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "attributes", 
+    name: "attributes",
   });
-
 
   if (mode === "view" && attributes) {
     return (
@@ -86,9 +88,9 @@ export const CredentialAttributes = ({
           size="sm"
           onClick={() =>
             append({
-              name: "", 
-              value: "", 
-              type: CredentialAttributeTypeEnum.options[0], 
+              name: "",
+              value: "",
+              type: CredentialAttributeTypeEnum.options[0],
             })
           }
         >
@@ -99,30 +101,32 @@ export const CredentialAttributes = ({
 
       <div className="space-y-4">
         {fields.map((field, index) => (
-          <div key={field.id} className="grid grid-cols-12 gap-2 items-start">
-            <div className="w-full col-span-8">
-						<FormTextInput
-  name={`attributes.${index}.name`}
-  label={t("credentials.attribute_name_label")}
-  register={form.register}
-  error={form.formState.errors?.attributes?.[index]?.name?.message}
-  placeholder={t("credentials.attribute_name_placeholder")}
-/>
+          <div key={field.id} className="grid grid-cols-12 gap-2 items-end">
+            <div className="col-span-8">
+              <FormTextInput
+                name={`attributes.${index}.name`}
+                label={t("credentials.attribute_name_label")}
+                register={form.register}
+                error={
+                  form.formState.errors?.attributes?.[index]?.name?.message
+                }
+                placeholder={t("credentials.attribute_name_placeholder")}
+              />
             </div>
 
             <div className="col-span-3">
               <label className="text-md font-bold mb-2 block">
                 {t("credentials.attribute_type_label")}
               </label>
-							<Select
-        onValueChange={(value) => {
-          form.setValue(
-            `attributes.${index}.type`, 
-            value as typeof CredentialAttributeTypeEnum._type
-          );
-        }}
-        defaultValue={field.type || "STRING"} 
-      >
+              <Select
+                onValueChange={(value) => {
+                  form.setValue(
+                    `attributes.${index}.type`,
+                    value as typeof CredentialAttributeTypeEnum._type
+                  );
+                }}
+                defaultValue={field.type || "STRING"}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
@@ -135,7 +139,8 @@ export const CredentialAttributes = ({
                 </SelectContent>
               </Select>
             </div>
-            <div className="col-span-1 pt-6">
+
+            <div className="col-span-1">
               <Button
                 type="button"
                 variant="ghost"

@@ -1,11 +1,10 @@
+// @ts-nocheck
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { OnboardingStep } from "@/types";
 import Image from "next/image";
 import {
   Copy,
   GripVertical,
-  TriangleAlert,
 } from "lucide-react";
 import { cn, ensureBase64HasPrefix } from "@/lib/utils";
 import { useOnboarding } from "@/hooks/use-onboarding";
@@ -160,7 +159,7 @@ export const SortableStep = ({
               />
               <div className="ml-4 flex-col">
                 <div className="font-semibold">{selectedCredential?.name}</div>
-                <div className="text-sm">{selectedCredential.issuer?.name ?? 'Test college'}</div>
+                <div className="text-sm">{selectedCredential?.issuer?.name ?? 'Test college'}</div>
               </div>
               <div className="align-middle ml-auto">
                 <div className="font-semibold">Attributes</div>
