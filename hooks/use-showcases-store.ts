@@ -1,34 +1,3 @@
-// DATA to the server
-
-// {
-//   "name": "example_name",
-//   "description": "example_description",
-//   "status": "ACTIVE",
-//   "hidden": false,
-//   "scenarios": ["{{issuanceScenarioId}}", "{{presentationScenarioId}}"],
-//   "credentialDefinitions": ["{{credentialDefinitionId}}"],
-
-// DATA for the UI
-// {
-//   "name": "example_name",
-//   "description": "example_description",
-//   "status": "ACTIVE",
-//   "hidden": false,
-//   "scenarios": [{
-//     "name": "example_name",
-//     "description": "example_description",
-//     "image": "example_image",
-//     "credentials": ["{{credentialDefinitionId}}"]
-//   }, {
-//     "name": "example_name",
-//     "description": "example_description",
-//     "image": "example_image",
-//     "credentials": ["{{credentialDefinitionId}}"]
-//   }]
-// }
-
-// showcase
-
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { ShowcaseRequestType, PersonaRequestType } from "@/openapi-types";
@@ -108,7 +77,7 @@ const initialState = {
   },
   issuerId: "",
   selectedPersonaIds: [] as string[],
-  selectedCredentialDefinitionIds: ["86a96d6d-91c9-4357-984d-1f6b162fdfae"] as string[],
+  selectedCredentialDefinitionIds: [] as string[],
 };
 
 export const useShowcaseStore = create<ShowcaseStore>()(

@@ -28,12 +28,13 @@ export const useOnboardingAdapter = () => {
     setActivePersonaId,
     updatePersonaSteps,
     completeShowcaseCreation,
-    isSaving: isSavingScenarios
+    isSaving: isSavingScenarios,
+    selectedCredentialDefinitionIds,
   } = useShowcaseCreation();
   
   const { 
     displayShowcase, 
-    setShowcase 
+    setShowcase,
   } = useShowcaseStore();
     
   const [loadedPersonaId, setLoadedPersonaId] = useState<string | null>(null);
@@ -108,8 +109,7 @@ export const useOnboardingAdapter = () => {
         status: data.status || "ACTIVE",
         hidden: data.hidden || false,
         scenarios: scenarioIds,
-        // credentialDefinitions: displayShowcase.credentialDefinitions.map((cred: CredentialDefinition) => cred.id),
-        credentialDefinitions: ["86a96d6d-91c9-4357-984d-1f6b162fdfae"],
+        credentialDefinitions: selectedCredentialDefinitionIds,
         personas: selectedPersonas.map((p: Persona) => p.id),
         bannerImage: data.bannerImage
       };

@@ -18,7 +18,7 @@ export const useShowcaseCreation = () => {
     selectedPersonaIds,
     selectedCredentialDefinitionIds,
     setScenarioIds,
-    issuerId
+    issuerId,
   } = useShowcaseStore();
   
   // Track scenarios being created for each persona

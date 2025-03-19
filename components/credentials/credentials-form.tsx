@@ -52,7 +52,7 @@ export const CredentialsForm = () => {
   const { mutateAsync: createCredentialDefinition } =
     useCreateCredentialDefinition();
   const { mutateAsync: createIssuer } = useCreateIssuer();
-  const { setIssuerId } = useShowcaseStore();
+  const { setIssuerId, setCredentialDefinitionIds } = useShowcaseStore();
 
   const form = useForm<CredentialSchemaRequestType>({
     resolver: zodResolver(CredentialSchemaRequest),
@@ -133,7 +133,7 @@ export const CredentialsForm = () => {
 			})) as typeof IssuerResponse._type;
 
       setIssuerId(issuerResponse.issuer.id);
-
+      setCredentialDefinitionIds([credentialDefinition.credentialDefinition.id]);
 			// add to issuer and credentail to showcase 
 			toast.success("Credential created successfully!");
       form.reset();
