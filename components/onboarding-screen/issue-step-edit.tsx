@@ -8,7 +8,6 @@ import { FormTextArea, FormTextInput } from "@/components/text-input";
 import { LocalFileUpload } from "@/components/onboarding-screen/local-file-upload";
 import { DisplaySearchResults } from "./display-search-results";
 import { DisplayAddedCredentials } from "./display-added-credentials";
-import { useShowcaseStore } from "@/hooks/use-showcase-store";
 import { useOnboarding } from "@/hooks/use-onboarding";
 import { IssueStepFormData, issueStepSchema } from "@/schemas/onboarding";
 import {
@@ -26,8 +25,7 @@ import { IssuanceScenario } from "@/openapi-types";
 
 export function IssueStepEdit() {
   const t = useTranslations();
-  const { showcaseJSON, selectedCharacter } = useShowcaseStore();
-  const { selectedStep, screens, updateStep, setSelectedStep, setStepState,removeStep } =
+  const { selectedStep, screens, updateStep, setSelectedStep, setStepState, removeStep } =
     useOnboarding();
   const [searchResults, setSearchResults] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -237,7 +235,7 @@ export function IssueStepEdit() {
         <Loader text="Creating Step" />
       ) : (
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-6">
         <StepHeader
           icon={<Monitor strokeWidth={3} />}
           title={t("onboarding.issue_step_header_title")}
@@ -293,7 +291,7 @@ export function IssueStepEdit() {
                   shouldValidate: true,
                 })
               }
-              localJSON={{ image: form.watch("image") || currentStep?.asset?.content || "" }}
+              localJSON={{ image: form.watch("image") }}
             />
           </div>
 
@@ -322,15 +320,11 @@ export function IssueStepEdit() {
             </div>
 
             <DisplaySearchResults
-              selectedCharacter={selectedCharacter}
-              showcaseJSON={showcaseJSON}
               searchResults={searchResults}
               addCredential={addCredential}
             />
 
             <DisplayAddedCredentials
-              selectedCharacter={selectedCharacter}
-              showcaseJSON={showcaseJSON}
               localJSON={localJSON}
               removeCredential={removeCredential}
             />

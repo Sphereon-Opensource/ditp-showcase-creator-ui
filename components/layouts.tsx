@@ -28,7 +28,7 @@ export const Layouts = () => {
           </div>
         </div>
         {/* End of col 1  */}
-        <div className="w-3/5 two-column-col  bg-gray-300 px-16 py-10 rounded-md right-col ">
+        <div className="w-3/5 bg-gray-300 px-16 py-10 rounded-md right-col ">
           <div className="flex justify-between mt-3">
             <div>
               <p className="text-slate-100 text-sm">

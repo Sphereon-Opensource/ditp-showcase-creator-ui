@@ -250,7 +250,7 @@ export default function NewCharacterPage() {
                     >
                       {selectedPersonaId === persona.id && (
                         <>
-                          <div className="absolute left-0 top-4 bg-light-yellow text-light-text dark:text-dark-text px-4 py-2 text-sm font-medium rounded-tr-lg rounded-br-lg">
+                          <div className="absolute left-0 top-4 bg-yellow-500 text-light-text dark:text-dark-text px-4 py-2 text-sm font-medium rounded-tr-lg rounded-br-lg">
                             {t("character.selected_label")}
                           </div>
                           {persona.hidden && (

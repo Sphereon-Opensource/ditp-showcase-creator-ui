@@ -1,12 +1,18 @@
 "use client";
 
-import React from "react";
 import { useTranslations } from "next-intl";
 import { OnboardingScreen } from "./onboarding-screen";
 import { OnboardingSteps } from "./onboarding-steps";
 
 export const OnboardingMain = () => {
   const t = useTranslations();
+  const scenario = {
+    name: "Example Scenario",
+    description: "This is an example scenario",
+    steps: [
+      
+    ]
+  }
   
   return (
     <div className="flex text-light-text bg-light-bg dark:bg-dark-bg dark:text-dark-text flex-col w-full">
@@ -20,7 +26,7 @@ export const OnboardingMain = () => {
               </h2>
               <p className="w-full text-xs">{t("onboarding.header_subtitle")}</p>
           </div>
-            <OnboardingScreen />
+            <OnboardingScreen slug="basic-step-add" />
           </div>
           {/* Right Section - Character Details with Header */}
           <div className="w-2/3 bg-white dark:bg-dark-bg-secondary border shadow-md rounded-md flex flex-col">

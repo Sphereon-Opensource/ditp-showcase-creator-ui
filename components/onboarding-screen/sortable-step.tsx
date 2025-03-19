@@ -21,7 +21,6 @@ export const SortableStep = ({
   selectedStep,
   myScreen,
   stepIndex,
-  totalSteps,
 }: {
   selectedStep: number | null;
   myScreen: typeof Step._type;
@@ -85,7 +84,7 @@ export const SortableStep = ({
       <div
         className={`cursor-default h-full flex-shrink-0 flex items-center ${
           myScreen.type == 'SERVICE'
-            ? "bg-light-yellow"
+            ? "bg-yellow-500"
             : "bg-[#898A8A]"
         } px-3 py-5 rounded-l`}
       >
@@ -161,7 +160,7 @@ export const SortableStep = ({
               />
               <div className="ml-4 flex-col">
                 <div className="font-semibold">{selectedCredential?.name}</div>
-                <div className="text-sm">{selectedCredential.issuer  ?? 'Test college'}</div>
+                <div className="text-sm">{selectedCredential.issuer?.name ?? 'Test college'}</div>
               </div>
               <div className="align-middle ml-auto">
                 <div className="font-semibold">Attributes</div>
