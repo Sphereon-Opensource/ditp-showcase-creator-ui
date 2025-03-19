@@ -40,12 +40,11 @@ export const BasicStepAdd = () => {
   const router = useRouter();
   const { mutateAsync, isPending } = useCreateScenario();
   const currentStep = selectedStep !== null ? screens[selectedStep] : null;
-  const { showcase, setScenarioIds } = useShowcaseStore();
+  const { showcase, setScenarioIds, issuerId } = useShowcaseStore();
   const personas = showcase.personas || [];
 
   const isEditMode = stepState === "editing-basic";
   const [showErrorModal, setErrorModal] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
 
   const defaultValues = {
     title: currentStep?.title || "",
@@ -72,8 +71,6 @@ export const BasicStepAdd = () => {
   const autoSave = debounce((data: BasicStepFormData) => {
     if (!currentStep || !form.formState.isDirty) return;
 
-    setIsSaving(true);
-
     const updatedStep = {
       ...currentStep,
       title: data.title,
@@ -84,7 +81,6 @@ export const BasicStepAdd = () => {
     updateStep(selectedStep || 0, updatedStep);
 
     setTimeout(() => {
-      setIsSaving(false);
       toast.success("Changes saved", { duration: 1000 });
     }, 500);
   }, 800);
@@ -104,6 +100,7 @@ export const BasicStepAdd = () => {
     autoSave.flush();
 
     sampleScenario.personas = personas;
+    sampleScenario.issuer = issuerId;
 
     sampleScenario.steps.push({
       title: data.title,
