@@ -51,6 +51,7 @@ export default function CreateCharacterList() {
         <div className="p-4 border-b flex-shrink-0">
           <StepHeader
             icon={<Monitor strokeWidth={3} />}
+            showDropdown={false}
             title={t("character.select_your_character_title")}
           />
           <p className="text-sm mt-2">

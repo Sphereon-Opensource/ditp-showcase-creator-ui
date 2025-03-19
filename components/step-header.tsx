@@ -6,12 +6,17 @@ import {
   RotateCw,
   Trash2,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface StepHeaderProps {
   icon: React.ReactNode;
   title: string;
   actions?: React.ReactNode; // Custom actions (buttons, menus, etc.)
   showDropdown?: boolean; // Control dropdown visibility from parent
+  showSave?: boolean;
+  showPreview?: boolean;
+  showRevert?: boolean;
+  showDelete?: boolean;
   onActionClick?: (action: "save" | "preview" | "revert" | "delete") => void; // Callback function for actions
 }
 
@@ -20,9 +25,15 @@ const StepHeader: React.FC<StepHeaderProps> = ({
   title,
   actions,
   showDropdown = true,
+  showSave = false,
+  showPreview = false,
+  showRevert = false,
+  showDelete = true,
   onActionClick,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const t = useTranslations();
+  const hasAnyAction = showSave || showPreview || showRevert || showDelete;
 
   return (
     <div className="flex items-center justify-between border-b border-gray-300 pb-6 mb-6">
@@ -37,7 +48,7 @@ const StepHeader: React.FC<StepHeaderProps> = ({
         {actions ? (
           actions
         ) : (
-          showDropdown && (
+          showDropdown && hasAnyAction && (
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="border p-2 rounded-md"
@@ -48,40 +59,48 @@ const StepHeader: React.FC<StepHeaderProps> = ({
         )}
 
         {/* Default Dropdown Menu */}
-        {isOpen && (
+        {isOpen && hasAnyAction && (
           <div className="absolute right-0 mt-2 w-48 bg-light-bg dark:bg-dark-bg border rounded-md shadow-lg z-50">
             <ul className="py-1 text-sm text-foreground/80">
+            {showSave && (
               <li
                 className="flex gap-2 px-4 py-2 hover:bg-light-bg-secondary dark:hover:bg-dark-input-hover cursor-pointer"
                 onClick={() => onActionClick?.("save")}
               >
                 <Download size={20} />
-                Save Draft
+                {t('action.save_draft_header_label')}
               </li>
+            )}
+            {showPreview && (
               <li
                 className="flex gap-2 px-4 py-2 hover:bg-light-bg-secondary dark:hover:bg-dark-input-hover cursor-pointer"
                 onClick={() => onActionClick?.("preview")}
               >
                 <Eye size={20} strokeWidth={3} />
-                Preview
+                {t('action.preview_header_label')}
               </li>
+            )}
+            {showRevert && (
               <li
-                className="flex gap-2 px-4 py-2 hover:bg-light-bg-secondary dark:hover:bg-dark-input-hover cursor-pointer border-b border-light-border-secondary dark:border-dark-border px-2"
+                className="flex gap-2 px-4 py-2 hover:bg-light-bg-secondary dark:hover:bg-dark-input-hover cursor-pointer border-b border-light-border-secondary dark:border-dark-border"
                 onClick={() => onActionClick?.("revert")}
               >
                 <RotateCw size={20} />
-                Revert Changes
+                {t('action.revert_header_label')}
               </li>
+            )}
+            {showDelete && (
               <li
-                className="flex gap-2 px-4 mt-2 py-2 hover:bg-light-bg-secondary dark:hover:bg-dark-input-hover cursor-pointer"
+                className="flex gap-2 px-4 py-2 hover:bg-light-bg-secondary dark:hover:bg-dark-input-hover cursor-pointer"
                 onClick={() => {
                   onActionClick?.("delete")
                   setIsOpen(false)}
                 }
               >
                 <Trash2 size={20} />
-                Delete Page
+                {t('action.delete_header_label')}
               </li>
+            )}
             </ul>
           </div>
         )}

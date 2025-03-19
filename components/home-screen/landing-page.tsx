@@ -59,7 +59,7 @@ export const LandingPage = () => {
           {t('showcases.loading_label')}
         </div>
       )}
-      <section className="container mx-auto px-4">
+      <section className="mx-auto p-4">
         <div className="grid md:grid-cols-3 gap-6 mt-6 pb-4">
           {data?.showcases
           .filter(searchFilter)

@@ -32,12 +32,12 @@ const Header: React.FC<HeaderProps> = ({
   const t = useTranslations();
 
   return (
-    <section className="w-full px-0 py-2 bg-cover bg-center dark:bg-dark-bg">
-      <div className="container mx-auto px-4 mt-6 mb-6">
+    <section className="w-full px-0 pt-2 bg-cover bg-center dark:bg-dark-bg">
+      <div className="mx-auto px-4 mt-6 mb-4">
         <h1 className="text-3xl font-bold">{title}</h1>
       </div>
-      <div className="container mx-auto px-4 mb-8 mt-2 flex items-center justify-between">
-        <div className="relative w-full max-w-lg sm:max-w-xl">
+      <div className="mx-auto px-4 mb-6 flex items-center justify-between">
+        <div className="relative w-full max-w-lg sm:max-w-lg">
           {showSearch && (
             <>
               <Search
