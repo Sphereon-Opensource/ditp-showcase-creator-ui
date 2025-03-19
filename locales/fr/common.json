@@ -54,8 +54,9 @@
     "character_delete_description": "Cette action ne peut pas être annulée."
   },
   "credentials": {
-    "credential_title": "Justificatifs",
-    "credential_subtitle": "Sélectionnez un justificatif pour le visualiser ou créez-en de nouveaux.",
+    "credential_title": "Selectionnez un Justificatif",
+    "credential_loading": "Chargement des Identifiants",
+    "credential_subtitle": "Selectionnez un justificatif existant ou utilisez les champs de droite pour créer un nouveau justificatif.",
     "header_title": "Ajoutez vos Identifiants",
     "header_subtitle": "Remplissez les détails à droite pour créer un identifiant pour cette vitrine.",
     "credentials_added_label": "Identifiants ajoutés: {credentialCount}",

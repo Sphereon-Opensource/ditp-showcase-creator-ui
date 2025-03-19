@@ -10,7 +10,17 @@ export const schemaAttribute = z.object({
   updatedAt: z.string().min(1, "Update timestamp is required"), // Date the attribute was last updated
 });
 
-
+export const schema = z.object({
+  name: z.string().min(1, "Credential name is required"),
+  version: z.string().min(1, "Version is required"),
+  attributes: z.array(
+    z.object({
+      name: z.string().min(1, "Attribute name is required"),
+      value: z.string().min(1, "Attribute value is required"),
+      type: z.enum(["STRING", "NUMBER", "BOOLEAN"]).default("STRING"),
+    })
+  ),
+});
 export const asset = z.object({
   id: z.string().min(1), // Unique identifier for the asset
   mediaType: z.string().min(1), // Media type, e.g., "image/jpeg"
