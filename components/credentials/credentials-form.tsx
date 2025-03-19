@@ -9,7 +9,6 @@ import { Form } from "@/components/ui/form";
 import { FormTextInput } from "../text-input";
 import { FileUploadFull } from "../file-upload";
 import { CredentialAttributes } from "./components/credential-attribute";
-import ButtonOutline from "../ui/button-outline";
 import { Monitor } from "lucide-react";
 import StepHeaderCredential from "../showcases-screen/step-header-credential";
 
@@ -19,6 +18,7 @@ import { ensureBase64HasPrefix } from "@/lib/utils";
 import {
   useCreateCredentialDefinition,
   useCreateCredentialSchema,
+  useCreateIssuer,
   useDeleteCredentialDefinition,
 } from "@/hooks/use-credentials";
 import { useCreateAsset } from "@/hooks/use-asset";
@@ -26,13 +26,16 @@ import {
   AssetRequest,
   AssetResponse,
   CredentialAttributeSchema,
+  CredentialDefinitionResponse,
   CredentialSchemaRequestType,
   CredentialSchemaResponse,
+  IssuerResponse,
 } from "@/openapi-types";
 import { CredentialSchemaRequest } from "@/openapi-types";
 import { CredentialDefinitionRequest } from "@/openapi-types";
 import Image from "next/image";
 import { Button } from "../ui/button";
+import { useShowcaseStore } from "@/hooks/use-showcases-store";
 
 export const CredentialsForm = () => {
   const { selectedCredential, mode, setSelectedCredential } = useCredentials();
@@ -48,19 +51,19 @@ export const CredentialsForm = () => {
     useDeleteCredentialDefinition();
   const { mutateAsync: createCredentialDefinition } =
     useCreateCredentialDefinition();
+  const { mutateAsync: createIssuer } = useCreateIssuer();
+  const { setIssuerId } = useShowcaseStore();
 
   const form = useForm<CredentialSchemaRequestType>({
     resolver: zodResolver(CredentialSchemaRequest),
     mode: "all",
   });
 
-  const createSchemaAndThenDefinition = async (
+  const onSubmit = async (
     formData: CredentialSchemaRequestType
   ) => {
-    console.log("2 ===>", formData);
     try {
       setIsSubmitting(true);
-
       const schemaPayload: CredentialSchemaRequestType = {
         name: formData.name || "example_name",
         version: formData.version || "example_version",
@@ -119,8 +122,20 @@ export const CredentialsForm = () => {
         icon: assetId,
       };
 
-      await createCredentialDefinition(credentialDefinitionPayload);
-      toast.success("Credential definition created successfully!");
+      const credentialDefinition = (await createCredentialDefinition(credentialDefinitionPayload)) as typeof CredentialDefinitionResponse._type;
+
+			const issuerResponse = (await createIssuer({
+				name: "dummy-issuer",
+				type: "ARIES",
+				credentialDefinitions: [credentialDefinition.credentialDefinition.id],
+				credentialSchemas: [schemaId],
+				description: "",
+			})) as typeof IssuerResponse._type;
+
+      setIssuerId(issuerResponse.issuer.id);
+
+			// add to issuer and credentail to showcase 
+			toast.success("Credential created successfully!");
       form.reset();
     } catch (error) {
       toast.error("Error creating schema or credential definition.");
@@ -146,10 +161,6 @@ export const CredentialsForm = () => {
     setIsLoading(false);
   };
 
-  const onSubmit = (data: CredentialSchemaRequestType) => {
-    console.log("===>", data);
-    createSchemaAndThenDefinition(data);
-  };
   const handleCancel = () => {
     form.reset();
     setCredentialLogo(undefined);
