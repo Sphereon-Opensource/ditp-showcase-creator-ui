@@ -53,6 +53,7 @@ export default function Sidebar() {
 						// icon={<Home size={22}/>}
 						icon="/assets/NavBar/Home_light.svg"
 						text={t("home_label")}
+						alt="Home"
 						expanded={isExpanded}
 						isActive={pathname === "/"}
 					/>
@@ -74,6 +75,7 @@ export default function Sidebar() {
 						// icon={<Wallet size={22}/>}
 						icon="/assets/NavBar/credentials_library.svg"
 						text={t("credential_library_label")}
+						alt="Credentials"
 						expanded={isExpanded}
 						isActive={pathname.startsWith("/credentials")}
 					/>
@@ -84,6 +86,7 @@ export default function Sidebar() {
 						icon={<Users2 size={22}/>}
 						// icon="/assets/NavBar/credentials_library.svg"
 						text={t("character_library_label")}
+						alt="Characters"
 						expanded={isExpanded}
 						isActive={pathname.startsWith("/characters")}
 					/>

@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { FormTextInput } from "../text-input";
-import { useCredentials } from "@/hooks/use-credentials"; // Use the credentials store
+import { useCredentials } from "@/hooks/use-credentials-store"; // Use the credentials store
 import {
   CredentialImportFormData,
   credentialSchema,
