@@ -14,7 +14,7 @@ interface DisplayAddedCredentialsProps {
   localJSON: {
     credentials?: string[];
   };
-  removeCredential: (credential: string) => void;
+  removeCredential: (credentialId: string) => void;
 }
 
 export const DisplayAddedCredentials = ({
@@ -86,12 +86,12 @@ export const DisplayAddedCredentials = ({
         {t("credentials.credential_added_label")} {credentials.length}
       </p>
 
-      {credentials.map((credential: any) => {
+      {credentials.map((credential: any, index: number) => {
 
         if (!credential) return null;
 
         return (
-          <div key={credential.id} className="flex flex-col pt-2">
+          <div key={index} className="flex flex-col pt-2">
             <div className="w-full border border-dark-border dark:border-light-border rounded-t-lg">
               {/* Credential Header */}
               <div

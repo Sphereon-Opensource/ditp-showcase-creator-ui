@@ -160,7 +160,7 @@ export const ShowcaseList = () => {
                     <div
                       className={`${
                         showcase.status == "ACTIVE"
-                          ? "bg-light-yellow"
+                          ? "bg-yellow-500"
                           : "bg-dark-grey"
                       } left-0 right-0 top-4 py-2 rounded w-1/4 absolute`}
                     >

@@ -91,7 +91,7 @@ export const ScenarioStep = ({
     >
       <div
         className={`cursor-default flex-shrink-0 flex items-center ${
-          step.type == "CONNET_AND_VERIFY" ? "bg-light-yellow" : "bg-[#898A8A]"
+          step.type == "CONNET_AND_VERIFY" ? "bg-yellow-500" : "bg-[#898A8A]"
         } px-3 py-5 rounded-l`}
       >
         <div className="flex flex-col gap-3">

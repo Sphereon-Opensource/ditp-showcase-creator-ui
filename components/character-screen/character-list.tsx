@@ -9,19 +9,19 @@ import ButtonOutline from "@/components/ui/button-outline";
 import { ensureBase64HasPrefix } from "@/lib/utils";
 import { usePersonas } from "@/hooks/use-personas";
 import { toast } from "sonner";
-import { Link } from "@/i18n/routing";
+import { Link, useRouter } from "@/i18n/routing";
 
 export default function CreateCharacterList() {
   const t = useTranslations();
-
+  const router = useRouter();
   const { data: personasData, isLoading } = usePersonas();
-  
-  const { 
-    selectedPersonaIds, 
-    toggleSelectedPersona, 
+
+  const {
+    selectedPersonaIds,
+    toggleSelectedPersona,
     clearSelectedPersonas,
-    setPersonaIds, 
-    setDisplayPersonas, 
+    setPersonaIds,
+    setDisplayPersonas,
   } = useShowcaseStore();
 
   const handleToggleSelect = (personaId: string) => {
@@ -33,11 +33,16 @@ export default function CreateCharacterList() {
       toast.error("Please select at least one character to proceed");
       return;
     }
-    
+
     // Save selected personas to both showcase and displayShowcase
     setPersonaIds(selectedPersonaIds);
-    setDisplayPersonas(personasData?.personas.filter(persona => selectedPersonaIds.includes(persona.id)) || []);
+    setDisplayPersonas(
+      personasData?.personas.filter((persona) =>
+        selectedPersonaIds.includes(persona.id)
+      ) || []
+    );
     toast.success("Characters selected successfully");
+    router.push("/showcases/create/onboarding");
   };
 
   return (
@@ -55,7 +60,7 @@ export default function CreateCharacterList() {
 
         {isLoading ? (
           <div className="flex flex-col items-center justify-center flex-grow p-8">
-            <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"/>
+            <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
             <p className="mt-4">Loading characters...</p>
           </div>
         ) : (
@@ -64,13 +69,13 @@ export default function CreateCharacterList() {
               {personasData?.personas &&
                 personasData.personas.map((persona: any) => {
                   const isSelected = selectedPersonaIds.includes(persona.id);
-                  
+
                   return (
                     <div
                       key={persona.id}
                       className={`relative p-4 border rounded-lg cursor-pointer transition-all ${
-                        isSelected 
-                          ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" 
+                        isSelected
+                          ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
                           : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                       }`}
                       onClick={() => handleToggleSelect(persona.id)}
@@ -80,20 +85,22 @@ export default function CreateCharacterList() {
                           <CheckCircle2 size={24} />
                         </div>
                       )}
-                      
+
                       {persona.hidden && (
                         <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded-md text-xs">
                           <EyeOff size={14} />
                           <span>{t("character.hidden_label")}</span>
                         </div>
                       )}
-                      
+
                       <div className="flex flex-col items-center mt-4">
                         <div className="w-24 h-24 overflow-hidden rounded-full mb-3">
                           <Image
                             src={
                               persona.headshotImage?.content
-                                ? ensureBase64HasPrefix(persona.headshotImage.content)
+                                ? ensureBase64HasPrefix(
+                                    persona.headshotImage.content
+                                  )
                                 : "/assets/NavBar/Joyce.png"
                             }
                             alt={persona.name}
@@ -102,8 +109,10 @@ export default function CreateCharacterList() {
                             className="object-cover w-full h-full"
                           />
                         </div>
-                        
-                        <h3 className="text-lg font-semibold text-center">{persona.name}</h3>
+
+                        <h3 className="text-lg font-semibold text-center">
+                          {persona.name}
+                        </h3>
                         <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
                           {persona.role}
                         </p>
@@ -121,21 +130,26 @@ export default function CreateCharacterList() {
         <div className="p-4 border-t flex-shrink-0 flex justify-between items-center">
           <div>
             <span className="text-sm font-medium">
-              {selectedPersonaIds.length} {selectedPersonaIds.length === 1 ? 'character' : 'characters'} selected
+              {selectedPersonaIds.length}{" "}
+              {selectedPersonaIds.length === 1 ? "character" : "characters"}{" "}
+              selected
             </span>
           </div>
           <div className="flex gap-3">
             <ButtonOutline onClick={clearSelectedPersonas}>
               {t("action.clear_selection_label")}
             </ButtonOutline>
-            <Link href={`/showcases/create/onboarding`}>
-              <ButtonOutline 
-                onClick={handleProceed}
-                className={selectedPersonaIds.length === 0 ? "opacity-50 cursor-not-allowed" : ""}
-              >
-                {t("action.proceed_label")}
-              </ButtonOutline>
-            </Link>
+            <ButtonOutline
+              onClick={handleProceed}
+              disabled={selectedPersonaIds.length === 0}
+              className={
+                selectedPersonaIds.length === 0
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }
+            >
+              {t("action.proceed_label")}
+            </ButtonOutline>
           </div>
         </div>
       </div>

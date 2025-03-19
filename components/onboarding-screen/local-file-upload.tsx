@@ -1,38 +1,44 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Trash2 } from "lucide-react";
-import { OnboardingStep } from "@/types";
 import { convertBase64 } from "@/lib/utils";
 import { useTranslations } from 'next-intl';
+import { AssetResponseType } from "@/openapi-types";
+import { useCreateAsset } from "@/hooks/use-asset";
 
 interface LocalFileUploadProps {
   text: string;
-  element: keyof OnboardingStep;
-  handleLocalUpdate: (key: keyof OnboardingStep, value: string) => void;
-  localJSON: {
-    [key: string]: any;
-  };
+  element: string;
+  handleLocalUpdate: (key: string, value: string) => void;
 }
 
 export function LocalFileUpload({
   text,
   element,
   handleLocalUpdate,
-  localJSON,
 }: LocalFileUploadProps) {
   const t = useTranslations()
   const [preview, setPreview] = useState<string | null>(null);
-
-  useEffect(() => {
-    setPreview(localJSON[element] || null);
-  }, [localJSON, element]);
+  const { mutateAsync: createAsset } = useCreateAsset();
 
   const handleChange = async (newValue: File | null) => {
     if (newValue) {
       try {
         const base64 = await convertBase64(newValue);
         if (typeof base64 === 'string') {
-          setPreview(base64);
-          handleLocalUpdate(element, base64);
+          await createAsset({
+            content: base64,
+            mediaType: newValue.type,
+          }, {
+            onSuccess: (data: unknown) => {
+              console.log('onSuccess', data);
+              const response = data as AssetResponseType;
+              setPreview(base64);
+              handleLocalUpdate(element, response.asset.id);
+            },
+            onError: (error) => {
+              console.error("Error creating asset:", error);
+            }
+          });
         }
       } catch (error) {
         console.error('Error converting file:', error);

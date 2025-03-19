@@ -41,7 +41,7 @@ export default async function Onboarding({ params }: { params: PageParams }) {
                 {t("onboarding.header_subtitle")}
               </p>
             </div>
-            <OnboardingScreen />
+            <OnboardingScreen slug="example-name" />
           </div>
           {/* Right Section - Character Details with Header */}
           <div className="w-2/3 bg-white dark:bg-dark-bg-secondary border shadow-md rounded-md flex flex-col">
