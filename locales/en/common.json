@@ -48,7 +48,10 @@
     "character_detail": "Character Details",
     "hide_character": "Hide this character",
     "create_new_character_label": "CREATE NEW CHARACTER",
-    "hide_character_placeholder": "Turning this setting on will hide this character and any attached scenarios."
+    "hide_character_placeholder": "Turning this setting on will hide this character and any attached scenarios.",
+    "no_character_selected_label": "No Persona Selected",
+    "character_delete_title": "Are you sure you want to delete this character?",
+    "character_delete_description": "This action cannot be undone."
   },
   "credentials": {
     "header_title": "Add your Credentials",
@@ -207,7 +210,11 @@
     "next_label": "NEXT",
     "search_label": "Search",
     "clear_selection_label": "Clear Selection",
-    "proceed_label": "Proceed"
+    "proceed_label": "Proceed",
+    "save_draft_header_label": "Save Draft",
+    "preview_header_label": "Preview",
+    "revert_header_label": "Revert Changes",
+    "delete_header_label": "Delete Page"
   },
   "file_upload": {
     "click_to_upload_label": "Click to upload",

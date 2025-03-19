@@ -66,15 +66,15 @@ export const FileUploadFull = ({
 				htmlFor={`${element}`}
 				className="p-3 flex flex-col items-center justify-center w-full h-full bg-light-bg dark:bg-dark-input dark:hover:bg-dark-input-hover rounded-lg cursor-pointer border dark:border-dark-border hover:bg-light-bg"
 			>
-				<div className="flex flex-col items-center justify-center border rounded-lg border-dashed dark:border-dark-border p-2">
+				<div className="flex flex-col items-center h-[240px] justify-center border rounded-lg border-dashed dark:border-dark-border p-2 w-full">
 					{preview ? (
 						<Image
-            alt="preview"
-            className="p-3 w-3/4"
-            src={preview}
-            width={300}
-            height={100}
-            layout="responsive"
+							alt="preview"
+							className="p-3 max-w-full max-h-full object-contain"
+							src={preview}
+							width={300}
+							height={100}
+							style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
 						/>
 					) : (
 						<p className="text-center text-xs lowercase">

@@ -48,7 +48,10 @@
     "character_detail": "Détails du personnage",
     "hide_character": "Masquer ce caractère",
     "create_new_character_label": "CRÉER UN NOUVEAU PERSONNAGE",
-    "hide_character_placeholder": "L’activation de ce paramètre masquera ce personnage et tous les scénarios associés."
+    "hide_character_placeholder": "L’activation de ce paramètre masquera ce personnage et tous les scénarios associés.",
+    "no_character_selected_label": "Aucun persona sélectionné",
+    "character_delete_title" : "Êtes-vous sûr de vouloir supprimer ce personnage ?",
+    "character_delete_description": "Cette action ne peut pas être annulée."
   },
   "credentials": {
     "credential_title": "Justificatifs",
@@ -201,7 +204,11 @@
     "next_label": "PROCHAIN",
     "search_label": "Recherche",
     "clear_selection_label": "Effacer la sélection",
-    "proceed_label": "Continuer"
+    "proceed_label": "Continuer",
+    "save_draft_header_label": "Enregistrer le brouillon",
+    "preview_header_label": "Aperçu",
+    "revert_header_label": "Annuler les modifications",
+    "delete_header_label": "Supprimer la page"
   },
   "file_upload": {
     "click_to_upload_label": "Cliquez pour téléverser",
