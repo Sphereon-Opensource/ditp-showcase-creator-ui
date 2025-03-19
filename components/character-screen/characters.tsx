@@ -238,7 +238,7 @@ export default function NewCharacterPage() {
             ) : (
               <div className="flex-grow overflow-y-auto">
                 {personasData?.personas &&
-                  personasData.personas.filter(searchFilter).map((persona: any) => (
+                  personasData.personas.filter(searchFilter).map((persona: Persona) => (
                     <div
                       key={persona.id}
                       className={`hover:bg-light-bg dark:hover:bg-dark-input-hover relative p-4 border-t border-b border-light-border-secondary dark:border-dark-border flex ${
