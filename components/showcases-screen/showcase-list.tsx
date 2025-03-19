@@ -75,7 +75,7 @@ export const ShowcaseList = () => {
         />
 
         {!isLoading && (
-          <div className="container mx-auto px-5 mt-2">
+          <div className="mx-auto px-5 mt-2">
             <div className="flex gap-4 text-sm font-medium">
               {tabs.map((tab, index) => {
 
@@ -112,7 +112,7 @@ export const ShowcaseList = () => {
           </div>
         )}
 
-        <section className="container mx-auto px-4">
+        <section className="mx-auto p-4">
           <div className="grid md:grid-cols-3 gap-6 mt-6 pb-4">
             {data?.showcases?.filter(searchFilter)
               .filter(

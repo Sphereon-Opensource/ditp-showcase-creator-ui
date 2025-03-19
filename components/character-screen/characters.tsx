@@ -20,6 +20,7 @@ import { usePersonas, useCreatePersona, useUpdatePersona, useDeletePersona } fro
 import { Persona } from "@/openapi-types";
 import { toast } from "sonner";
 import Header from "../header";
+import DeleteModal from "../delete-modal";
 
 type CharacterFormData = z.infer<typeof characterSchema>;
 
@@ -209,7 +210,8 @@ export default function NewCharacterPage() {
   };
 
   return (
-    <div className="flex bg-light-bg dark:bg-dark-bg dark:text-dark-text text-light-text flex-col h-full w-full">
+    <>
+    <div className="flex bg-white dark:bg-dark-bg dark:text-dark-text text-light-text flex-col h-full w-full">
       <div className="flex flex-col h-screen">
       <Header
         title="Characters"
@@ -311,16 +313,6 @@ export default function NewCharacterPage() {
                         >
                           {t("action.edit_label")}
                         </ButtonOutline>
-                        {selectedPersonaId === persona.id && (
-                          <ButtonOutline
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeletePersona();
-                            }}
-                          >
-                            {t("action.delete_label")}
-                          </ButtonOutline>
-                        )}
                       </div>
                     </div>
                   ))}
@@ -458,12 +450,28 @@ export default function NewCharacterPage() {
               </div>
             ) : (
               <div className="self-center justify-center mt-[23%]">
-                No Persona Selected
+                {t('character.no_character_selected_label')}
               </div>
             )}
           </div>
         </div>
       </div>
     </div>
+    <DeleteModal
+      isOpen={isModalOpen}
+      isLoading={false}
+      onClose={() => setIsModalOpen(false)}
+      onDelete={() => {
+        console.log("Persona to be Deleted",selectedPersonaId);
+        setIsModalOpen(false);
+        handleDeletePersona();
+      }}
+      header={t('character.character_delete_title')}
+      description={t('character.character_delete_title')}
+      subDescription={t('character.character_delete_description')}
+      cancelText={t('action.cancel_label')}
+      deleteText={t('action.delete_label')}
+    />
+    </>
   );
 }

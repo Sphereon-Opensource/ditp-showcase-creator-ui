@@ -21,7 +21,6 @@ export const CredentialsPage = () => {
 
 	return (
 		<div className="flex flex-col">
-
 			<Header
         title={t('sidebar.credential_library_label')}
         searchTerm={searchTerm}
@@ -33,7 +32,6 @@ export const CredentialsPage = () => {
         buttonTextColor="text-black"
         showIcon={false}
       />
-
 
 			<div className="flex gap-4 p-4">
 				<div className="w-1/3 bg-[white]  dark:bg-dark-bg-secondary border shadow-md rounded-md flex flex-col">
