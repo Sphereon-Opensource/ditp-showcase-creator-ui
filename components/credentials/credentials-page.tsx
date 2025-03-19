@@ -10,9 +10,11 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 export const CredentialsPage = () => {
+
 	const t = useTranslations();
 	const { mode, startImporting } = useCredentials(); // Get the store's state and actions
 	const [searchTerm, setSearchTerm] = useState("");
+
 	const handleImport = () => {
 		startImporting();
 	};
