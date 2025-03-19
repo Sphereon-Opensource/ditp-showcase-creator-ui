@@ -6,8 +6,6 @@ import { useCredentials } from "@/hooks/use-credentials";
 import { ensureBase64HasPrefix } from "@/lib/utils";
 
 interface DisplaySearchResultsProps {
-  selectedCharacter: number;
-  showcaseJSON: ShowcaseJSON;
   searchResults: string[];
   addCredential: (credentialId: string) => void;
 }

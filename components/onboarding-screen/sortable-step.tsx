@@ -21,7 +21,6 @@ export const SortableStep = ({
   selectedStep,
   myScreen,
   stepIndex,
-  totalSteps,
 }: {
   selectedStep: number | null;
   myScreen: typeof Step._type;

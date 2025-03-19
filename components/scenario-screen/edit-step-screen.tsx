@@ -44,7 +44,7 @@ export const EditStepScreen = () => {
 
   return (
     <div 
-    className="w-full two-column-col bg-white dark:bg-dark-bg-secondary text-light-text dark:text-dark-text p-6 rounded-md right-col">
+    className="w-full bg-white dark:bg-dark-bg-secondary text-light-text dark:text-dark-text p-6 rounded-md right-col">
       {stepState === "adding-step" && (
         <ChooseStepType addNewStep={handleAddStep} />
       )}

@@ -1,55 +1,44 @@
 "use client";
 
-import { useEffect } from "react";
-import { BasicStepEdit } from "./basic-step-edit";
+import { BasicStepAdd } from "./basic-step-add";
 import { IssueStepEdit } from "./issue-step-edit";
 import { CreateNewStep } from "./create-step";
 import { NoSelection } from "../credentials/no-selection";
-import { useOnboarding } from "@/hooks/use-onboarding";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
+import { useOnboardingAdapter } from "@/hooks/use-onboarding-adapter";
 
 export const OnboardingSteps = () => {
-  const t = useTranslations()
+  const t = useTranslations();
   const {
-    selectedStep,
     stepState,
-    screens,
-    setStepState,
-  } = useOnboarding();
-
-  useEffect(() => {
-    if (selectedStep === null) {
-      setStepState("no-selection");
-    } else {
-      const currentStep = screens[selectedStep];
-      setStepState(currentStep?.credentials ? "editing-issue" : "editing-basic");
-    }
-  }, [selectedStep, screens, setStepState]);
+    activePersonaId,
+  } = useOnboardingAdapter();
 
   return (
     <div
       id="editStep"
-      className="w-full two-column-col bg-white dark:bg-dark-bg-secondary text-light-text dark:text-dark-text p-6 rounded-md right-col"
+      className=" bg-white dark:bg-dark-bg-secondary text-light-text dark:text-dark-text p-6 rounded-md"
     >
-      {stepState === "no-selection" && (
-        <div className="">
-          <NoSelection text={t('onboarding.no_step_selected_message')} />
-        </div>
+      {!activePersonaId && (
+        <NoSelection
+          text={
+            // t("onboarding.select_persona_message") ||
+            "Please select a persona from the left to edit their onboarding steps."
+          }
+        />
       )}
-
-      {stepState === "creating-new" && (
-        <CreateNewStep />
-      )}
-
-      {stepState === "editing-basic" && selectedStep !== null && (
-        <div className="">
-          <BasicStepEdit />
-        </div>
-      )}
-
-      {stepState === "editing-issue" && selectedStep !== null && (
-        <IssueStepEdit />
-      )}
+      {activePersonaId &&
+        (stepState === null || stepState === "no-selection") && (
+          <NoSelection
+            text={
+              t("onboarding.no_step_selected_message") ||
+              "No step selected. Please select a step from the left panel or create a new one."
+            }
+          />
+        )}
+      {activePersonaId && stepState === "creating-new" && <CreateNewStep />}
+      {activePersonaId && stepState === "editing-basic" && <BasicStepAdd />}
+      {activePersonaId && stepState === "editing-issue" && <IssueStepEdit />}
     </div>
   );
 };

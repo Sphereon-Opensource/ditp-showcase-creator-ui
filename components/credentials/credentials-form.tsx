@@ -7,8 +7,6 @@ import { useTranslations } from "next-intl";
 import { useCredentials } from "@/hooks/use-credentials";
 import {
 	CredentialFormData,
-	SchemaData,
-	IssuerData,
 } from "@/schemas/credential";
 import { Form } from "@/components/ui/form";
 import { FormTextInput } from "../text-input";
@@ -19,7 +17,6 @@ import { credentialDefinition } from "@/schemas/credential";
 import { Monitor } from "lucide-react";
 import StepHeaderCredential from "../showcases-screen/step-header-credential";
 import apiClient from "@/lib/apiService";
-import { ErrorModal } from "../error-modal";
 import DeleteModal from "../delete-modal";
 import { ensureBase64HasPrefix } from "@/lib/utils";
 
@@ -279,7 +276,7 @@ export const CredentialsForm = () => {
 								<div className="space-y-4">
 									<CredentialAttributes
 										mode="view"
-										form={form}
+										form={form as any}
 										attributes={
 											credentialDefinition.credentialSchema.attributes
 										}
@@ -395,7 +392,7 @@ export const CredentialsForm = () => {
 						</>
 					)}
 
-					<CredentialAttributes mode="create" form={form} />
+					<CredentialAttributes mode="create" form={form as any} />
 				</div>
 				<div className="flex justify-end gap-4 mt-6">
 					<ButtonOutline type="button" onClick={handleCancel}>
