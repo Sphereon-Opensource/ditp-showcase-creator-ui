@@ -80,35 +80,26 @@ const initialState = {
     hidden: false,
     scenarios: [],
     credentialDefinitions: [{
-      "id": "86a96d6d-91c9-4357-984d-1f6b162fdfae",
       "name": "example_name",
       "credentialSchema": {
-          "id": "fef1a6de-886b-4c2f-bbfe-4d1c68511c0d",
-          "name": "example_name",
-          "version": "example_version",
-          "identifierType": "DID",
-          "identifier": "did:sov:XUeUZauFLeBNofY3NhaZCB",
-          "source": "CREATED",
-          "attributes": [
-              {
-                  "id": "4cc8199e-a50b-4bb9-9c38-592e30606a05",
-                  "name": "example_attribute_name1",
-                  "value": "example_attribute_value1",
-                  "type": "STRING",
-                  "createdAt": "2025-03-13T09:47:37.632Z",
-                  "updatedAt": "2025-03-13T09:47:37.632Z"
-              }
-          ],
-          "createdAt": "2025-03-13T09:47:37.632Z",
-          "updatedAt": "2025-03-13T09:47:37.632Z"
+        "name": "example_name",
+        "version": "example_version",
+        "identifierType": "DID",
+        "identifier": "did:sov:XUeUZauFLeBNofY3NhaZCB",
+        "source": "CREATED",
+        "attributes": [
+          {
+            "name": "example_attribute_name1",
+            "value": "example_attribute_value1",
+            "type": "STRING"
+          }
+        ]
       },
       "identifierType": "DID",
       "identifier": "did:sov:XUeUZauFLeBNofY3NhaZCB",
       "version": "example_version",
       "type": "ANONCRED",
-      "representations": [],
-      "createdAt": "2025-03-13T09:49:24.713Z",
-      "updatedAt": "2025-03-13T09:49:24.713Z"
+      "representations": []
     }],
     personas: [],
   },

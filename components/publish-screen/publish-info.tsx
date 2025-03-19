@@ -14,9 +14,9 @@ export const PublishInfo = ({
   return (
     <div className="bg-white dark:bg-dark-bg-secondary text-light-text dark:text-dark-text">
       <div className="flex flex-col gap-4">
-        {characters.map((char) => (
+        {characters.map((char, index) => (
           <div
-            key={char.id}
+            key={index}
             className="bg-white dark:bg-gray-800 border rounded-lg shadow-lg p-6 flex flex-col"
           >
             {/* Character Header */}
@@ -43,8 +43,8 @@ export const PublishInfo = ({
               </p>
 
               <div className="mt-3 space-y-3">
-                {credentials?.map((cred) => (
-                  <div key={cred.id} className="flex items-center gap-3">
+                {credentials?.map((cred, index) => (
+                  <div key={index} className="flex items-center gap-3">
                     <Image
                       src={ensureBase64HasPrefix(cred.icon?.content) || "/assets/NavBar/Joyce.png"}
                       alt={cred.icon?.description || "Credential"}

@@ -14,7 +14,6 @@ import StepHeader from "../step-header";
 import ButtonOutline from "../ui/button-outline";
 import { Link, useRouter } from "@/i18n/routing";
 import { AssetResponseType, ShowcaseRequest, ShowcaseRequestType } from "@/openapi-types";
-import { useCreateShowcase } from "@/hooks/use-showcases";
 import { toast } from "sonner";
 import { useShowcaseStore } from "@/hooks/use-showcases-store";
 import { convertBase64 } from "@/lib/utils";
@@ -22,6 +21,7 @@ import Image from "next/image";
 import { Trash2 } from "lucide-react";
 import { useCreateAsset } from "@/hooks/use-asset";
 import { Button } from "../ui/button";
+import { useOnboardingAdapter } from "@/hooks/use-onboarding-adapter";
 
 const BannerImageUpload = ({
   text,
@@ -92,7 +92,7 @@ const BannerImageUpload = ({
             </p>
           )}
         </div>
-        <input id="bannerImage" type="file" className="hidden" onChange={(e) => handleChange(e.target.files?.[0] ?? null)} />
+        <input id="bannerImage" type="file" accept="image/*" className="hidden" onChange={(e) => handleChange(e.target.files?.[0] ?? null)} />
       </label>
     </div>
   );
@@ -101,10 +101,11 @@ const BannerImageUpload = ({
 export const PublishEdit = () => {
   const t = useTranslations();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { showcase, displayShowcase, reset } = useShowcaseStore();
-  const { mutateAsync: createShowcase } = useCreateShowcase();
+  const [isSaving, setIsSaving] = useState(false);
+  const { showcase, reset } = useShowcaseStore();
   const router = useRouter();
-  
+  const { saveShowcase } = useOnboardingAdapter();
+
   const form = useForm<ShowcaseRequestType>({
     resolver: zodResolver(ShowcaseRequest),
     mode: "all",
@@ -119,38 +120,26 @@ export const PublishEdit = () => {
     }
   });
 
-   // Initialize form with values from store
    useEffect(() => {
     form.reset({
       ...showcase,
       name: showcase.name || "",
       description: showcase.description || "",
-      // Make sure we're using the credential definitions from the store
-      // credentialDefinitions: showcase.credentialDefinitions || ["86a96d6d-91c9-4357-984d-1f6b162fdfae"],
-      // Use selected personas from the store
+      credentialDefinitions: showcase.credentialDefinitions || ["86a96d6d-91c9-4357-984d-1f6b162fdfae"],
       personas: showcase.personas || [],
-      // Maintain other values
       status: "PENDING",
     });
   }, [form, showcase]);
 
-  const onSubmit = (data: ShowcaseRequestType) => {
-    console.log(data, showcase, displayShowcase);
-    data.credentialDefinitions.push("86a96d6d-91c9-4357-984d-1f6b162fdfae");
-    data.scenarios.push("61f6084f-95c5-4dc4-8c33-c424217704fa");
-
-    createShowcase(data, {
-      onSuccess: () => {
-        setIsModalOpen(false)
-        toast.success("Showcase created successfully")
-        reset();
-        router.push("/showcases");
-      },
-      onError: () => {
-        toast.error("Failed to create showcase")
-      }
-    })
+  const onSubmit = async () => {
+    const data = form.getValues();
+    setIsSaving(true);
+    await saveShowcase(data);    
+    toast.success("Showcase created successfully");
+    reset();
     setIsModalOpen(false)
+    router.push("/showcases");
+    setIsSaving(false);
   };
 
   const handleCancel = () => {
@@ -214,15 +203,14 @@ export const PublishEdit = () => {
               </ButtonOutline>
             </div>
             <div className="flex gap-3">
-              {/* <ButtonOutline disabled={!form.formState.isValid || !form.formState.isDirty} onClick={handleCancel}>
-                {"SAVE AS DRAFT"}
-              </ButtonOutline> */}
               <Button
-                type="submit"
                 variant="outline"
                 size="lg"
                 disabled={!form.formState.isValid || !form.formState.isDirty}
-                onClick={() => setIsModalOpen(true)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsModalOpen(true)
+                }}
                 className="px-6 bg-yellow-500 py-2 rounded text-gray-700 font-bold hover:bg-yellow-400 dark:bg-yellow-500 dark:hover:bg-yellow-600"
               >
                 {"PUBLISH FOR REVIEW"}
@@ -267,16 +255,17 @@ export const PublishEdit = () => {
               >
                 {t("action.cancel_label")}
               </button>
-              <Link href={'/'}>
+  
               <ButtonOutline
+                type="submit"
                 className="bg-yellow-500 border-light-yellow hover:bg-yellow-500"
                 onClick={() => {
-                  form.handleSubmit(onSubmit)
+                  onSubmit()
                 }}
               >
                 {"CONFIRM & SUBMIT FOR REVIEW"}
               </ButtonOutline>
-              </Link>
+       
             </div>
           </div>
         </div>
