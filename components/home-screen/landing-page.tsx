@@ -10,20 +10,14 @@ import { Share2 } from "lucide-react";
 import { ensureBase64HasPrefix } from "@/lib/utils";
 import { useShowcases } from "@/hooks/use-showcases";
 import { Showcase } from "@/openapi-types";
+import { SidebarTrigger } from "../ui/sidebar";
 import Image from "next/image";
 import Header from "../header";
 
 export const LandingPage = () => {
   const t = useTranslations();
-  const [activeTab, setActiveTab] = useState(t("home.header_tab_all"));
   const [searchTerm, setSearchTerm] = useState("");
   const { data, isLoading } = useShowcases();
-
-  const tabs = [
-    t("home.header_tab_all"),
-    t("home.header_tab_mine"),
-    t("home.header_tab_others"),
-  ];
 
   const searchFilter = (showcase: Showcase) => {
     if (searchTerm === "") {

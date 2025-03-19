@@ -40,7 +40,7 @@ export const basicStepSchema = z.object({
     description: z.string()
     .min(1, "Description is required")
     .max(500, "Description must be less than 500 characters"),
-  image: z.string().optional(),
+  asset: z.string().optional(),
 });
 
 export type BasicStepFormData = z.infer<typeof basicStepSchema>;

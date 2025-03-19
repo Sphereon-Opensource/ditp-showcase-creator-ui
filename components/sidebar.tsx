@@ -63,6 +63,7 @@ export default function Sidebar() {
 						// icon={<Library size={22}/>}
 						icon="/assets/NavBar/showcases.svg"
 						text={t("showcases_label")}
+						alt="Showcases"
 						expanded={isExpanded}
 						isActive={pathname.startsWith("/showcases")}
 					/>
@@ -123,9 +124,11 @@ function SidebarItem({
 	text,
 	expanded,
 	isActive,
+	alt,
 }: {
 	icon: JSX.Element | string;
 	text: string;
+	alt: string;
 	expanded: boolean;
 	isActive: boolean;
 }) {
@@ -141,7 +144,7 @@ function SidebarItem({
 				<Image
 					className="filter dark:invert"
 					src={icon}
-					alt={text}
+					alt={alt || `menu item ${text}`}
 					width={20}
 					height={20}
 				/>
