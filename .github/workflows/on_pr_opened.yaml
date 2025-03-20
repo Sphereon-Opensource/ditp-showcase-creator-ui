@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main
-      - develop
+      - feature/SHOWCASE-92
     paths:
       - "**"  # You may want to restrict this to frontend code paths
     types:
