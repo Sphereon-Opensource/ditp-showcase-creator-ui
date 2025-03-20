@@ -1,0 +1,107 @@
+name: Uninstall PR instance
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "**"
+    types:
+      - closed
+
+jobs:
+  uninstall:
+    name: Uninstall PR
+    environment: development
+    runs-on: ubuntu-22.04
+    if: github.repository_owner == 'getmoin'  # Change to your org
+    steps:
+      - uses: actions/checkout@v4
+
+      # Uninstall via SSH to EC2 instance
+      - name: Uninstall PR via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            # Uninstall Helm release
+            helm uninstall pr-${{ github.event.number }}-showcase-ui || true
+            
+            # Delete Certificate
+            kubectl delete certificate pr-${{ github.event.number }}-showcase-ui-tls || true
+            
+            # Delete IngressRoute
+            kubectl delete ingressroute pr-${{ github.event.number }}-showcase-ui-route || true
+            
+            # Delete any remaining resources with the PR label
+            kubectl delete secret,pvc --selector "app.kubernetes.io/instance=pr-${{ github.event.number }}-showcase-ui" || true
+
+  # clean-ecr:
+  #   runs-on: ubuntu-22.04
+  #   name: Delete closed PR images
+  #   steps:
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v2
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: ${{ secrets.AWS_REGION }}
+
+  #     - name: Delete ECR Image
+  #       run: |
+  #         # Delete the PR-specific image from ECR
+  #         aws ecr-public batch-delete-image \
+  #           --repository-name k8o4d9r5/bcshowcase/ditp-showcase-creator-ui \
+  #           --image-ids imageTag=pr-${{ github.event.number }} \
+  #           --region us-east-1 || true
+
+
+#### FOR OPENSHIFT USE THE FOLLOWING:
+  # uninstall:
+  #   name: Uninstall PR
+  #   environment: development
+  #   runs-on: ubuntu-22.04
+  #   if: github.repository_owner == 'bcgov'
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Check out manifest repo
+  #       uses: actions/checkout@v4
+  #       with:
+  #         ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+  #         repository: ${{ secrets.MANIFEST_REPO }}
+  #         path: charts
+
+  #     - name: Authenticate and set context
+  #       uses: redhat-actions/oc-login@v1
+  #       with:
+  #         openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+  #         openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+  #         certificate_authority_data: ${{ secrets.OPENSHIFT_CA_CRT }}
+  #         namespace: ${{ secrets.OPENSHIFT_NAMESPACE }}
+
+  #     - name: Uninstall via Helm
+  #       continue-on-error: true
+  #       run: |
+  #         helm uninstall pr-${{ github.event.number }}-showcase-ui
+
+  #     - name: Remove Openshift Objects
+  #       continue-on-error: true
+  #       run: |
+  #         oc delete secret,pvc --selector "app.kubernetes.io/instance"=pr-${{ github.event.number }}-showcase-ui
+
+
+  # clean-ghcr:
+  #   runs-on: ubuntu-22.04
+  #   if: ${{ false }}
+  #   name: Delete closed PR images
+  #   steps:
+  #     - name: Delete Images
+  #       uses: snok/container-retention-policy@v3.0.0
+  #       with:
+  #         account: bcgov
+  #         image-names: ditp-showcase-creator-ui
+  #         image-tags: pr-${{ github.event.number }}
+  #         cut-off: 1second
+  #         token: ${{ secrets.GITHUB_TOKEN }}
