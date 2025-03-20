@@ -1,7 +1,7 @@
 "use client";
 
 import { BasicStepAdd } from "./basic-step-add";
-import { IssueStepEdit } from "./issue-step-edit";
+import { IssuanceStepAdd } from "./issue-step-edit";
 import { CreateNewStep } from "./create-step";
 import { NoSelection } from "../credentials/no-selection";
 import { useTranslations } from "next-intl";
@@ -38,7 +38,7 @@ export const OnboardingSteps = () => {
         )}
       {activePersonaId && stepState === "creating-new" && <CreateNewStep />}
       {activePersonaId && stepState === "editing-basic" && <BasicStepAdd />}
-      {activePersonaId && stepState === "editing-issue" && <IssueStepEdit />}
+      {activePersonaId && stepState === "editing-issue" && <IssuanceStepAdd />}
     </div>
   );
 };

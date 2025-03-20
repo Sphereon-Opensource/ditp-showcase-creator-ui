@@ -27,8 +27,8 @@ export const issueStepSchema = z.object({
     description: z.string()
     .min(1, "Description is required")
     .max(500, "Description must be less than 500 characters"),
-  image: z.string().optional(),
-  credentials: z.array(z.string()).min(1, "At least one credential is required"),
+  asset: z.string().optional(),
+  credentials: z.array(z.string()).optional(),
 });
 
 export type IssueStepFormData = z.infer<typeof issueStepSchema>;
@@ -40,7 +40,7 @@ export const basicStepSchema = z.object({
     description: z.string()
     .min(1, "Description is required")
     .max(500, "Description must be less than 500 characters"),
-  asset: z.string().optional(),
+    asset: z.string().optional(),
 });
 
 export type BasicStepFormData = z.infer<typeof basicStepSchema>;

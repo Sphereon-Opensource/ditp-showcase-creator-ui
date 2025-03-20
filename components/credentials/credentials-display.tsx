@@ -78,7 +78,7 @@ export const CredentialsDisplay = () => {
 				credentials.credentialDefinitions.map((item) => (
 					<div
 						key={item.id}
-						className="border-b dark:border-dark-border hover:bg-gray-100"
+						className="border-b dark:border-dark-border hover:bg-gray-100 dark:hover:bg-dark-bg"
 					>
 						{openId === item.id ? (
 							<div className="p-3 bg-light-bg flex flex-col dark:bg-dark-bg items-center text-center">

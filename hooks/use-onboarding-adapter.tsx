@@ -7,6 +7,7 @@ import { createDefaultStep } from "@/lib/steps";
 import { useShowcaseStore } from "@/hooks/use-showcases-store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/apiService";
+import { useHelpersStore } from "./use-helpers-store";
 
 export const useOnboardingAdapter = () => {
   const {
@@ -27,15 +28,17 @@ export const useOnboardingAdapter = () => {
     activePersonaId,
     setActivePersonaId,
     updatePersonaSteps,
-    completeShowcaseCreation,
-    isSaving: isSavingScenarios,
-    selectedCredentialDefinitionIds,
+    // completeShowcaseCreation,
+    // isSaving: isSavingScenarios,
   } = useShowcaseCreation();
   
   const { 
     displayShowcase, 
     setShowcase,
+    showcase
   } = useShowcaseStore();
+
+  const { selectedCredentialDefinitionIds, issuerId } = useHelpersStore();
     
   const [loadedPersonaId, setLoadedPersonaId] = useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -76,7 +79,8 @@ export const useOnboardingAdapter = () => {
         description: step.description,
         order: index,
         type: step.type as 'HUMAN_TASK' | 'SERVICE' | 'SCENARIO',
-        actions: step.actions || []
+        actions: step.actions || [],
+        issuer: issuerId
       }));
       
       updatePersonaSteps(activePersonaId, scenarioSteps);
@@ -102,16 +106,15 @@ export const useOnboardingAdapter = () => {
   
   const saveShowcase = useCallback(async (data: ShowcaseRequestType) => {
     try {
-      const { scenarioIds } = await completeShowcaseCreation();
       const showcaseData = {
         name: data.name,
         description: data.description,
         status: data.status || "ACTIVE",
         hidden: data.hidden || false,
-        scenarios: scenarioIds,
+        scenarios: showcase.scenarios,
         credentialDefinitions: selectedCredentialDefinitionIds,
         personas: selectedPersonas.map((p: Persona) => p.id),
-        bannerImage: data.bannerImage
+        bannerImage: data.bannerImage,
       };
       
       const updatedShowcase = await updateShowcaseMutation.mutateAsync(showcaseData);      
@@ -121,7 +124,7 @@ export const useOnboardingAdapter = () => {
       console.error("Error saving showcase:", error);
       throw error;
     }
-  }, [completeShowcaseCreation, displayShowcase, selectedPersonas, updateShowcaseMutation, setShowcase]);
+  }, [displayShowcase, selectedPersonas, updateShowcaseMutation, setShowcase]);
   
   const activePersona = activePersonaId 
     ? selectedPersonas.find((p: Persona) => p.id === activePersonaId) || null
@@ -146,6 +149,6 @@ export const useOnboardingAdapter = () => {
     
     // Combined functionality
     saveShowcase,
-    isSaving: isSavingScenarios || updateShowcaseMutation.isPending
+    isSaving:  updateShowcaseMutation.isPending
   };
 };

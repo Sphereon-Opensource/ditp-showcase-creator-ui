@@ -24,7 +24,7 @@ import { sampleAction } from "@/lib/steps";
 import { sampleScenario } from "@/lib/steps";
 import { NoSelection } from "../credentials/no-selection";
 import { debounce } from "lodash";
-
+import { useHelpersStore } from "@/hooks/use-helpers-store";
 export const BasicStepAdd = () => {
   const t = useTranslations();
 
@@ -40,7 +40,8 @@ export const BasicStepAdd = () => {
   const router = useRouter();
   const { mutateAsync, isPending } = useCreateScenario();
   const currentStep = selectedStep !== null ? screens[selectedStep] : null;
-  const { showcase, setScenarioIds, issuerId } = useShowcaseStore();
+  const { showcase, setScenarioIds } = useShowcaseStore();
+  const { issuerId } = useHelpersStore();
   const personas = showcase.personas || [];
 
   const isEditMode = stepState === "editing-basic";
@@ -95,37 +96,90 @@ export const BasicStepAdd = () => {
     return () => subscription.unsubscribe();
   }, [form, autoSave]);
 
+  // const onSubmit = async (data: BasicStepFormData) => {
+  //   autoSave.flush();
+
+  //   sampleScenario.personas = personas;
+  //   sampleScenario.issuer = issuerId;
+
+  //   sampleScenario.steps.push({
+  //     title: data.title,
+  //     description: data.description,
+  //     asset: data.asset || undefined,
+  //     type: "HUMAN_TASK",
+  //     order: currentStep?.order || 0,
+  //     actions: [...new Set([sampleAction])],
+  //   });
+
+  //   await mutateAsync(sampleScenario, {
+  //     onSuccess: (data: unknown) => {
+  //       toast.success("Scenario Created");
+
+  //       setScenarioIds([
+  //         (data as IssuanceScenarioResponseType).issuanceScenario.id,
+  //       ]);
+
+  //       router.push(`/showcases/create/publish`);
+  //     },
+  //     onError: (error) => {
+  //       console.error("Error creating scenario:", error);
+  //       setErrorModal(true);
+  //     },
+  //   });
+  // };
+
+
   const onSubmit = async (data: BasicStepFormData) => {
-    // Make sure any pending auto-saves are applied immediately
-    autoSave.flush();
+    autoSave.flush();  
+    const personaScenarios = personas.map(persona => {
+      const scenarioForPersona = JSON.parse(JSON.stringify(sampleScenario));
+      
+      scenarioForPersona.personas = [persona];
+      scenarioForPersona.issuer = issuerId;
 
-    sampleScenario.personas = personas;
-    sampleScenario.issuer = issuerId;
-
-    sampleScenario.steps.push({
-      title: data.title,
-      description: data.description,
-      asset: data.asset || undefined,
-      type: "HUMAN_TASK",
-      order: currentStep?.order || 0,
-      actions: [...new Set([sampleAction])],
+      scenarioForPersona.steps = [...screens.map((screen, index) => ({
+        title: screen.title,
+        description: screen.description,
+        asset: screen.asset || undefined,
+        type: screen.type || "HUMAN_TASK",
+        order: index,
+        actions: screen.actions || [sampleAction],
+      }))];
+      
+      const currentStepExists = scenarioForPersona.steps.some(
+        (step: any) => step.title === data.title && step.description === data.description
+      );
+      
+      if (!currentStepExists) {
+        scenarioForPersona.steps.push({
+          title: data.title,
+          description: data.description,
+          asset: data.asset || undefined,
+          type: "HUMAN_TASK",
+          order: currentStep?.order || scenarioForPersona.steps.length,
+          actions: [sampleAction],
+        });
+      }
+      
+      return scenarioForPersona;
     });
-
-    await mutateAsync(sampleScenario, {
-      onSuccess: (data: unknown) => {
-        toast.success("Scenario Created");
-
-        setScenarioIds([
-          (data as IssuanceScenarioResponseType).issuanceScenario.id,
-        ]);
-
-        router.push(`/showcases/create/publish`);
-      },
-      onError: (error) => {
+  
+    const scenarioIds = [];
+    
+    for (const scenario of personaScenarios) {
+      try {
+        const result = await mutateAsync(scenario);
+        scenarioIds.push((result as IssuanceScenarioResponseType).issuanceScenario.id);
+        toast.success(`Scenario created for ${scenario.personas[0]?.name || 'persona'}`);
+      } catch (error) {
         console.error("Error creating scenario:", error);
         setErrorModal(true);
-      },
-    });
+        return; // Stop if there's an error
+      }
+    }
+  
+    setScenarioIds(scenarioIds);
+    router.push(`/showcases/create/publish`);
   };
 
   const handleCancel = () => {
@@ -211,72 +265,70 @@ export const BasicStepAdd = () => {
   }
 
   return (
-    <>
-      <StepHeader
-        icon={<Monitor strokeWidth={3} />}
-        title={t("onboarding.basic_step_header_title")}
-        showDropdown={false}
-      />
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-6">
-            <FormTextInput
-              label={t("onboarding.page_title_label")}
-              name="title"
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <StepHeader
+          icon={<Monitor strokeWidth={3} />}
+          title={t("onboarding.basic_step_header_title")}
+          showDropdown={false}
+        />
+        <div className="space-y-6">
+          <FormTextInput
+            label={t("onboarding.page_title_label")}
+            name="title"
+            register={form.register}
+            error={form.formState.errors.title?.message}
+            placeholder={t("onboarding.page_title_placeholder")}
+          />
+
+          <div className="space-y-2">
+            <FormTextArea
+              label={t("onboarding.page_description_label")}
+              name="description"
               register={form.register}
-              error={form.formState.errors.title?.message}
-              placeholder={t("onboarding.page_title_placeholder")}
+              error={form.formState.errors.description?.message}
+              placeholder={t("onboarding.page_description_placeholder")}
             />
-
-            <div className="space-y-2">
-              <FormTextArea
-                label={t("onboarding.page_description_label")}
-                name="description"
-                register={form.register}
-                error={form.formState.errors.description?.message}
-                placeholder={t("onboarding.page_description_placeholder")}
-              />
-              {form.formState.errors.description && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.description.message}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <LocalFileUpload
-                text={t("onboarding.icon_label")}
-                element="asset"
-                handleLocalUpdate={(_, value) =>
-                  form.setValue("asset", value, {
-                    shouldDirty: true,
-                    shouldTouch: true,
-                    shouldValidate: true,
-                  })
-                }
-              />
-              {form.formState.errors.asset && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.asset.message}
-                </p>
-              )}
-            </div>
+            {form.formState.errors.description && (
+              <p className="text-sm text-destructive">
+                {form.formState.errors.description.message}
+              </p>
+            )}
           </div>
-          <div className="mt-auto pt-4 border-t flex justify-end gap-3">
-            <ButtonOutline onClick={handleCancel} type="button">
-              {t("action.cancel_label")}
-            </ButtonOutline>
 
-            <ButtonOutline
-              type="button"
-              disabled={!form.formState.isValid}
-              onClick={() => form.handleSubmit(onSubmit)()}
-            >
-              {t("action.next_label")}
-            </ButtonOutline>
+          <div className="space-y-2">
+            <LocalFileUpload
+              text={t("onboarding.icon_label")}
+              element="asset"
+              handleLocalUpdate={(_, value) =>
+                form.setValue("asset", value, {
+                  shouldDirty: true,
+                  shouldTouch: true,
+                  shouldValidate: true,
+                })
+              }
+            />
+            {form.formState.errors.asset && (
+              <p className="text-sm text-destructive">
+                {form.formState.errors.asset.message}
+              </p>
+            )}
           </div>
-        </form>
-      </Form>
-    </>
+        </div>
+        <div className="mt-auto pt-4 border-t flex justify-end gap-3">
+          <ButtonOutline onClick={handleCancel} type="button">
+            {t("action.cancel_label")}
+          </ButtonOutline>
+
+          <ButtonOutline
+            type="button"
+            disabled={!form.formState.isValid}
+            onClick={() => form.handleSubmit(onSubmit)()}
+          >
+            {t("action.next_label")}
+          </ButtonOutline>
+        </div>
+      </form>
+    </Form>
   );
 };

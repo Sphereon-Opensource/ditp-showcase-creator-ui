@@ -32,7 +32,7 @@ import {
 } from "@/openapi-types";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { useShowcaseStore } from "@/hooks/use-showcases-store";
+import { useHelpersStore } from "@/hooks/use-helpers-store";
 
 export const CredentialsForm = () => {
 	const { selectedCredential, mode, setSelectedCredential } = useCredentials();
@@ -49,7 +49,7 @@ export const CredentialsForm = () => {
 	const { mutateAsync: createCredentialDefinition } =
 		useCreateCredentialDefinition();
 	const { mutateAsync: createIssuer } = useCreateIssuer();
-	const { setIssuerId } = useShowcaseStore();
+	const { setIssuerId, setSelectedCredentialDefinitionIds } = useHelpersStore();
 
 	const form = useForm<CredentialSchemaRequestType>({
 		resolver: zodResolver(CredentialSchemaRequest),
@@ -140,6 +140,7 @@ export const CredentialsForm = () => {
 				useCredentials.getState();
 			setSelectedCredential(newCredential);
 			viewCredential(newCredential);
+			setSelectedCredentialDefinitionIds([credentialId]);
 
 			toast.success("Credential created successfully!");
 		} catch (error) {
