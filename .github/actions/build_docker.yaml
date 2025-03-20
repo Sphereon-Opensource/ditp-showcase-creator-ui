@@ -1,7 +1,7 @@
 name: Build Docker Image
 inputs:
   ref:
-    description: 'The branch, tag or SHA to checkout
+    description: 'The branch, tag or SHA to checkout'
     required: false
     default: ''  
   context:
