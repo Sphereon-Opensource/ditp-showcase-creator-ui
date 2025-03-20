@@ -22,7 +22,7 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 RUN chown -R nextjs:nodejs /app
 USER nextjs
-EXPOSE 3000
+EXPOSE 3050
 #EXPOSE ${PORT}
 #ENV HOSTNAME "0.0.0.0"
 CMD ["node", "server.js"]
