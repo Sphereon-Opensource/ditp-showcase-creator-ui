@@ -109,6 +109,7 @@ export const BasicStepAdd = () => {
       description: data.description,
       asset: data.asset || undefined,
       type: "HUMAN_TASK",
+      screenId: data.screen_id,
       order: currentStep?.order || 0,
       actions: [...new Set([sampleAction])],
     });

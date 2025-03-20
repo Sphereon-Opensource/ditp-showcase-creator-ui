@@ -40,6 +40,7 @@ export const basicStepSchema = z.object({
     description: z.string()
     .min(1, "Description is required")
     .max(500, "Description must be less than 500 characters"),
+  screen_id: z.string(),
   asset: z.string().optional(),
 });
 
