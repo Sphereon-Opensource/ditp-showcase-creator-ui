@@ -186,6 +186,7 @@ export const useCreateStep = () => {
       description: "",
       type: type,
       asset: "",
+      screenId: undefined,
       ...(type === "HUMAN_TASK" && { credentials: [] }),
     });
   };
@@ -197,6 +198,7 @@ export const useCreateStep = () => {
       description: data.description,
       type: data.type,
       asset: data.asset || "",
+      screenId: data.screenId,
       // ...(data.type === "HUMAN_TASK" && { credentials: data.credentials || [] }),
     };
 

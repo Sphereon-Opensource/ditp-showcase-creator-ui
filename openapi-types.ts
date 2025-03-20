@@ -104,9 +104,12 @@ export const Step = z.object({
   description: z.string(),
   order: z.number().int().min(0),
   type: StepTypeEnum,
+  screenId: z.string().optional(),
   subScenario: z.string().optional(),
   actions: z.array(StepActionSchema),
   asset: AssetSchema.optional(),
+  iconLight: AssetSchema.optional(),
+  iconDark: AssetSchema.optional(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });
@@ -116,9 +119,12 @@ export const StepRequest = z.object({
   description: z.string(),
   order: z.number().int().min(0),
   type: StepTypeEnum,
+  screenId: z.string().optional(),
   subScenario: z.string().optional(),
   actions: z.array(AriesOOBActionRequest), // Fixed: Using direct type instead of z.union with single element
   asset: z.string().optional(),
+  iconLight: z.string().optional(),
+  iconDark: z.string().optional(),
 });
 
 export const StepsResponse = z.object({

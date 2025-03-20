@@ -1,36 +1,29 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Form, FormField } from "@/components/ui/form";
-import { FormTextArea, FormTextInput } from "@/components/text-input";
-import { Edit, Monitor } from "lucide-react";
-import { useOnboarding, useCreateScenario } from "@/hooks/use-onboarding";
-import { BasicStepFormData } from "@/schemas/onboarding";
-import { basicStepSchema } from "@/schemas/onboarding";
-import { LocalFileUpload } from "./local-file-upload";
-import { useTranslations } from "next-intl";
+import React, {useEffect, useState} from "react";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Button} from "@/components/ui/button";
+import {Form, FormField} from "@/components/ui/form";
+import {FormTextArea, FormTextInput} from "@/components/text-input";
+import {Edit, Monitor} from "lucide-react";
+import {useCreateScenario, useOnboarding} from "@/hooks/use-onboarding";
+import {BasicStepFormData, basicStepSchema} from "@/schemas/onboarding";
+import {LocalFileUpload} from "./local-file-upload";
+import {useTranslations} from "next-intl";
 import StepHeader from "../step-header";
 import ButtonOutline from "../ui/button-outline";
-import { useRouter } from "@/i18n/routing";
-import { ErrorModal } from "../error-modal";
+import {useRouter} from "@/i18n/routing";
+import {ErrorModal} from "../error-modal";
 import Loader from "../loader";
-import { IssuanceScenarioResponseType } from "@/openapi-types";
-import { useShowcaseStore } from "@/hooks/use-showcases-store";
-import { toast } from "sonner";
-import { sampleAction } from "@/lib/steps";
-import { sampleScenario } from "@/lib/steps";
-import { NoSelection } from "../credentials/no-selection";
-import { debounce } from "lodash";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+import {IssuanceScenarioResponseType} from "@/openapi-types";
+import {useShowcaseStore} from "@/hooks/use-showcases-store";
+import {toast} from "sonner";
+import {sampleAction, sampleScenario} from "@/lib/steps";
+import {NoSelection} from "../credentials/no-selection";
+import {debounce} from "lodash";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "../ui/select";
+import {ScreenType, useScreenTypes} from "@/hooks/use-screen-types";
 
 export const BasicStepAdd = () => {
   const t = useTranslations();
@@ -64,6 +57,8 @@ export const BasicStepAdd = () => {
     defaultValues,
     mode: "all",
   });
+
+  const screenTypes = useScreenTypes()
 
   useEffect(() => {
     if (currentStep) {
@@ -227,7 +222,7 @@ export const BasicStepAdd = () => {
           selector={
             <FormField
               control={form.control}
-              name="step_type"
+              name="screen_id"
               render={({ field }) => (
                 <Select
                   onValueChange={field.onChange}
@@ -237,9 +232,9 @@ export const BasicStepAdd = () => {
                     <SelectValue placeholder="Select a step type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="first">First type</SelectItem>
-                    <SelectItem value="second">Second type</SelectItem>
-                    <SelectItem value="third">Third type</SelectItem>
+                    {screenTypes.map((type: ScreenType) => (
+                        <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}
