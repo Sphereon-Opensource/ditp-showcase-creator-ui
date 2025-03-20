@@ -8,16 +8,16 @@ import { persist } from "zustand/middleware";
 interface HelpersStore {
   selectedCredentialDefinitionIds: string[];
   issuerId: string;
-
+  relayerId: string;
   setSelectedCredentialDefinitionIds: (ids: string[]) => void;
-
   setIssuerId: (issuerId: string) => void;
-  
+  setRelayerId: (relayerId: string) => void;
   reset: () => void;
 }
 
 const initialState = {
   issuerId: "",
+  relayerId: "",
   selectedCredentialDefinitionIds: [] as string[],
 };
 
@@ -25,11 +25,9 @@ export const useHelpersStore = create<HelpersStore>()(
   persist(
     (set) => ({
       ...initialState,
-    
       setSelectedCredentialDefinitionIds: (selectedCredentialDefinitionIds) => set({ selectedCredentialDefinitionIds }),
-
       setIssuerId: (issuerId: string) => set({ issuerId }),
-
+      setRelayerId: (relayerId: string) => set({ relayerId }),
       reset: () => set(initialState),
     }),
     {

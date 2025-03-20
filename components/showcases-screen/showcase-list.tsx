@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import ButtonOutline from "@/components/ui/button-outline";
 import { Card } from "@/components/ui/card";
 import { ensureBase64HasPrefix } from "@/lib/utils";
-import { useCreateShowcase, useShowcases } from "@/hooks/use-showcases";
+import { useCreateShowcase, useDeleteShowcase, useShowcases } from "@/hooks/use-showcases";
 import { Persona, Showcase } from "@/openapi-types";
 import Image from "next/image";
 import Header from "../header";
@@ -17,7 +17,7 @@ export const ShowcaseList = () => {
   const t = useTranslations();
   const { data, isLoading } = useShowcases();
   const { mutateAsync } = useCreateShowcase();
-
+  const { mutateAsync: deleteShowcase } = useDeleteShowcase();
   const tabs = [
     { label: t("showcases.header_tab_overview"), status: "ALL" },
     { label: t("showcases.header_tab_draft"), status: "PENDING" },
@@ -232,7 +232,8 @@ export const ShowcaseList = () => {
                       <Link className="w-1/2" href={`/showcases/${showcase.slug}`}>
                       <ButtonOutline
                         className="w-full"
-                        disabled
+                        // disabled
+                        onClick={() => deleteShowcase(showcase.slug)}
                       >
                         {t("action.edit_label")}
                       </ButtonOutline>

@@ -232,7 +232,7 @@ export const IssuanceStepAdd = () => {
     }
   
     setScenarioIds(scenarioIds);
-    router.push(`/showcases/create/publish`);
+    router.push(`/showcases/create/scenarios`);
   };
   
   const handleCancel = () => {

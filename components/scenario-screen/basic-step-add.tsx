@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { FormTextArea, FormTextInput } from "@/components/text-input";
 import { Edit, Monitor } from "lucide-react";
-import { useOnboarding, useCreateScenario } from "@/hooks/use-onboarding";
 import { BasicStepFormData } from "@/schemas/onboarding";
 import { basicStepSchema } from "@/schemas/onboarding";
 import { LocalFileUpload } from "./local-file-upload";
@@ -17,7 +16,7 @@ import ButtonOutline from "../ui/button-outline";
 import { useRouter } from "@/i18n/routing";
 import { ErrorModal } from "../error-modal";
 import Loader from "../loader";
-import { IssuanceScenarioResponseType } from "@/openapi-types";
+import { PresentationScenarioResponseType } from "@/openapi-types";
 import { useShowcaseStore } from "@/hooks/use-showcases-store";
 import { toast } from "sonner";
 import { sampleAction } from "@/lib/steps";
@@ -25,6 +24,8 @@ import { sampleScenario } from "@/lib/steps";
 import { NoSelection } from "../credentials/no-selection";
 import { debounce } from "lodash";
 import { useHelpersStore } from "@/hooks/use-helpers-store";
+import { useCreatePresentation, usePresentations } from "@/hooks/use-presentation";
+
 export const BasicStepAdd = () => {
   const t = useTranslations();
 
@@ -35,13 +36,13 @@ export const BasicStepAdd = () => {
     setStepState,
     stepState,
     updateStep,
-  } = useOnboarding();
+  } = usePresentations();
 
   const router = useRouter();
-  const { mutateAsync, isPending } = useCreateScenario();
+  const { mutateAsync, isPending } = useCreatePresentation();
   const currentStep = selectedStep !== null ? screens[selectedStep] : null;
   const { showcase, setScenarioIds } = useShowcaseStore();
-  const { issuerId } = useHelpersStore();
+  const { relayerId } = useHelpersStore();
   const personas = showcase.personas || [];
 
   const isEditMode = stepState === "editing-basic";
@@ -96,13 +97,46 @@ export const BasicStepAdd = () => {
     return () => subscription.unsubscribe();
   }, [form, autoSave]);
 
+  // const onSubmit = async (data: BasicStepFormData) => {
+  //   autoSave.flush();
+
+  //   sampleScenario.personas = personas;
+  //   sampleScenario.issuer = issuerId;
+
+  //   sampleScenario.steps.push({
+  //     title: data.title,
+  //     description: data.description,
+  //     asset: data.asset || undefined,
+  //     type: "HUMAN_TASK",
+  //     order: currentStep?.order || 0,
+  //     actions: [...new Set([sampleAction])],
+  //   });
+
+  //   await mutateAsync(sampleScenario, {
+  //     onSuccess: (data: unknown) => {
+  //       toast.success("Scenario Created");
+
+  //       setScenarioIds([
+  //         (data as PresentationScenarioResponseType).issuanceScenario.id,
+  //       ]);
+
+  //       router.push(`/showcases/create/publish`);
+  //     },
+  //     onError: (error) => {
+  //       console.error("Error creating scenario:", error);
+  //       setErrorModal(true);
+  //     },
+  //   });
+  // };
+
+
   const onSubmit = async (data: BasicStepFormData) => {
     autoSave.flush();  
     const personaScenarios = personas.map(persona => {
       const scenarioForPersona = JSON.parse(JSON.stringify(sampleScenario));
       
       scenarioForPersona.personas = [persona];
-      scenarioForPersona.issuer = issuerId;
+      scenarioForPersona.relyingParty = relayerId;
 
       scenarioForPersona.steps = [...screens.map((screen, index) => ({
         title: screen.title,
@@ -136,8 +170,8 @@ export const BasicStepAdd = () => {
     for (const scenario of personaScenarios) {
       try {
         const result = await mutateAsync(scenario);
-        scenarioIds.push((result as IssuanceScenarioResponseType).issuanceScenario.id);
-        toast.success(`Scenario created for ${scenario.personas[0]?.name || 'persona'}`);
+        scenarioIds.push((result as PresentationScenarioResponseType).presentationScenario.id);
+        toast.success(`Presentation created for ${scenario.personas[0]?.name || 'persona'}`);
       } catch (error) {
         console.error("Error creating scenario:", error);
         setErrorModal(true);
@@ -146,7 +180,7 @@ export const BasicStepAdd = () => {
     }
   
     setScenarioIds(scenarioIds);
-    router.push(`/showcases/create/scenarios`);
+    router.push(`/showcases/create/publish`);
   };
 
   const handleCancel = () => {

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Image from "next/image";
@@ -13,6 +12,7 @@ import { produce } from "immer";
 import { useShowcaseStore } from "@/hooks/use-showcase-store";
 import { Step } from "@/openapi-types";
 import { useCredentials } from "@/hooks/use-credentials-store";
+import { usePresentations } from "@/hooks/use-presentation";
 
 const MAX_CHARS = 50;
 
@@ -27,8 +27,10 @@ export const SortableStep = ({
   totalSteps: number;
 }) => {
   const t = useTranslations();
-  const { setSelectedStep, setStepState, stepState } = useOnboarding();
-  const { selectedCredential } = useCredentials()
+  const { setSelectedStep, setStepState, stepState, screens } = usePresentations();
+  const { selectedCharacter } = useShowcaseStore();
+
+  const {selectedCredential} = useCredentials()
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
       id: myScreen.id,
@@ -47,7 +49,7 @@ export const SortableStep = ({
 
   const handleCopyStep = (index: number) => {
     try {
-      const { screens, selectedStep } = useOnboarding.getState();
+      const { screens, selectedStep } = usePresentations.getState();
 
       if (!screens[index]) return;
 
@@ -56,13 +58,11 @@ export const SortableStep = ({
       const newStep = JSON.parse(JSON.stringify(stepToCopy));
       newStep.id = `${Date.now()}`; // Ensure a unique ID
 
-      useOnboarding.setState(
+      usePresentations.setState(
         produce((state) => {
           state.screens.splice(index + 1, 0, newStep);
           state.selectedStep = index + 1;
 
-          // Update showcaseJSON
-          const { selectedCharacter } = useShowcaseStore.getState();
           useShowcaseStore.setState((draft) => {
             draft.showcaseJSON.personas[selectedCharacter].onboarding =
               JSON.parse(JSON.stringify(state.screens));
@@ -159,11 +159,11 @@ export const SortableStep = ({
               />
               <div className="ml-4 flex-col">
                 <div className="font-semibold">{selectedCredential?.name}</div>
-                <div className="text-sm">{selectedCredential?.issuer?.name ?? 'Test college'}</div>
+                {/* <div className="text-sm">{selectedCredential?.relyingParty?.name ?? 'Test college'}</div> */}
               </div>
               <div className="align-middle ml-auto">
                 <div className="font-semibold">Attributes</div>
-                <div className="text-sm text-end">{Object.keys(selectedCredential.credentialSchema.attributes).length}</div>
+                {/* <div className="text-sm text-end">{Object.keys(selectedCredential.credentialSchema.attributes).length}</div> */}
               </div>
             </div>
             }

@@ -17,6 +17,7 @@ import {
 	useCreateCredentialDefinition,
 	useCreateCredentialSchema,
 	useCreateIssuer,
+	useCreateRelyingParty,
 	useDeleteCredentialDefinition,
 } from "@/hooks/use-credentials";
 import { useCreateAsset } from "@/hooks/use-asset";
@@ -29,6 +30,7 @@ import {
 	CredentialSchemaRequest,
 	CredentialDefinitionRequest,
 	IssuerResponse,
+	RelyingPartyResponse,
 } from "@/openapi-types";
 import Image from "next/image";
 import { Button } from "../ui/button";
@@ -49,7 +51,9 @@ export const CredentialsForm = () => {
 	const { mutateAsync: createCredentialDefinition } =
 		useCreateCredentialDefinition();
 	const { mutateAsync: createIssuer } = useCreateIssuer();
-	const { setIssuerId, setSelectedCredentialDefinitionIds } = useHelpersStore();
+	const { mutateAsync: createRelyingParty } = useCreateRelyingParty();
+
+	const { setIssuerId, setSelectedCredentialDefinitionIds, setRelayerId } = useHelpersStore();
 
 	const form = useForm<CredentialSchemaRequestType>({
 		resolver: zodResolver(CredentialSchemaRequest),
@@ -116,7 +120,15 @@ export const CredentialsForm = () => {
 				description: "",
 			})) as typeof IssuerResponse._type;
 
+			const relyingPartyResponse = (await createRelyingParty({
+				name: "dummy-relying-party",
+				type: "ARIES",
+				credentialDefinitions: [credentialId],
+				description: "",
+			})) as typeof RelyingPartyResponse._type;
+
 			setIssuerId(issuerResponse.issuer.id);
+			setRelayerId(relyingPartyResponse.relyingParty.id);
 
 			const newCredential: (typeof CredentialDefinitionResponse._type)["credentialDefinition"] =
 				{

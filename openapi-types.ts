@@ -452,3 +452,7 @@ export type CredentialSchemaRequestType = z.infer<typeof CredentialSchemaRequest
 
 export type StepRequestType = z.infer<typeof StepRequest>;
 export type StepType = z.infer<typeof Step>;
+
+export type PresentationScenarioResponseType = z.infer<typeof PresentationScenarioResponse>;
+export type IssuanceScenarioRequestType = z.infer<typeof IssuanceScenarioRequest>;
+export type PresentationScenarioRequestType = z.infer<typeof PresentationScenarioRequest>;
