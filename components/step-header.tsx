@@ -13,6 +13,7 @@ interface StepHeaderProps {
   actions?: React.ReactNode; // Custom actions (buttons, menus, etc.)
   showDropdown?: boolean; // Control dropdown visibility from parent
   onActionClick?: (action: "save" | "preview" | "revert" | "delete") => void; // Callback function for actions
+  selector?: React.ReactNode; // Custom selector (dropdown, etc.)
 }
 
 const StepHeader: React.FC<StepHeaderProps> = ({
@@ -21,6 +22,7 @@ const StepHeader: React.FC<StepHeaderProps> = ({
   actions,
   showDropdown = true,
   onActionClick,
+  selector,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -85,6 +87,8 @@ const StepHeader: React.FC<StepHeaderProps> = ({
             </ul>
           </div>
         )}
+
+        {selector && selector}
       </div>
     </div>
   );

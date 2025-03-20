@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
+import { Form, FormField } from "@/components/ui/form";
 import { FormTextArea, FormTextInput } from "@/components/text-input";
 import { Edit, Monitor } from "lucide-react";
 import { useOnboarding, useCreateScenario } from "@/hooks/use-onboarding";
@@ -24,6 +24,13 @@ import { sampleAction } from "@/lib/steps";
 import { sampleScenario } from "@/lib/steps";
 import { NoSelection } from "../credentials/no-selection";
 import { debounce } from "lodash";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 export const BasicStepAdd = () => {
   const t = useTranslations();
@@ -211,72 +218,92 @@ export const BasicStepAdd = () => {
   }
 
   return (
-    <>
-      <StepHeader
-        icon={<Monitor strokeWidth={3} />}
-        title={t("onboarding.basic_step_header_title")}
-        showDropdown={false}
-      />
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-6">
-            <FormTextInput
-              label={t("onboarding.page_title_label")}
-              name="title"
-              register={form.register}
-              error={form.formState.errors.title?.message}
-              placeholder={t("onboarding.page_title_placeholder")}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <StepHeader
+          icon={<Monitor strokeWidth={3} />}
+          title={t("onboarding.basic_step_header_title")}
+          showDropdown={false}
+          selector={
+            <FormField
+              control={form.control}
+              name="step_type"
+              render={({ field }) => (
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select a step type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="first">First type</SelectItem>
+                    <SelectItem value="second">Second type</SelectItem>
+                    <SelectItem value="third">Third type</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
             />
+          }
+        />
 
-            <div className="space-y-2">
-              <FormTextArea
-                label={t("onboarding.page_description_label")}
-                name="description"
-                register={form.register}
-                error={form.formState.errors.description?.message}
-                placeholder={t("onboarding.page_description_placeholder")}
-              />
-              {form.formState.errors.description && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.description.message}
-                </p>
-              )}
-            </div>
+        <div className="space-y-6">
+          <FormTextInput
+            label={t("onboarding.page_title_label")}
+            name="title"
+            register={form.register}
+            error={form.formState.errors.title?.message}
+            placeholder={t("onboarding.page_title_placeholder")}
+          />
 
-            <div className="space-y-2">
-              <LocalFileUpload
-                text={t("onboarding.icon_label")}
-                element="asset"
-                handleLocalUpdate={(_, value) =>
-                  form.setValue("asset", value, {
-                    shouldDirty: true,
-                    shouldTouch: true,
-                    shouldValidate: true,
-                  })
-                }
-              />
-              {form.formState.errors.asset && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.asset.message}
-                </p>
-              )}
-            </div>
+          <div className="space-y-2">
+            <FormTextArea
+              label={t("onboarding.page_description_label")}
+              name="description"
+              register={form.register}
+              error={form.formState.errors.description?.message}
+              placeholder={t("onboarding.page_description_placeholder")}
+            />
+            {form.formState.errors.description && (
+              <p className="text-sm text-destructive">
+                {form.formState.errors.description.message}
+              </p>
+            )}
           </div>
-          <div className="mt-auto pt-4 border-t flex justify-end gap-3">
-            <ButtonOutline onClick={handleCancel} type="button">
-              {t("action.cancel_label")}
-            </ButtonOutline>
 
-            <ButtonOutline
-              type="button"
-              disabled={!form.formState.isValid}
-              onClick={() => form.handleSubmit(onSubmit)()}
-            >
-              {t("action.next_label")}
-            </ButtonOutline>
+          <div className="space-y-2">
+            <LocalFileUpload
+              text={t("onboarding.icon_label")}
+              element="asset"
+              handleLocalUpdate={(_, value) =>
+                form.setValue("asset", value, {
+                  shouldDirty: true,
+                  shouldTouch: true,
+                  shouldValidate: true,
+                })
+              }
+            />
+            {form.formState.errors.asset && (
+              <p className="text-sm text-destructive">
+                {form.formState.errors.asset.message}
+              </p>
+            )}
           </div>
-        </form>
-      </Form>
-    </>
+        </div>
+        <div className="mt-auto pt-4 border-t flex justify-end gap-3">
+          <ButtonOutline onClick={handleCancel} type="button">
+            {t("action.cancel_label")}
+          </ButtonOutline>
+
+          <ButtonOutline
+            type="button"
+            disabled={!form.formState.isValid}
+            onClick={() => form.handleSubmit(onSubmit)()}
+          >
+            {t("action.next_label")}
+          </ButtonOutline>
+        </div>
+      </form>
+    </Form>
   );
 };
