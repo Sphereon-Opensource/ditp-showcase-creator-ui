@@ -14,13 +14,29 @@ export const schema = z.object({
   name: z.string().min(1, "Credential name is required"),
   version: z.string().min(1, "Version is required"),
   attributes: z.array(
-    z.object({
-      name: z.string().min(1, "Attribute name is required"),
-      value: z.string().min(1, "Attribute value is required"),
-      type: z.enum(["STRING", "NUMBER", "BOOLEAN"]).default("STRING"),
-    })
+    z
+      .object({
+        name: z.string().min(1, "Attribute name is required"),
+        value: z.string().min(1, "Attribute value is required"),
+        type: z
+          .enum(["STRING", "INT", "FLOAT", "BOOL", "DATE"])
+          .default("STRING"),
+      })
+      .refine(
+        (data) => {
+          if (data.type === "DATE") {
+            return !isNaN(new Date(data.value).getTime());
+          }
+          return true;
+        },
+        {
+          message: "Attribute value must be a valid date",
+          path: ["value"],
+        }
+      )
   ),
 });
+
 export const asset = z.object({
   id: z.string().min(1), // Unique identifier for the asset
   mediaType: z.string().min(1), // Media type, e.g., "image/jpeg"
@@ -33,76 +49,76 @@ export const asset = z.object({
 
 // Main schema for SchemaData
 export const credentialSchema = z.object({
-	id: z.string().min(1),
+  id: z.string().min(1),
   identifierType: z.string().min(1),
   identifier: z.string().min(1),
-	name: z.string().min(1),
-	attributes: z.array(schemaAttribute),
+  name: z.string().min(1),
+  attributes: z.array(schemaAttribute),
   version: z.string().min(1),
 });
 
 // Revocation schema
 export const revocation = z.object({
-	id: z.string().min(1),
-	title: z.string().min(1),
-	description: z.string().min(1),
-	createdAt: z.string().min(1),
-	updatedAt: z.string().min(1),
+  id: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().min(1),
+  createdAt: z.string().min(1),
+  updatedAt: z.string().min(1),
 });
 
 // Representation schema
 export const credentialRepresentation = z.object({
-	id: z.string().min(1),
-	createdAt: z.string().min(1),
-	updatedAt: z.string().min(1),
-	credDefId: z.string().min(1),
-	schemaId: z.string().min(1),
-	ocaBundleUrl: z.string().url().optional(),
+  id: z.string().min(1),
+  createdAt: z.string().min(1),
+  updatedAt: z.string().min(1),
+  credDefId: z.string().min(1),
+  schemaId: z.string().min(1),
+  ocaBundleUrl: z.string().url().optional(),
 });
 
 // Issuer schema
 export const issuer = z.object({
-	id: z.string().min(1),
-	name: z.string().min(1),
-	description: z.string().optional(),
-	type: z.string().min(1),
-	organization: z.string().optional(),
-	logo: z.string().optional(),
+  id: z.string().min(1),
+  name: z.string().min(1),
+  description: z.string().optional(),
+  type: z.string().min(1),
+  organization: z.string().optional(),
+  logo: z.string().optional(),
 });
 
 // Icon schema (previously embedded in credentialDefinitionSchema)
 export const credentialIcon = z.object({
-	id: z.string().min(1),
-	mediaType: z.string().min(1),
-	content: z.string().min(1), // Base64 encoded data
-	fileName: z.string().min(1),
-	description: z.string().min(1),
-	createdAt: z.string().min(1),
-	updatedAt: z.string().min(1),
+  id: z.string().min(1),
+  mediaType: z.string().min(1),
+  content: z.string().min(1), // Base64 encoded data
+  fileName: z.string().min(1),
+  description: z.string().min(1),
+  createdAt: z.string().min(1),
+  updatedAt: z.string().min(1),
 });
 
 // Updated Credential Definition Schema with assetId
 export const credentialDefinition = z.object({
-	id: z.string().min(1),
-	name: z.string().min(1, "Credential name is required"),
-	schemaId: z.string().min(1),
-	identifierType: z.string().min(1),
-	identifier: z.string().min(1),
-	version: z.string().optional(),
-	type: z.string().optional(),
-	assetId: z.string().min(1, "Asset ID is required"), // ✅ Added assetId here
-	representations: z.array(credentialRepresentation),
-	revocation: revocation,
-	credentialSchema: credentialSchema,
-	issuer: issuer.optional(),
-	createdAt: z.string().min(1),
+  id: z.string().min(1),
+  name: z.string().min(1, "Credential name is required"),
+  schemaId: z.string().min(1),
+  identifierType: z.string().min(1),
+  identifier: z.string().min(1),
+  version: z.string().optional(),
+  type: z.string().optional(),
+  assetId: z.string().min(1, "Asset ID is required"), // ✅ Added assetId here
+  representations: z.array(credentialRepresentation),
+  revocation: revocation,
+  credentialSchema: credentialSchema,
+  issuer: issuer.optional(),
+  createdAt: z.string().min(1),
   icon: credentialIcon.optional(),
-	updatedAt: z.string().min(1),
+  updatedAt: z.string().min(1),
 });
 
 // Main schema for the credential definitions list
 export const credentialDefinitionsList = z.object({
-	credentialDefinitions: z.array(credentialDefinition),
+  credentialDefinitions: z.array(credentialDefinition),
 });
 
 // Types
@@ -114,5 +130,5 @@ export type CredentialFormData = z.infer<typeof credentialDefinition> & {
 export type Asset = z.infer<typeof asset>;
 
 export type CredentialDefinitionsData = z.infer<
-	typeof credentialDefinitionsList
+  typeof credentialDefinitionsList
 >;
