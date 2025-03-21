@@ -409,10 +409,13 @@ export const IssuanceStepAdd = () => {
               addCredential={addCredential}
             />
 
-            {/* <DisplayAddedCredentials
+            {/* 
+              <DisplayAddedCredentials
+              // selected credentials 
                 credentials={form.watch("credentials")}
                 removeCredential={removeCredential}
-              /> */}
+              /> 
+              */}
 
             {form.formState.errors.credentials && (
               <p className="text-sm text-destructive">
