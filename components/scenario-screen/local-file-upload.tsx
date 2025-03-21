@@ -1,38 +1,44 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { convertBase64 } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { useTranslations } from 'next-intl';
+import { AssetResponseType } from "@/openapi-types";
+import { useCreateAsset } from "@/hooks/use-asset";
 
 interface LocalFileUploadProps {
   text: string;
-  element: string[];
-  handleLocalUpdate: (path: string[], value: string) => void;
-  localJSON: {
-    [key: string]: any;
-  };
+  element: string;
+  handleLocalUpdate: (key: string, value: string) => void;
 }
 
 export function LocalFileUpload({
   text,
   element,
   handleLocalUpdate,
-  localJSON,
 }: LocalFileUploadProps) {
   const t = useTranslations()
   const [preview, setPreview] = useState<string | null>(null);
-
-  useEffect(() => {
-    const [section, field] = element;
-    setPreview(localJSON[section]?.[field] ?? '');
-  }, [localJSON, element]);
+  const { mutateAsync: createAsset } = useCreateAsset();
 
   const handleChange = async (newValue: File | null) => {
     if (newValue) {
       try {
         const base64 = await convertBase64(newValue);
         if (typeof base64 === 'string') {
-          setPreview(base64);
-          handleLocalUpdate(element, base64);
+          await createAsset({
+            content: base64,
+            mediaType: newValue.type,
+          }, {
+            onSuccess: (data: unknown) => {
+              console.log('onSuccess', data);
+              const response = data as AssetResponseType;
+              setPreview(base64);
+              handleLocalUpdate(element, response.asset.id);
+            },
+            onError: (error) => {
+              console.error("Error creating asset:", error);
+            }
+          });
         }
       } catch (error) {
         console.error('Error converting file:', error);
@@ -66,7 +72,7 @@ export function LocalFileUpload({
       )}
 
       <label
-        htmlFor={element.join(".")}
+        htmlFor={element}
         className="p-3 flex flex-col items-center justify-center w-full h-full bg-light-bg dark:bg-dark-input dark:hover:bg-dark-input-hover rounded-lg cursor-pointer border dark:border-dark-border hover:bg-light-bg"
       >
         <div className="flex flex-col items-center h-full justify-center border rounded-lg border-dashed dark:border-dark-border p-2">
@@ -85,7 +91,7 @@ export function LocalFileUpload({
         </div>
 
         <input
-          id={element.join(".")}
+          id={element}
           type="file"
           className="hidden"
           accept="image/*"

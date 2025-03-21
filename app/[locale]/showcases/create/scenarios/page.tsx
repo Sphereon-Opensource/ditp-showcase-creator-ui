@@ -1,9 +1,9 @@
-import { EditStepScreen } from "@/components/scenario-screen/edit-step-screen";
-import { ScenarioScreen } from "@/components/scenario-screen/scenario-screen";
+import { CreateScenariosStepsScreen } from "@/components/scenario-screen/choose-step-screen";
+import { CreateScenariosScreen } from "@/components/scenario-screen/scenario-creation";
 import TabsComponent from "@/components/Tabs-component";
 import { useTranslations } from "next-intl";
 
-export default function CreateOnboardingPage() {
+export default function CreateScenariosPage() {
   const t = useTranslations();
 
   return (
@@ -24,10 +24,10 @@ export default function CreateOnboardingPage() {
               </h2>
               <p className="w-full text-xs">{t("scenario.header_subtitle")}</p>
             </div>
-            <ScenarioScreen />
+            <CreateScenariosScreen />
           </div>
           <div className="w-2/3 bg-white dark:bg-dark-bg-secondary border shadow-md rounded-md flex flex-col">
-            <EditStepScreen />
+            <CreateScenariosStepsScreen />
           </div>
         </div>
       </div>

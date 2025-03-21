@@ -9,7 +9,6 @@ interface ShowcaseStore {
   // Selection states
   selectedPersonaIds: string[];
   selectedCredentialDefinitionIds: string[];
-  issuerId: string;
 
   // Basic setters
   setShowcase: (showcase: ShowcaseRequestType) => void;
@@ -28,8 +27,6 @@ interface ShowcaseStore {
   setSelectedCredentialDefinitionIds: (ids: string[]) => void;
   toggleSelectedCredentialDefinition: (definitionId: string) => void;
   clearSelectedCredentialDefinitions: () => void;
-
-  setIssuerId: (issuerId: string) => void;
   
   reset: () => void;
 }
@@ -75,7 +72,6 @@ const initialState = {
     }],
     personas: [],
   },
-  issuerId: "",
   selectedPersonaIds: [] as string[],
   selectedCredentialDefinitionIds: [] as string[],
 };
@@ -135,8 +131,6 @@ export const useShowcaseStore = create<ShowcaseStore>()(
       
       clearSelectedCredentialDefinitions: () => set({ selectedCredentialDefinitionIds: [] }),
       
-      setIssuerId: (issuerId: string) => set({ issuerId }),
-
       reset: () => set(initialState),
     }),
     {

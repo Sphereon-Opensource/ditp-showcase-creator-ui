@@ -13,6 +13,9 @@ import { Showcase } from "@/openapi-types";
 import { SidebarTrigger } from "../ui/sidebar";
 import Image from "next/image";
 import Header from "../header";
+import { CopyButton } from "../ui/copy-button";
+import { DeleteButton } from "../ui/delete-button";
+import { OpenButton } from "../ui/external-open-button";
 
 export const LandingPage = () => {
   const t = useTranslations();
@@ -28,7 +31,11 @@ export const LandingPage = () => {
 
   return (
     <>
-      <Header title={t("home.header_title")} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <Header
+        title={t("home.header_title")}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
 
       {/* {!isLoading && (
         <div className="container mx-auto px-5 mt-2">
@@ -56,14 +63,12 @@ export const LandingPage = () => {
       {isLoading && (
         <div className="flex flex-col items-center">
           <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-          {t('showcases.loading_label')}
+          {t("showcases.loading_label")}
         </div>
       )}
       <section className="mx-auto p-4">
         <div className="grid md:grid-cols-3 gap-6 mt-6 pb-4">
-          {data?.showcases
-          .filter(searchFilter)
-          .map((showcase: Showcase) => (
+          {data?.showcases.filter(searchFilter).map((showcase: Showcase) => (
             <Card key={showcase.id}>
               <div
                 key={showcase.id}
@@ -90,13 +95,23 @@ export const LandingPage = () => {
                         {showcase?.name}
                       </h2>
                       <div className="flex-shrink-0">
-                        {" "}
-                        <button className="border dark:border-white rounded px-3 py-1 hover:bg-gray-400 dark:hover:bg-gray-700">
-                          <Share2
-                            size={18}
-                            className="cursor-pointer text-white"
-                          />
-                        </button>
+                        <DeleteButton
+                          onClick={() => {
+                            console.log("delete", showcase.id);
+                          }}
+                        />
+                        <CopyButton
+                          value={
+                            "http://localhost:3000/digital-trust/showcase/" +
+                            showcase.slug
+                          }
+                        />
+                        <OpenButton
+                          value={
+                            "http://localhost:3000/digital-trust/showcase/" +
+                            showcase.slug
+                          }
+                        />
                       </div>
                     </div>
                   </div>

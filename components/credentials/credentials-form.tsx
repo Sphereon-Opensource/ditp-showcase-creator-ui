@@ -18,6 +18,7 @@ import {
 	useCreateCredentialDefinition,
 	useCreateCredentialSchema,
 	useCreateIssuer,
+	useCreateRelyingParty,
 	useDeleteCredentialDefinition,
 } from "@/hooks/use-credentials";
 import { useCreateAsset } from "@/hooks/use-asset";
@@ -30,13 +31,14 @@ import {
 	CredentialSchemaRequest,
 	CredentialDefinitionRequest,
 	IssuerResponse,
+	RelyingPartyResponse,
 } from "@/openapi-types";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { useShowcaseStore } from "@/hooks/use-showcases-store";
+import { useHelpersStore } from "@/hooks/use-helpers-store";
 
 export const CredentialsForm = () => {
-	const { selectedCredential, mode, setSelectedCredential } = useCredentials();
+	const { selectedCredential, mode, setSelectedCredential, viewCredential } = useCredentials();
 	const t = useTranslations();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,7 +50,9 @@ export const CredentialsForm = () => {
 	const { mutateAsync: createCredentialDefinition } =
 		useCreateCredentialDefinition();
 	const { mutateAsync: createIssuer } = useCreateIssuer();
-	const { setIssuerId } = useShowcaseStore();
+	const { mutateAsync: createRelyingParty } = useCreateRelyingParty();
+
+	const { setIssuerId, setSelectedCredentialDefinitionIds, setRelayerId } = useHelpersStore();
 
 	const { mutateAsync: deleteCredentialDefinition, isPending: isDeleting } =
 		useDeleteCredentialDefinition();
@@ -62,6 +66,7 @@ export const CredentialsForm = () => {
 		mode: "onChange",
 		shouldFocusError: true,
 	});
+
 	const onSubmit = async (formData: CredentialSchemaRequestType) => {
 		try {
 			setIsSubmitting(true);
@@ -91,6 +96,7 @@ export const CredentialsForm = () => {
 				fileName: "example.jpg",
 				description: "Example asset",
 			};
+
 			const assetResponse = (await createAsset(
 				assetPayload
 			)) as typeof AssetResponse._type;
@@ -123,7 +129,15 @@ export const CredentialsForm = () => {
 				description: "",
 			})) as typeof IssuerResponse._type;
 
+			const relyingPartyResponse = (await createRelyingParty({
+				name: "dummy-relying-party",
+				type: "ARIES",
+				credentialDefinitions: [credentialId],
+				description: "",
+			})) as typeof RelyingPartyResponse._type;
+
 			setIssuerId(issuerResponse.issuer.id);
+			setRelayerId(relyingPartyResponse.relyingParty.id);
 
 			const newCredential: (typeof CredentialDefinitionResponse._type)["credentialDefinition"] =
 				{
@@ -143,10 +157,9 @@ export const CredentialsForm = () => {
 					icon: assetId,
 				};
 
-			const { setSelectedCredential, viewCredential } =
-				useCredentials.getState();
 			setSelectedCredential(newCredential);
 			viewCredential(newCredential);
+			setSelectedCredentialDefinitionIds([credentialId]);
 
 			toast.success("Credential created successfully!");
 		} catch (error) {

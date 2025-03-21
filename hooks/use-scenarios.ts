@@ -20,7 +20,7 @@ interface State {
   stepState: ScenarioStepState;
   relyingPartyId: string;
 }
-// move to shared
+
 const deepClone = <T>(obj: T): T => JSON.parse(JSON.stringify(obj));
 
 interface Actions {

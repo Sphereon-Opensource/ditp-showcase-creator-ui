@@ -1,18 +1,23 @@
 "use client";
 
 import { BasicStepAdd } from "./basic-step-add";
-import { IssuanceStepAdd } from "./issue-step-edit";
-import { CreateNewStep } from "./create-step";
+// import { IssuanceStepAdd } from "./issue-step-edit";
+// import { CreateNewStep } from "./create-step";
 import { NoSelection } from "../credentials/no-selection";
 import { useTranslations } from "next-intl";
-import { useOnboardingAdapter } from "@/hooks/use-onboarding-adapter";
 
-export const OnboardingSteps = () => {
+import { BasicStepEdit } from "@/components/scenario-screen/basic-step-edit";
+import { ProofStepEdit } from "@/components/scenario-screen/proof-step-edit";
+import { ChooseStepType } from "@/components/scenario-screen/choose-step-type";
+import { ScenarioEdit } from "@/components/scenario-screen/scenario-edit";
+import { usePresentationAdapter } from "@/hooks/use-presentation-adapter";
+
+export const CreateScenariosStepsScreen = () => {
   const t = useTranslations();
   const {
     stepState,
     activePersonaId,
-  } = useOnboardingAdapter();
+  } = usePresentationAdapter();
 
   return (
     <div
@@ -36,9 +41,9 @@ export const OnboardingSteps = () => {
             }
           />
         )}
-      {activePersonaId && stepState === "creating-new" && <CreateNewStep />}
+      {activePersonaId && stepState === "creating-new" && <BasicStepAdd />}
       {activePersonaId && stepState === "editing-basic" && <BasicStepAdd />}
-      {activePersonaId && stepState === "editing-issue" && <IssuanceStepAdd />}
+      {activePersonaId && stepState === "editing-issue" && <BasicStepEdit />}
     </div>
   );
 };
