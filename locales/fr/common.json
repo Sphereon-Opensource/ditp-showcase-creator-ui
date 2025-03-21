@@ -91,6 +91,7 @@
     "schema_empty": "Schema non disponible",
     "schema_id_label": "Identifiant du schéma: (obligatoire)",
     "first_checkbox_label": "Justificatif",
+    "id_label": "Identifiant du schéma",
     "second_checkbox_label": "Demande de preuve",
     "import_header_title": "Importation d'un Justificatif",
     "import_header":"IMPORTATION D'UN JUSTIFICATIF",
