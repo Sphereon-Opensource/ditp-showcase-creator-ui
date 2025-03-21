@@ -1,20 +1,30 @@
 import { useState } from "react";
-import { Search } from "lucide-react";
-import { Input } from "../ui/input";
 import { Credential, CredentialAttributeType } from "@/openapi-types";
-import ButtonOutline from "../ui/button-outline";
 import { useTranslations } from "next-intl";
 import { useCredentials } from "@/hooks/use-credentials-store";
 import { useCredentialDefinitions } from "@/hooks/use-credentials";
 import Image from "next/image";
 import { ensureBase64HasPrefix } from "@/lib/utils";
+import { Button } from "../ui/button";
 
-export const CredentialsDisplay = () => {
+interface CredentialsDisplayProps {
+	searchTerm: string;
+}
+
+export const CredentialsDisplay = ({ searchTerm }: CredentialsDisplayProps) => {
 	const { setSelectedCredential, startCreating, viewCredential } =
 		useCredentials();
 	const [openId, setOpenId] = useState<string | null>(null);
 	const t = useTranslations();
 	const { data: credentials, isLoading, error } = useCredentialDefinitions();
+
+	const sanitizedSearchTerm = searchTerm?.toLowerCase() || "";
+
+	const filteredCredentials =
+		credentials?.credentialDefinitions?.filter((credential: Credential) =>
+			credential.name?.toLowerCase().includes(sanitizedSearchTerm)
+		) || []; 
+	
 
 	const handleSelectCredential = (credential: Credential) => {
 		setSelectedCredential(credential);
@@ -27,10 +37,9 @@ export const CredentialsDisplay = () => {
 			setOpenId(null);
 			setSelectedCredential(null);
 		} else {
-			const credential = credentials?.credentialDefinitions?.filter(
-				(credential: Credential) =>
-					credential.id === id ? credentials.credentialDefinitions : null
-			)[0];
+			const credential = credentials?.credentialDefinitions?.find(
+				(credential: Credential) => credential.id === id
+			);
 			if (credential) handleSelectCredential(credential);
 		}
 	};
@@ -39,122 +48,117 @@ export const CredentialsDisplay = () => {
 		startCreating();
 		setOpenId(null);
 	};
-
 	return (
-		<div className="w-full h-full bg-white dark:bg-dark-bg-secondary dark:border dark:border-dark-bg shadow-lg rounded-lg">
-			<div className="p-4 border-b dark:border-dark-border">
+		<div className="w-full h-full bg-white dark:bg-dark-bg-secondary border-b dark:border-dark-ter  shadow-lg rounded-lg">
+			<div className="p-4 border-b dark:border-dark-border ">
 				<h2 className="text-lg font-bold">
 					{t("credentials.credential_title")}
 				</h2>
-				<p className="text-sm text-gray-400">
-					{t("credentials.credential_subtitle")}
-				</p>
+				<p className="text-sm">{t("credentials.credential_subtitle")}</p>
 			</div>
 
-			<div className="mx-auto px-4 mt-4 mb-0">
-				<div className="relative max-w-[550px] w-full">
-					<Search
-						className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-						size={22}
-					/>
-					<Input
-						type="text"
-						placeholder={t("action.search_label")}
-						className="bg-white dark:bg-dark-bg w-full pl-10 pr-3 py-4 border rounded-md text-light-text dark:text-dark-text"
-					/>
+			{isLoading ? (
+				<div className="flex flex-col items-center">
+					<div className="w-12 h-12 border-4 border-gray-300 border-t-blue-500 mt-4 rounded-full animate-spin"></div>
+					{t("credentials.credential_loading")}
 				</div>
-			</div>
+			) : (
+				filteredCredentials.map((item) => (
+					<div className="flex-grow overflow-y-auto" 		key={item.id}>
+						<div
 
-			<hr className="border-gray-200 dark:border-dark-border" />
-
-			{isLoading && <p className="text-center py-4">Loading credentials...</p>}
-			{error && (
-				<p className="text-center text-red-500 py-4">
-					Failed to load credentials.
-				</p>
-			)}
-
-			{!isLoading && !error && credentials?.credentialDefinitions ? (
-				credentials.credentialDefinitions.map((item) => (
-					<div
-						key={item.id}
-						className="border-b dark:border-dark-border hover:bg-gray-100 dark:hover:bg-dark-bg"
-					>
-						{openId === item.id ? (
-							<div className="p-3 bg-light-bg flex flex-col dark:bg-dark-bg items-center text-center">
-								<div className="flex flex-col py-2 w-full items-center">
-									<Image
-										alt="Credential Icon"
-										src={ensureBase64HasPrefix(item?.icon?.content) || "/assets/no-image.jpg"}	
-										width={56}
-										height={56}
-										className="rounded-full shadow mb-4"
-										style={{ aspectRatio: "1 / 1" }} 
-									/>
-									<span className="text-md font-semibold">{item.name}</span>
-									<span className="text-sm mt-1 text-black dark:text-gray-400">
-										Version {item.version}
-									</span>
-
-									<div className="flex flex-wrap gap-2 mt-2 text-xs">
-										{item.credentialSchema?.attributes?.map(
-											(attr: CredentialAttributeType) => (
-												<span
-													key={attr.id}
-													className="bg-gray-200 dark:bg-dark-border px-2 py-1 rounded"
-												>
-													{attr.name}
-												</span>
-											)
-										)}
-									</div>
-								</div>
-							</div>
-						) : (
-							<div
-								className="flex justify-between items-center p-3 cursor-pointer"
-								onClick={() => toggleDetails(item.id)}
-							>
-								<div className="flex items-center gap-3">
-									<Image
-										src={ensureBase64HasPrefix(item?.icon?.content) || "/assets/no-image.jpg"}
-										alt="Credential Icon"
-										width={40}
-										height={40}
-										className="w-10 h-10 rounded-full shadow"
-										style={{ aspectRatio: "1/1" }}
-									/>
-									<div>
-										<p className="text-xs text-black dark:text-gray-200 font-bold">
+							className="border-b dark:border-dark-border hover:bg-gray-100"
+						>
+							{openId === item.id ? (
+								<div className="p-3 bg-light-bg flex flex-col dark:bg-dark-bg items-center text-center">
+									<div className="flex flex-col py-2 w-full items-center">
+										<Image
+											alt="Credential Icon"
+											src={
+												ensureBase64HasPrefix(item?.icon?.content) ||
+												"/assets/no-image.jpg"
+											}
+											width={100}
+											height={100}
+											className="rounded-full aspect-square object-cover"
+										/>
+										<span className="text-lg font-semibold mt-2">
 											{item.name}
+										</span>
+										<span className="text-sm text-gray-600 dark:text-gray-400">
+											Version {item.version}
+										</span>
+
+										<div className="flex flex-wrap gap-2 mt-2 text-xs">
+											{item.credentialSchema?.attributes?.map(
+												(attr: CredentialAttributeType) => (
+													<span
+													key={`${item.id}-${attr.id}-${attr.type || 'unknown'}`} 
+														className="bg-gray-200 dark:bg-dark-border px-2 py-1 rounded"
+													>
+														{attr.name}
+													</span>
+												)
+											)}
+										</div>
+									</div>
+								</div>
+							) : (
+								<div
+									onClick={() => toggleDetails(item.id)}
+									key={item.id}
+									className={`hover:bg-light-bg dark:hover:bg-dark-input-hover relative p-4 flex ${
+										openId === item.id
+											? "flex-col items-center bg-gray-100 dark:bg-dark-bg"
+											: "flex-row items-center bg-white dark:bg-dark-bg-secondary"
+									}`}
+								>
+									<div className="flex items-center gap-3 w-full">
+										<Image
+											src={
+												ensureBase64HasPrefix(item?.icon?.content) ||
+												"/assets/no-image.jpg"
+											}
+											alt="Credential Icon"
+											width={50}
+											height={50}
+											className="rounded-full aspect-square object-cover"
+										/>
+										<div className="flex flex-col w-full">
+											<span className="text-lg font-semibold mt-2">
+												{item.name}
+											</span>
+											<span className="text-sm text-foreground/80 ">
+												Version {item.version}
+											</span>
+										</div>
+									</div>
+
+									<div>
+										<p className="text-sm text-foreground font-semibold mt-2">
+											{t("credentials.attributes_label")}
 										</p>
-										<p className="text-xs text-gray-500 dark:text-gray-400">
-											{item.version}
+										<p className="text-sm text-foreground/80 ">
+											{item.credentialSchema?.attributes?.length || 0}
 										</p>
 									</div>
 								</div>
-
-								<div>
-									<p className="text-xs text-black dark:text-gray-200 font-bold">
-										{t("credentials.attributes_label")}
-									</p>
-									<p className="text-xs text-gray-500 dark:text-gray-400">
-										{item.credentialSchema?.attributes?.length || 0}
-									</p>
-								</div>
-							</div>
-						)}
+							)}
+						</div>
 					</div>
 				))
-			) : null}
+			)}
 
 			<div className="flex flex-col items-center p-4">
-				<ButtonOutline
-					className="mt-4 border w-full py-2 rounded-md font-bold"
+				<Button
+					type="button"
+					variant="outlineAction"
+					size="lg"
+					className="w-full"
 					onClick={handleCreate}
 				>
 					CREATE CREDENTIAL
-				</ButtonOutline>
+				</Button>
 			</div>
 		</div>
 	);

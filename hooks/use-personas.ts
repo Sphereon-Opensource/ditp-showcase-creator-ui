@@ -27,11 +27,15 @@ export const usePersona = (slug  : string) => {
 }
 
 export const useUpdatePersona = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({slug,data}:{slug: string, data: typeof PersonaRequest._type}) => {
       const response = await apiClient.put(`/personas/${slug}`, data);
       return response;
     },
+    onSettled: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['personas'] });
+    }
   })
 }
 

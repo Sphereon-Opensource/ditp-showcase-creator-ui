@@ -6,98 +6,105 @@ import { Credential } from "@/openapi-types";
 type Mode = "create" | "import" | "view";
 
 interface State {
-  selectedCredential: Credential | null;
-  mode: Mode;
-  isCreating: boolean;
-  isDeleting: boolean;
-  credentials: Credential[];
+	selectedCredential: Credential | null;
+	mode: Mode;
+	isCreating: boolean;
+	isDeleting: boolean;
+	credentials: Credential[];
 }
 
 interface Actions {
-  setSelectedCredential: (credential: Credential | null) => void;
-  startCreating: () => Promise<string>;
-  startImporting: () => void;
-  viewCredential: (credential: Credential) => void;
-  cancel: () => void;
-  reset: () => void;
-  deleteCredential: (credentialId: string) => void;
+	setSelectedCredential: (credential: Credential | null) => void;
+	startCreating: () => Promise<string>;
+	startImporting: () => void;
+	viewCredential: (credential: Credential) => void;
+	cancel: () => void;
+	reset: () => void;
+	deleteCredential: (credentialId: string) => void;
 }
 
 export const useCredentials = create<State & Actions>()(
-  immer((set, get) => ({
-    selectedCredential: null,
-    mode: "create",
-    credentials: [],
-    isCreating: false,
-    isDeleting: false,
+	immer((set, get) => ({
+		selectedCredential: null,
+		mode: "create",
+		credentials: [],
+		isCreating: false,
+		isDeleting: false,
 
-    deleteCredential: async () => {
-      set((state) => {
-        state.selectedCredential = null;
-        state.mode = "create";
-      });
-    },
+		deleteCredential: (credentialId: string) => {
+			set((state) => {
+				state.isDeleting = true;
+			});
 
-    setSelectedCredential: (credential) =>
-      set((state) => {
-        state.selectedCredential = credential;
-      }),
+			set((state) => {
+				state.credentials = state.credentials.filter(
+					(credential) => credential.id !== credentialId
+				);
+				state.selectedCredential = null;
+				state.mode = "create";
+				state.isDeleting = false;
+			});
+		},
 
-    startCreating: async () => {
-      const newCredential = {
-        id: Date.now().toString(),
-        name: "",
-        version: "",
-        type: "ANONCRED",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        credentialSchema: {
-          id: "",
-          name: "",
-          version: "",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      } as WritableDraft<Credential>;
+		setSelectedCredential: (credential) =>
+			set((state) => {
+				state.selectedCredential = credential;
+			}),
 
-      set((state) => {
-        state.selectedCredential = newCredential;
-        state.isCreating = true;
-        state.mode = "create";
-      });
+		startCreating: async () => {
+			const newCredential = {
+				id: Date.now().toString(),
+				name: "",
+				version: "",
+				type: "ANONCRED",
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+				credentialSchema: {
+					id: "",
+					name: "",
+					version: "",
+					createdAt: new Date().toISOString(),
+					updatedAt: new Date().toISOString(),
+				},
+			} as WritableDraft<Credential>;
 
-      return newCredential.id;
-    },
+			set((state) => {
+				state.selectedCredential = newCredential;
+				state.isCreating = true;
+				state.mode = "create";
+			});
 
-    startImporting: () =>
-      set((state) => {
-        state.mode = "import";
-        state.isCreating = false;
-        state.selectedCredential = null;
-      }),
+			return newCredential.id;
+		},
 
-    viewCredential: (credential) => {
-      set((state) => {
-        state.selectedCredential = credential;
-        state.mode = "view";
-        state.isCreating = false;
-      });
-    },
+		startImporting: () =>
+			set((state) => {
+				state.mode = "import";
+				state.isCreating = false;
+				state.selectedCredential = null;
+			}),
 
-    cancel: () => {
-      set((state) => {
-        state.selectedCredential = null;
-        state.isCreating = false;
-        state.mode = "create";
-      });
-    },
+		viewCredential: (credential) => {
+			set((state) => {
+				state.selectedCredential = credential;
+				state.mode = "view";
+				state.isCreating = false;
+			});
+		},
 
-    reset: () =>
-      set((state) => {
-        state.selectedCredential = null;
-        state.mode = "create";
-        state.isCreating = false;
-      }),
-  }))
+		cancel: () => {
+			set((state) => {
+				state.selectedCredential = null;
+				state.isCreating = false;
+				state.mode = "create";
+			});
+		},
+
+		reset: () =>
+			set((state) => {
+				state.selectedCredential = null;
+				state.mode = "create";
+				state.isCreating = false;
+			}),
+	}))
 );
-

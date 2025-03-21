@@ -88,6 +88,7 @@ export const FileUploadFull = ({
 				<input
 					id={`${element}`}
 					type="file"
+					accept="image/*" 
 					className="hidden"
 					onChange={(e) => handleChange(e.target.files?.[0] ?? null)}
 				/>

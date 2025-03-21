@@ -6,6 +6,7 @@ import { z } from "zod";
 import { useCredentials } from "@/hooks/use-credentials-store";
 import { Form } from "@/components/ui/form";
 import { FormTextInput } from "../text-input";
+import { schema } from "@/schemas/credential";
 import { FileUploadFull } from "../file-upload";
 import { CredentialAttributes } from "./components/credential-attribute";
 import { Monitor } from "lucide-react";
@@ -42,12 +43,10 @@ export const CredentialsForm = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [credentialLogo, setCredentialLogo] = useState<string>();
-	const [schemaId, setSchemaId] = useState<string | undefined>();
 	const [isLoading, setIsLoading] = useState(false);
 	const { mutateAsync: createAsset } = useCreateAsset();
 	const { mutateAsync: createCredentialSchema } = useCreateCredentialSchema();
-	const { mutateAsync: deleteCredentialDefinition } =
-		useDeleteCredentialDefinition();
+
 	const { mutateAsync: createCredentialDefinition } =
 		useCreateCredentialDefinition();
 	const { mutateAsync: createIssuer } = useCreateIssuer();
@@ -55,9 +54,17 @@ export const CredentialsForm = () => {
 
 	const { setIssuerId, setSelectedCredentialDefinitionIds, setRelayerId } = useHelpersStore();
 
+	const { mutateAsync: deleteCredentialDefinition, isPending: isDeleting } =
+		useDeleteCredentialDefinition();
 	const form = useForm<CredentialSchemaRequestType>({
-		resolver: zodResolver(CredentialSchemaRequest),
-		mode: "all",
+		resolver: zodResolver(schema),
+		defaultValues: {
+			name: "",
+			version: "",
+			attributes: [{ name: "", value: "", type: "STRING" }],
+		},
+		mode: "onChange",
+		shouldFocusError: true,
 	});
 
 	const onSubmit = async (formData: CredentialSchemaRequestType) => {
@@ -72,7 +79,7 @@ export const CredentialsForm = () => {
 				identifier: "did:sov:XUeUZauFLeBNofY3NhaZCB",
 				attributes: formData?.attributes?.map((item) => ({
 					name: item.name,
-					value: "example_value",
+					value: item.value,
 					type: item.type,
 				})),
 			};
@@ -164,25 +171,13 @@ export const CredentialsForm = () => {
 	};
 
 	const handleDeleteCredential = async () => {
-		if (!selectedCredential) return;
-		setIsLoading(true);
-		try {
+		if (selectedCredential) {
 			await deleteCredentialDefinition(selectedCredential.id);
 			setSelectedCredential(null);
-			setIsModalOpen(false);
 			toast.success("Credential deleted successfully!");
 			form.reset();
-			setCredentialLogo(undefined);
-			setSchemaId(undefined);
-			setSelectedCredential(null);
-		} catch (error) {
-			setIsModalOpen(false);
-			toast.error("Failed to delete credential.");
-			console.error(error);
 		}
-		setIsLoading(false);
 	};
-
 	const handleCancel = () => {
 		form.reset();
 		setCredentialLogo(undefined);
@@ -310,7 +305,7 @@ export const CredentialsForm = () => {
 					</div>
 
 					<div
-						className=" mx-4 flex items-center bg-[#F7F9FC] dark:bg-[#202223] dark:border-dark-border  border border-gray-300 rounded text-white text-sm font-bold px-4 py-3"
+						className="mx-8 flex items-center bg-[#F7F9FC] dark:bg-[#202223] dark:border-dark-border  border border-gray-300 rounded text-white text-sm font-bold px-4 py-3"
 						role="alert"
 					>
 						<svg
@@ -350,9 +345,9 @@ export const CredentialsForm = () => {
 		<Form {...form}>
 			<form
 				onSubmit={form.handleSubmit(onSubmit)}
-				className="my-4 flex flex-col"
+				className="my-2 flex flex-col"
 			>
-				<div className="flex items-center gap-x-2 px-4 py-3 border-b border-gray-200">
+				<div className="flex items-center gap-x-2 px-4 py-4 border-b border-gray-200 dark:border-dark-border">
 					<h3 className="text-lg font-bold text-foreground">
 						{mode === "create"
 							? t("credentials.add_header_title")
@@ -422,17 +417,12 @@ export const CredentialsForm = () => {
 						variant="outlineAction"
 						size="lg"
 						type="submit"
-						disabled={
-							!form.formState.isDirty ||
-							!form.formState.isValid ||
-							form.getValues("attributes")?.length === 0
-						}
+						disabled={!form.formState.isDirty || !form.formState.isValid}
 					>
-						{isSubmitting ? "Creating..." : "Create Credential"}
+						{isSubmitting ? "CREATING..." : "CREATE CREDENTIAL"}
 					</Button>
 				</div>
 			</form>{" "}
 		</Form>
 	);
 };
-
