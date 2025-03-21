@@ -37,7 +37,7 @@ import { Button } from "../ui/button";
 import { useHelpersStore } from "@/hooks/use-helpers-store";
 
 export const CredentialsForm = () => {
-	const { selectedCredential, mode, setSelectedCredential } = useCredentials();
+	const { selectedCredential, mode, setSelectedCredential, viewCredential } = useCredentials();
 	const t = useTranslations();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,6 +59,7 @@ export const CredentialsForm = () => {
 		resolver: zodResolver(CredentialSchemaRequest),
 		mode: "all",
 	});
+
 	const onSubmit = async (formData: CredentialSchemaRequestType) => {
 		try {
 			setIsSubmitting(true);
@@ -88,6 +89,7 @@ export const CredentialsForm = () => {
 				fileName: "example.jpg",
 				description: "Example asset",
 			};
+
 			const assetResponse = (await createAsset(
 				assetPayload
 			)) as typeof AssetResponse._type;
@@ -148,8 +150,6 @@ export const CredentialsForm = () => {
 					icon: assetId,
 				};
 
-			const { setSelectedCredential, viewCredential } =
-				useCredentials.getState();
 			setSelectedCredential(newCredential);
 			viewCredential(newCredential);
 			setSelectedCredentialDefinitionIds([credentialId]);

@@ -1,4 +1,3 @@
-// hooks/use-onboarding-adapter.tsx
 import { useEffect, useState, useCallback } from "react";
 import { useOnboarding } from "@/hooks/use-onboarding";
 import { useShowcaseCreation } from "@/hooks/use-showcase-creation";

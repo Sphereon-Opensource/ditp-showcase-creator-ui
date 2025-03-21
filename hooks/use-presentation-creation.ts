@@ -25,13 +25,13 @@ export const usePresentationCreation = () => {
     
     personas.forEach((persona: Persona) => {
       initialScenarios.set(persona.id, {
-        name: "Cool Clothes Online",
+        name: "University of British Columbia",
         description: `Onboarding scenario for ${persona.name}`,
         type: "PRESENTATION",
         steps: [
           {
             title: `Scan the QR Code to start sharing`,
-            description: `In this example, you will just tell Cool Clothes Online you're a st..see more.`,
+            description: `Imagine, as Ana, you are logged into the BestBC College website (see below). They want to offer you a Digital Student Card. Use your BC Wallet to scan the QR code from the website.`,
             order: 0,
             type: "HUMAN_TASK",
             actions: [
@@ -120,7 +120,7 @@ export const usePresentationCreation = () => {
         steps: [
           {
             title: `Scan the QR Code to start sharing`,
-            description: `In this example, you will just tell Cool Clothes Online you're a st..see more.`,
+            description: `Imagine, as Ana, you are logged into the BestBC College website (see below). They want to offer you a Digital Student Card. Use your BC Wallet to scan the QR code from the website.`,
             order: 0,
             type: "HUMAN_TASK",
             actions: []
