@@ -153,7 +153,8 @@ export default function NewCharacterPage() {
         });
 
         toast.success("Persona has been updated.")
-
+        setStepState("no-selection");
+        setEditMode(false)
       } else {
         await createPersona(personaData, {
           onSuccess: (data: unknown) => {
