@@ -55,8 +55,9 @@
   },
   "credentials": {
     "header_title": "Add your Credentials",
-    "credential_title": "Credentials",
-    "credential_subtitle": "Select credential to view or credential new ones.",
+    "credential_title": "Select your Credential",
+    "credential_loading": "Loading Credentials",
+    "credential_subtitle": "Select an existing credential or use the fields on the right to create a new credential.",
     "header_subtitle": "Fill in the details on the right to create a credential for this showcase.",
     "credentials_added_label": "Credentials Added: {credentialCount}",
     "add_credential_label": "Add Credential",
@@ -92,7 +93,7 @@
     "credential_id_placeholder": "Enter Credential ID",
     "checkbox_label": "How will you use this imported credential?",
     "import_header_title": "Import Credential",
-    "import_header":"IMPORT CREDENTIAL",
+    "import_header": "IMPORT CREDENTIAL",
     "import_subtitle": "To import a credential, first locate the CLAIM_DEF transaction in CandyScan. Then, enter the Schema ID and Credential ID below.",
     "first_checkbox_label": "Issuance",
     "second_checkbox_label": "Proof Request",
@@ -126,7 +127,7 @@
     "identifier_label": "Identifier",
     "revocation_label": "Is this credential revocable?",
     "revocation_checkbox_label": "Yes",
-    "loading" : "Loading...",
+    "loading": "Loading...",
     "no_credentials: ": "No Credentials",
     "type_label": "Credential Type",
     "representations_label": "Representations",
@@ -190,9 +191,9 @@
     "edit_summary_label": "Summary",
     "proof_attribute_placeholder": "Select attribute",
     "confirm_information_to_send_label": "Confirm the information to send",
-    "basic_label":"Basic",
-    "proof_request_label":"Proof Request",
-    "scenario_description" : "Scenario Description"
+    "basic_label": "Basic",
+    "proof_request_label": "Proof Request",
+    "scenario_description": "Scenario Description"
   },
   "action": {
     "cancel_label": "CANCEL",

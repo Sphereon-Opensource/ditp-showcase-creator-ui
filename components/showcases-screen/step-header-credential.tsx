@@ -25,7 +25,7 @@ const StepHeaderCredential: React.FC<StepHeaderCredentialProps> = ({
 	const [isOpen, setIsOpen] = useState(false);
 
 	return (
-		<div className="flex items-center justify-between border-b border-gray-300 pb-6 mb-6">
+		<div className="flex items-center justify-between border-b border-gray-300 dark:border-dark-border pb-6 mb-6">
 			{/* Left Section: Icon + Title */}
 			<h2 className="text-lg font-bold flex items-center gap-2">
 				<div className="p-2 mx-2 rounded highlight-text">{icon}</div>

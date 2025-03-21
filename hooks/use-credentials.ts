@@ -102,36 +102,30 @@ export const useCreateCredentialDefinition = () => {
 };
 
 export const useDeleteCredentialDefinition = () => {
-  const queryClient = useQueryClient();
+	const queryClient = useQueryClient();
 
-	return useMutation<void, Error, string>({
-    mutationFn: async (slug: string) => {
-      await apiClient.delete(`/credentials/definitions/${slug}`);
-    },
-    onSuccess: () => {
-      toast.success("Credential deleted successfully!"); 
-      queryClient.invalidateQueries({ queryKey: ["credential"] }); 
-    },
-    onError: (error) => {
-      toast.error("Failed to delete credential."); // Show error toast
-      console.error(error);
-    },
-    onSettled: () => {
-      // Optionally refetch or reset state here
-      queryClient.refetchQueries({ queryKey: ["credential"] }); // Ensure the table is refreshed
-    },
-  });
+	return useMutation({
+		mutationFn: async (slug: string) => {
+			const response = await apiClient.delete(
+				`/credentials/definitions/${slug}`
+			);
+			return response;
+		},
+		onSettled: () => {
+			queryClient.invalidateQueries({ queryKey: ["credential"] });
+		},
+	});
 };
 
 export const useCreateIssuer = () => {
 	const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (data: typeof IssuerRequest._type) => {
-      const response = await apiClient.post(`/roles/issuers`, data);
-      return response;
-    },
+	return useMutation({
+		mutationFn: async (data: typeof IssuerRequest._type) => {
+			const response = await apiClient.post(`/roles/issuers`, data);
+			return response;
+		},
 		onSettled: () => {
 			queryClient.invalidateQueries({ queryKey: ["issuer"] });
 		},
-  });
+	});
 };
