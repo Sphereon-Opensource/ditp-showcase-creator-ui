@@ -12,7 +12,7 @@ import { useCreateShowcase, useDeleteShowcase, useShowcases } from "@/hooks/use-
 import { Persona, Showcase } from "@/openapi-types";
 import Image from "next/image";
 import Header from "../header";
-
+import { cn } from "@/lib/utils";
 export const ShowcaseList = () => {
   const t = useTranslations();
   const { data, isLoading } = useShowcases();
@@ -136,18 +136,20 @@ export const ShowcaseList = () => {
                     }}
                   >
                     <div
-                      className={`${
+                      className={cn(
+                        "left-4 right-0 top-4 py-2 rounded w-1/4 absolute",
                         showcase.status == "ACTIVE"
                           ? "bg-yellow-500"
                           : "bg-dark-grey"
-                      } left-0 right-0 top-4 py-2 rounded w-1/4 absolute`}
+                      )}
                     >
                       <p
-                        className={`text-center ${
+                        className={cn(
+                          "text-center",
                           showcase.status == "ACTIVE"
                             ? "text-black"
                             : "text-white"
-                        }`}
+                        )}
                       >
                         {showcase.status}
                       </p>
