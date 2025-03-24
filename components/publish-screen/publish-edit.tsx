@@ -101,7 +101,6 @@ const BannerImageUpload = ({
 export const PublishEdit = () => {
   const t = useTranslations();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const { showcase, reset } = useShowcaseStore();
   const router = useRouter();
   const { saveShowcase } = useOnboardingAdapter();
@@ -133,13 +132,11 @@ export const PublishEdit = () => {
 
   const onSubmit = async () => {
     const data = form.getValues();
-    setIsSaving(true);
     await saveShowcase(data);    
     toast.success("Showcase created successfully");
     reset();
     setIsModalOpen(false)
     router.push("/showcases");
-    setIsSaving(false);
   };
 
   const handleCancel = () => {

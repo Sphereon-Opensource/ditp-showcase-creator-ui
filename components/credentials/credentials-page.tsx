@@ -1,6 +1,5 @@
 "use client";
 
-import ButtonOutline from "../ui/button-outline";
 import { useCredentials } from "@/hooks/use-credentials-store";
 import { CredentialsDisplay } from "./credentials-display";
 import { CredentialsForm } from "./credentials-form";

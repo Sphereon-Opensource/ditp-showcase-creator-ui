@@ -3,6 +3,7 @@ import { Input } from "../components/ui/input";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
 
 interface HeaderProps {
   title: string;
@@ -49,7 +50,7 @@ const Header: React.FC<HeaderProps> = ({
                 placeholder={t("action.search_label")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-3 py-4 border border-foreground/50 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-100"
+                className="w-full pl-10 pr-3 border border-foreground/50 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-100"
               />
             </>
           )}
@@ -58,29 +59,32 @@ const Header: React.FC<HeaderProps> = ({
         {buttonLabel && buttonLink && (
           typeof buttonLink === "string" ? (
             <Link href={buttonLink}>
-              <button
+              <Button
                 className={cn(
-                  "font-bold py-2 px-4 h-12 flex items-center gap-4 shadow-md",
+                  "font-bold flex items-center gap-4 shadow-md",
                   buttonBgColor,
                   buttonTextColor,
-                  buttonClasses
+                  buttonClasses,
+                  "bg-transparent border-2 dark:border-yellow-500 border-amber-500 text-amber-500 dark:text-yellow-500 hover:bg-amber-500 dark:hover:bg-yellow-500 hover:text-background dark:hover:text-background"
                 )}
+                variant="outline"
               >
                 {buttonLabel} {showIcon && <CirclePlus size={22} />}
-              </button>
+              </Button>
             </Link>
           ) : (
-            <button
+            <Button
               onClick={buttonLink}
               className={cn(
-                "font-bold py-2 px-4 h-12 flex items-center gap-4 shadow-md",
+                "font-bold flex items-center gap-4 shadow-md",
                 buttonBgColor,
                 buttonTextColor,
-                buttonClasses
+                buttonClasses,
+                
               )}
             >
               {buttonLabel} {showIcon && <CirclePlus size={22} />}
-            </button>
+            </Button>
           )
         )}
       </div>

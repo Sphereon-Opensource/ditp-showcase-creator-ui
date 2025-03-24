@@ -26,6 +26,7 @@ import {
 import { useShowcaseStore } from "@/hooks/use-showcases-store";
 import { toast } from "sonner";
 import { useDeleteStep } from "@/hooks/use-issue-step";
+import { useHelpersStore } from "@/hooks/use-helpers-store";
 
 export const BasicStepEdit = () => {
   const t = useTranslations();
@@ -42,7 +43,9 @@ export const BasicStepEdit = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { mutateAsync } = useCreateScenario();
   const currentStep: any = selectedStep !== null ? screens[selectedStep] : null;
-  const { showcase, setScenarioIds, issuerId } = useShowcaseStore();
+  const { showcase, setScenarioIds } = useShowcaseStore();
+  const { issuerId } = useHelpersStore();
+  
   const personas = showcase.personas || [];
   const router = useRouter();
 

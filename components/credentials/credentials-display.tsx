@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Credential, CredentialAttributeType } from "@/openapi-types";
-import ButtonOutline from "../ui/button-outline";
 import { useTranslations } from "next-intl";
 import { useCredentials } from "@/hooks/use-credentials-store";
 import { useCredentialDefinitions } from "@/hooks/use-credentials";

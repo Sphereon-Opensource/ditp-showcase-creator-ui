@@ -9,20 +9,19 @@ import { Input } from "../ui/input";
 import ButtonOutline from "../ui/button-outline";
 import apiClient from "@/lib/apiService";
 import { toast } from "sonner";
+import { CredentialAttributeType, CredentialDefinitionType } from "@/openapi-types";
 
 interface DisplayAddedCredentialsProps {
-  localJSON: {
-    credentials?: string[];
-  };
+  credentials: CredentialDefinitionType[];
   removeCredential: (credentialId: string) => void;
 }
 
 export const DisplayAddedCredentials = ({
-  localJSON,
+  credentials,
   removeCredential,
 }: DisplayAddedCredentialsProps) => {
   const t = useTranslations();
-  const credentials = localJSON.credentials || [];
+  // PLEASE FIX ME
   const [localAttributes, setLocalAttributes] = useState<{ [key: string]: any[] }>({});
 
   const handleAttributeChange = (credentialId: string, attrIndex: number, newValue: string) => {
@@ -37,11 +36,11 @@ export const DisplayAddedCredentials = ({
 
   useEffect(() => {
     const initialAttributes: { [key: string]: any[] } = {};
-    credentials.forEach((credential: any) => {
-      initialAttributes[credential.id] = credential?.credentialSchema?.attributes?.map((attr: any) => ({
+    credentials.forEach((credential: CredentialDefinitionType) => {
+      initialAttributes[credential.id] = credential?.credentialSchema?.attributes?.map((attr: CredentialAttributeType) => ({
         ...attr,
         value: attr.value || "",
-      }));
+      })) || [];
     });
     setLocalAttributes(initialAttributes);
   }, [credentials]);

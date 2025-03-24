@@ -2,23 +2,22 @@ import { useState, useCallback } from "react";
 import { useShowcaseStore } from "@/hooks/use-showcases-store";
 import { 
   Persona, 
-  ScenarioRequestType, 
   StepRequestType,
   AriesOOBActionRequest,
-  IssuanceScenarioRequestType,
+  PresentationScenarioRequestType,
 } from "@/openapi-types";
 import { sampleAction } from "@/lib/steps";
 import { useHelpersStore } from "@/hooks/use-helpers-store";
 
-export const useShowcaseCreation = () => {
+export const usePresentationCreation = () => {
   const { 
     displayShowcase, 
     selectedPersonaIds,
   } = useShowcaseStore();
 
-  const { issuerId, selectedCredentialDefinitionIds } = useHelpersStore();
-  const [personaScenarios, setPersonaScenarios] = useState(() => {
-    const initialScenarios = new Map<string, IssuanceScenarioRequestType>();
+  const { relayerId, selectedCredentialDefinitionIds } = useHelpersStore();
+  const [ personaScenarios, setPersonaScenarios ] = useState(() => {
+    const initialScenarios = new Map<string, PresentationScenarioRequestType>();
     
     const personas = (displayShowcase.personas || []).filter(
       (persona: Persona) => selectedPersonaIds.includes(persona.id)
@@ -26,13 +25,13 @@ export const useShowcaseCreation = () => {
     
     personas.forEach((persona: Persona) => {
       initialScenarios.set(persona.id, {
-        name: `${persona.name}'s Journey`,
+        name: "University of British Columbia",
         description: `Onboarding scenario for ${persona.name}`,
-        type: "ISSUANCE",
+        type: "PRESENTATION",
         steps: [
           {
-            title: `Meet ${persona.name}`,
-            description: `Welcome to this showcase. Here you'll learn about digital credentials with ${persona.name}.`,
+            title: `Scan the QR Code to start sharing`,
+            description: `Imagine, as Ana, you are logged into the BestBC College website (see below). They want to offer you a Digital Student Card. Use your BC Wallet to scan the QR code from the website.`,
             order: 0,
             type: "HUMAN_TASK",
             actions: [
@@ -42,7 +41,7 @@ export const useShowcaseCreation = () => {
         ],
         personas: [persona.id],
         hidden: false,
-        issuer: issuerId
+        relyingParty: relayerId
       });
     });
     
@@ -114,14 +113,14 @@ export const useShowcaseCreation = () => {
         return prevScenarios;
       }
       
-      const defaultScenario: ScenarioRequestType = {
-        name: `${persona.name}'s Journey`,
+      const defaultScenario: PresentationScenarioRequestType = {
+        name: "You're done!",
         description: `Onboarding scenario for ${persona.name}`,
-        type: "ISSUANCE",
+        type: "PRESENTATION",
         steps: [
           {
-            title: `Meet ${persona.name}`,
-            description: `Welcome to this showcase. Here you'll learn about digital credentials with ${persona.name}.`,
+            title: `Scan the QR Code to start sharing`,
+            description: `Imagine, as Ana, you are logged into the BestBC College website (see below). They want to offer you a Digital Student Card. Use your BC Wallet to scan the QR code from the website.`,
             order: 0,
             type: "HUMAN_TASK",
             actions: []
@@ -129,11 +128,11 @@ export const useShowcaseCreation = () => {
         ],
         personas: [persona.id],
         hidden: false,
-        issuer: issuerId
+        relyingParty: relayerId
       };
       
       const newScenarios = new Map(prevScenarios);
-      newScenarios.set(persona.id, defaultScenario as IssuanceScenarioRequestType);
+      newScenarios.set(persona.id, defaultScenario as PresentationScenarioRequestType);
       return newScenarios;
     });
   }, []);

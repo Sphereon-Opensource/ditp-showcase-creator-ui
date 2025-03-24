@@ -1,14 +1,15 @@
+// hooks/use-onboarding-adapter.tsx
 import { useEffect, useState, useCallback } from "react";
-import { useOnboarding } from "@/hooks/use-onboarding";
-import { useShowcaseCreation } from "@/hooks/use-showcase-creation";
+import { usePresentations } from "@/hooks/use-presentation";
 import { Persona, ShowcaseRequestType, StepRequestType } from "@/openapi-types";
 import { createDefaultStep } from "@/lib/steps";
 import { useShowcaseStore } from "@/hooks/use-showcases-store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/apiService";
 import { useHelpersStore } from "./use-helpers-store";
+import { usePresentationCreation } from "./use-presentation-creation";
 
-export const useOnboardingAdapter = () => {
+export const usePresentationAdapter = () => {
   const {
     screens: steps,
     selectedStep,
@@ -19,7 +20,7 @@ export const useOnboardingAdapter = () => {
     moveStep,
     setStepState,
     stepState
-  } = useOnboarding();
+  } = usePresentations();
   
   const {
     selectedPersonas,
@@ -29,7 +30,7 @@ export const useOnboardingAdapter = () => {
     updatePersonaSteps,
     // completeShowcaseCreation,
     // isSaving: isSavingScenarios,
-  } = useShowcaseCreation();
+  } = usePresentationCreation();
   
   const { 
     displayShowcase, 
@@ -37,7 +38,7 @@ export const useOnboardingAdapter = () => {
     showcase
   } = useShowcaseStore();
 
-  const { selectedCredentialDefinitionIds, issuerId } = useHelpersStore();
+  const { selectedCredentialDefinitionIds, relayerId } = useHelpersStore();
     
   const [loadedPersonaId, setLoadedPersonaId] = useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -79,7 +80,7 @@ export const useOnboardingAdapter = () => {
         order: index,
         type: step.type as 'HUMAN_TASK' | 'SERVICE' | 'SCENARIO',
         actions: step.actions || [],
-        issuer: issuerId
+        relyingParty: relayerId
       }));
       
       updatePersonaSteps(activePersonaId, scenarioSteps);

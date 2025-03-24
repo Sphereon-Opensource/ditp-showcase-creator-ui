@@ -14,6 +14,9 @@ import { SidebarTrigger } from "../ui/sidebar";
 import Image from "next/image";
 import ShowcaseCard from "../showcases-screen/showcase-card";
 import Header from "../header";
+import { CopyButton } from "../ui/copy-button";
+import { DeleteButton } from "../ui/delete-button";
+import { OpenButton } from "../ui/external-open-button";
 
 export const LandingPage = () => {
   const t = useTranslations();
@@ -67,9 +70,7 @@ export const LandingPage = () => {
       <section className="mx-auto p-4">
         <div className="grid md:grid-cols-3 gap-6 mt-6 pb-4">
           {data?.showcases.filter(searchFilter).map((showcase: Showcase) => (
-            <div key={showcase.id}>
-              <ShowcaseCard showcase={showcase} variant="public" />
-            </div>
+              <ShowcaseCard key={showcase.id} showcase={showcase} variant="public" />
           ))}
         </div>
       </section>

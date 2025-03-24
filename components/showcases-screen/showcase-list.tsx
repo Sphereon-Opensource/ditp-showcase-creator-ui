@@ -8,17 +8,17 @@ import { Input } from "@/components/ui/input";
 import ButtonOutline from "@/components/ui/button-outline";
 import { Card } from "@/components/ui/card";
 import { ensureBase64HasPrefix } from "@/lib/utils";
-import { useCreateShowcase, useShowcases } from "@/hooks/use-showcases";
+import { useCreateShowcase, useDeleteShowcase, useShowcases } from "@/hooks/use-showcases";
 import { Persona, Showcase } from "@/openapi-types";
 import Image from "next/image";
 import ShowcaseCard from "./showcase-card";
 import Header from "../header";
-
+import { cn } from "@/lib/utils";
 export const ShowcaseList = () => {
   const t = useTranslations();
   const { data, isLoading } = useShowcases();
   const { mutateAsync } = useCreateShowcase();
-
+  const { mutateAsync: deleteShowcase } = useDeleteShowcase();
   const tabs = [
     { label: t("showcases.header_tab_overview"), status: "ALL" },
     { label: t("showcases.header_tab_draft"), status: "PENDING" },
@@ -124,9 +124,7 @@ export const ShowcaseList = () => {
               )
               .reverse()
               .map((showcase: Showcase) => (
-                <div key={showcase.id}>
-                  <ShowcaseCard showcase={showcase} variant="internal" />
-                </div>
+                  <ShowcaseCard key={showcase.id} showcase={showcase} variant="internal" />
               ))}
           </div>
         </section>

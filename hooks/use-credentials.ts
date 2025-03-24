@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import apiClient from "@/lib/apiService";
 import {
 	CredentialDefinitionRequest,
@@ -8,6 +7,8 @@ import {
 	CredentialDefinitionsResponse,
 	CredentialSchemaRequest,
 	IssuerRequest,
+	RelyingPartyResponse,
+	RelyingPartyRequest,
 } from "@/openapi-types";
 
 const staleTime = 1000 * 60 * 5; // 5 minutes
@@ -127,5 +128,32 @@ export const useCreateIssuer = () => {
 		onSettled: () => {
 			queryClient.invalidateQueries({ queryKey: ["issuer"] });
 		},
+
 	});
+};
+
+export const useRelyingPartyQuery = () => {
+	return useQuery({
+		queryKey: ["relying-parties"],
+		queryFn: async () => {
+			const response = await apiClient.get<{ relayer: typeof RelyingPartyResponse }>(
+				"/roles/relying-parties"
+			);
+			return response;
+		},
+		staleTime,
+	});
+};
+
+export const useCreateRelyingParty = () => {
+	const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: typeof RelyingPartyRequest._type) => {
+      const response = await apiClient.post(`/roles/relying-parties`, data);
+      return response;
+    },
+		onSettled: () => {
+			queryClient.invalidateQueries({ queryKey: ["issuer"] });
+		},
+  });
 };
