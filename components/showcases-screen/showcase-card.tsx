@@ -1,11 +1,13 @@
 import React from "react";
-import { Share2, Edit3 } from "lucide-react";
+import { Share2, Edit3, Trash2, Eye } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { ensureBase64HasPrefix } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { Persona, Showcase } from "@/openapi-types";
-
+import { OpenButton } from "../ui/open-button";
+import { CopyButton } from "../ui/copy-button";
+import { DeleteButton } from "../ui/delete-button";
 interface ShowcaseCardProps {
   showcase: Showcase;
   variant?: "internal" | "public";
@@ -49,9 +51,25 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
           </p>
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-bold text-white">{showcase?.name}</h2>
-            <button className="border dark:border-white rounded px-3 py-1 hover:bg-gray-400 dark:hover:bg-gray-700">
-              <Share2 size={18} className="text-white" />
-            </button>
+            <div className="flex-shrink-0">
+              <DeleteButton
+                onClick={() => {
+                  console.log("delete", showcase.id);
+                }}
+              />
+              <CopyButton
+                value={
+                  "http://localhost:3000/digital-trust/showcase/" +
+                  showcase.slug
+                }
+              />
+              <OpenButton
+                value={
+                  "http://localhost:3000/digital-trust/showcase/" +
+                  showcase.slug
+                }
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -139,4 +157,3 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
 };
 
 export default ShowcaseCard;
-
